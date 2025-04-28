@@ -1,0 +1,171 @@
+
+body {
+    margin: 0;
+    padding: 0;
+    background: url('background.png') center center fixed;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-color: black; /* αυτό προστέθηκε */
+    font-family: Arial, sans-serif;
+    color: white;
+}
+
+.container {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.neon {
+    font-size: 60px;
+    color: #fff;
+    text-shadow:
+        0 0 5px #fff,
+        0 0 10px #f0f,
+        0 0 20px #f0f,
+        0 0 40px #f0f;
+}
+
+.dock {
+    position: fixed;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    z-index: 10;
+}
+
+
+.dock-item {
+    text-align: center;
+    margin: 0 20px;
+    transition: transform 0.3s;
+}
+
+.dock-item:hover {
+    transform: scale(1.3);
+}
+
+.dock-item:hover ~ .dock-item,
+.dock-item:not(:hover) ~ .dock-item:hover {
+    transform: scale(1.1);
+}
+
+.dock-icon {
+    width: 100px;
+    cursor: pointer;
+}
+
+.neon-sub {
+    font-size: 16px;
+    color: #fff;
+    text-shadow:
+        0 0 3px #fff,
+        0 0 5px #0ff,
+        0 0 10px #0ff;
+    margin-top: 10px;
+}
+
+#content {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    right: 10%;
+    background-color: rgba(0, 0, 0, 0.85);
+    padding: 20px;
+    border-radius: 20px;
+    text-align: center;
+    animation: unfold 0.8s ease-in-out;
+}
+
+@keyframes unfold {
+    0% { transform: scaleY(0.1); opacity: 0; }
+    100% { transform: scaleY(1); opacity: 1; }
+}
+
+#content img {
+    max-width: 80%;
+    margin-bottom: 20px;
+}
+
+.neon-title {
+    font-size: 36px;
+    color: #fff;
+    text-shadow:
+        0 0 5px #fff,
+        0 0 10px #0ff,
+        0 0 20px #0ff,
+        0 0 40px #0ff;
+    margin-bottom: 10px;
+}
+
+.description {
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 2px 2px 4px black;
+    margin-bottom: 20px;
+}
+
+.button-container button {
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.hidden {
+    display: none;
+}
+
+#logo {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    cursor: pointer;
+    z-index: 9999;
+}
+
+#logo img {
+    width: 80px;
+}
+
+#logoContent {
+    position: fixed;
+    bottom: 100px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.9);
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    animation: fadeIn 0.5s ease-in-out;
+    z-index: 9998;
+}
+
+
+.logo-text {
+    color: white;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px black;
+    margin-top: 10px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.side-buttons {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 15px;
+}
+
+.side-buttons button {
+    white-space: nowrap;
+}

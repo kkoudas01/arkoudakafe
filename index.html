@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <title>Αρκούδα Καφέ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="neon">Αρκούδα Καφέ</h1>
+        <div class="dock">
+            <div class="dock-item" onmouseover="hoverEffect(this)" onmouseout="removeEffect(this)" onclick="showContent('cat')">
+                <img src="origamiCat1.png" class="dock-icon">
+                <div class="neon-sub">Γάτα Οριγκάμι</div>
+            </div>
+            <div class="dock-item" onmouseover="hoverEffect(this)" onmouseout="removeEffect(this)" onclick="showContent('bird')">
+                <img src="origamiBird1.png" class="dock-icon">
+                <div class="neon-sub">Πουλί Οριγκάμι</div>
+            </div>
+            <div class="dock-item" onmouseover="hoverEffect(this)" onmouseout="removeEffect(this)" onclick="showContent('boat')">
+                <img src="origamiBoat1.png" class="dock-icon">
+                <div class="neon-sub">Πλοίο Οριγκάμι</div>
+            </div>
+            <div class="dock-item" onmouseover="hoverEffect(this)" onmouseout="removeEffect(this)" onclick="showContent('airplane')">
+                <img src="origamiAirplane.png" class="dock-icon">
+                <div class="neon-sub">Σαΐτα Οριγκάμι</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="content" class="hidden paper-unfold">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
+            <div id="contentInner"></div>
+            <div class="button-container side-buttons">
+                <button onclick="goBack()">Επιστροφή</button>
+                <button onclick="window.location.href='website.html'">Περισσότερα</button>
+            </div>
+        </div>
+    </div>
+    
+
+    <div id="logo" onclick="toggleLogoContent()">
+        <img src="logo1.png" alt="Logo">
+    </div>
+
+    <div id="logoContent" class="hidden">
+        <img src="logo2.png" alt="Logo Info">
+        <p class="logo-text">Αυτό είναι το λογότυπο του Καφέ.</p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
