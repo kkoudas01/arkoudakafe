@@ -74,3 +74,16 @@ function removeEffect(el) {
         item.style.transform = 'scale(1) translateY(0)';
     });
 }
+
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('show');
+}
+
+document.addEventListener('click', (e) => {
+    const sidebar = document.getElementById('sidebar');
+    const sideTab = document.getElementById('sideTab');
+    if (!sidebar.contains(e.target) && e.target !== sideTab) {
+        sidebar.classList.remove('show');
+    }
+});
