@@ -20,7 +20,15 @@ function showContent(type) {
         imageSrc = 'origamiAirplane2.png';
         title = 'Γερανοί της Ελπίδας';
         description = 'Ο γερανός, σύμβολο ειρήνης και ελπίδας.';
-    } 
+    } else if (type === 'rose') {
+        imageSrc = 'origamiRose2.png';
+        title = 'Λουλούδι της Ζωής';
+        description = 'Ένα λουλούδι που ανθίζει με την τέχνη του οριγκάμι.';
+    } else if (type === 'butterfly') {
+        imageSrc = 'origamibutterfly2.png';
+        title = 'Καρδιά Αγάπης';
+        description = 'Μια καρδιά που εκφράζει συναισθήματα και αγάπη.';
+    }
 
     contentInner.innerHTML = `
         <img src="${imageSrc}" alt="${type}">
@@ -40,9 +48,29 @@ function toggleLogoContent() {
 }
 
 function hoverEffect(el) {
-    el.style.transform = 'scale(1.3)';
+    // Βρίσκουμε όλα τα dock items
+    const dockItems = document.querySelectorAll('.dock-item');
+    const currentIndex = Array.from(dockItems).indexOf(el);
+    
+    dockItems.forEach((item, index) => {
+        const distance = Math.abs(index - currentIndex);
+        
+        if (item === el) {
+            // Το επιλεγμένο εικονίδιο - μεγαλύτερο zoom
+            item.style.transform = 'scale(1.5) translateY(-20px)';
+        } else if (distance === 1) {
+            // Άμεσα γειτονικά εικονίδια - μικρότερο zoom
+            item.style.transform = 'scale(1.2) translateY(-10px)';
+        } else if (distance === 2) {
+            // Εικονίδια δύο θέσεις μακριά - ακόμα μικρότερο zoom
+            item.style.transform = 'scale(1.1) translateY(-5px)';
+        }
+    });
 }
 
 function removeEffect(el) {
-    el.style.transform = 'scale(1)';
+    const dockItems = document.querySelectorAll('.dock-item');
+    dockItems.forEach(item => {
+        item.style.transform = 'scale(1) translateY(0)';
+    });
 }

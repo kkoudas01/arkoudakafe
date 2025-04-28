@@ -2,8 +2,9 @@
 body {
     margin: 0;
     padding: 0;
-    background: url('background.png') center center fixed;
-    background-size: contain;
+    background: url('background.png') no-repeat center center fixed;
+    background-size: 800px auto;  /* Ρητό πλάτος (π.χ. 800px) και αυτόματο ύψος */
+    background-color: black;
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
@@ -86,9 +87,13 @@ body {
 }
 
 #content img {
-    max-width: 80%;
+    width: auto;
+    height: auto;
+    max-width: 400px; /* Ή ό,τι θες εσύ */
+    max-height: 400px;
     margin-bottom: 20px;
 }
+
 
 .neon-title {
     font-size: 36px;
@@ -168,4 +173,47 @@ body {
 
 .side-buttons button {
     white-space: nowrap;
+}
+
+.dock {
+    position: fixed;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    z-index: 10;
+    height: 100px; /* Προσθήκη ύψους για καλύτερο εφέ */
+}
+
+.dock-item {
+    text-align: center;
+    margin: 0 10px; /* Μικρότερο margin για πιο κοντά εικονίδια */
+    transition: transform 0.2s ease-in-out;
+    transform-origin: center bottom; /* Για να μεγαλώνουν από το κάτω μέρος */
+}
+
+.dock-icon {
+    width: 60px; /* Μικρότερο default μέγεθος */
+    height: 60px;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+
+/* Εφέ για γειτονικά εικονίδια */
+.dock-item:hover ~ .dock-item,
+.dock-item ~ .dock-item:hover {
+    transform: scale(1.2);
+}
+
+/* Εφέ για το επιλεγμένο εικονίδιο */
+.dock-item:hover .dock-icon {
+    transform: scale(1.5);
+}
+
+/* Εφέ για τα πιο μακρινά εικονίδια */
+.dock-item:hover ~ .dock-item ~ .dock-item,
+.dock-item ~ .dock-item ~ .dock-item:hover {
+    transform: scale(1.1);
 }
