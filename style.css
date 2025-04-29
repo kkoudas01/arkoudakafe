@@ -18,15 +18,34 @@ body {
     margin-top: 50px;
 }
 
-.neon {
-    font-size: 60px;
-    color: #fff;
-    text-shadow:
-        0 0 5px #fff,
-        0 0 10px #f0f,
-        0 0 20px #f0f,
-        0 0 40px #f0f;
+.container h1 {
+    background: rgba(255, 248, 220, 0.2);
+    padding: 10px 20px;
+    border: 2px solid #bfa76f;
+    border-radius: 10px;
+    display: inline-block;
 }
+
+
+.neon {
+    font-family: 'Comic Neue', cursive;
+    font-size: 40px; /* ήταν 60px, τώρα μικρότερο */
+    color: #4b2e1e;
+    text-shadow:
+        1px 1px 0 #e0caa3,
+        2px 2px 3px rgba(0, 0, 0, 0.2);
+    letter-spacing: 1.5px;
+    background: rgba(255, 248, 220, 0.1);
+    padding: 10px 20px; /* λίγο μικρότερο padding */
+    border: 2px solid #c2a477;
+    border-radius: 10px;
+    display: inline-block;
+    box-shadow: 0 0 10px rgba(139, 69, 19, 0.3);
+    margin-top: 20px; /* προσθέτουμε ελαφρύ margin από πάνω */
+}
+
+
+
 
 .dock {
     position: fixed;

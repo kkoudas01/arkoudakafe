@@ -6,27 +6,27 @@ function showContent(type) {
 
     if (type === 'cat') {
         imageSrc = 'origamiCat2.png';
-        title = 'Γατίσια Γοητεία';
+        title = 'Α Γυμνασίου';
         description = 'Ένα χαριτωμένο οριγκάμι γατάκι που σε κοιτά με περιέργεια.';
     } else if (type === 'bird') {
         imageSrc = 'origamiBird2.png';
-        title = 'Πουλί Ελευθερίας';
+        title = 'Β Γυμνασίου';
         description = 'Ένα λεπτοδουλεμένο πουλί έτοιμο για απογείωση.';
     } else if (type === 'boat') {
         imageSrc = 'origamiBoat2.png';
-        title = 'Χάρτινο Ταξίδι';
+        title = 'Γ Γυμνασίου';
         description = 'Ένα μικρό πλοίο που κουβαλά ιστορίες από πέλαγα.';
     } else if (type === 'airplane') {
         imageSrc = 'origamiAirplane2.png';
-        title = 'Γερανοί της Ελπίδας';
+        title = 'Α Λυκείου';
         description = 'Ο γερανός, σύμβολο ειρήνης και ελπίδας.';
     } else if (type === 'rose') {
         imageSrc = 'origamiRose2.png';
-        title = 'Λουλούδι της Ζωής';
+        title = 'Β Λυκείου';
         description = 'Ένα λουλούδι που ανθίζει με την τέχνη του οριγκάμι.';
     } else if (type === 'butterfly') {
         imageSrc = 'origamibutterfly2.png';
-        title = 'Καρδιά Αγάπης';
+        title = 'Γ Λυκείου';
         description = 'Μια καρδιά που εκφράζει συναισθήματα και αγάπη.';
     }
 
@@ -87,3 +87,4 @@ document.addEventListener('click', (e) => {
         sidebar.classList.remove('show');
     }
 });
+
