@@ -1,4 +1,6 @@
 
+let currentPage = '';
+
 function showContent(type) {
     const content = document.getElementById('content');
     const contentInner = document.getElementById('contentInner');
@@ -8,26 +10,32 @@ function showContent(type) {
         imageSrc = 'origamiCat2.png';
         title = 'Α Γυμνασίου';
         description = 'Ένα χαριτωμένο οριγκάμι γατάκι που σε κοιτά με περιέργεια.';
+        currentPage = 'GymnasioA/index.html';
     } else if (type === 'bird') {
         imageSrc = 'origamiBird2.png';
         title = 'Β Γυμνασίου';
         description = 'Ένα λεπτοδουλεμένο πουλί έτοιμο για απογείωση.';
+        currentPage = 'GymnasioB/index.html';
     } else if (type === 'boat') {
         imageSrc = 'origamiBoat2.png';
         title = 'Γ Γυμνασίου';
         description = 'Ένα μικρό πλοίο που κουβαλά ιστορίες από πέλαγα.';
+        currentPage = 'GymnasioC/index.html';
     } else if (type === 'airplane') {
         imageSrc = 'origamiAirplane2.png';
         title = 'Α Λυκείου';
         description = 'Ο γερανός, σύμβολο ειρήνης και ελπίδας.';
+        currentPage = 'LykeioA/index.html';
     } else if (type === 'rose') {
         imageSrc = 'origamiRose2.png';
         title = 'Β Λυκείου';
         description = 'Ένα λουλούδι που ανθίζει με την τέχνη του οριγκάμι.';
+        currentPage = 'LykeioB/index.html';
     } else if (type === 'butterfly') {
         imageSrc = 'origamibutterfly2.png';
         title = 'Γ Λυκείου';
         description = 'Μια καρδιά που εκφράζει συναισθήματα και αγάπη.';
+        currentPage = 'LykeioC/index.html';
     }
 
     contentInner.innerHTML = `
@@ -37,6 +45,7 @@ function showContent(type) {
     `;
     content.classList.remove('hidden');
 }
+
 
 function goBack() {
     document.getElementById('content').classList.add('hidden');
@@ -88,3 +97,10 @@ document.addEventListener('click', (e) => {
     }
 });
 
+function goToMore() {
+    if (currentPage) {
+        window.location.href = currentPage;
+    } else {
+        alert('Δεν έχει επιλεγεί τάξη.');
+    }
+}

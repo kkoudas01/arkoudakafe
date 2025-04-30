@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Αρρωστημένο Quiz</title>
+  <title>Είδη γραφικών παραστάσεων</title>
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -24,11 +24,30 @@
     .question {
       margin-bottom: 20px;
     }
-    .options label {
-      display: block;
-      margin: 10px 0;
-      cursor: pointer;
+
+    .options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px 40px;
     }
+
+    .options label {
+      cursor: pointer;
+      break-inside: avoid;
+    }
+
+    .options img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    @media (max-width: 600px) {
+      .options {
+        grid-template-columns: 1fr;
+      }
+    }
+
     button {
       background-color: #28a745;
       color: white;
@@ -38,16 +57,20 @@
       cursor: pointer;
       margin: 5px;
     }
+
     button:hover {
       background-color: #218838;
     }
+
     #timer, #result {
       font-size: 1.2em;
       margin: 10px 0;
     }
+
     .hidden {
       display: none;
     }
+
     img {
       max-width: 100%;
       height: auto;
@@ -72,22 +95,85 @@
   <script>
     const quizData = [
       {
-        question: "Solve the equation: \\( 2x + 3 = 7 \\)",
-        image: "https://via.placeholder.com/150?text=Graph",
-        options: ["x = 1", "x = 2", "x = 3", "x = 4"],
-        correct: "x = 2"
+        question: "Να βρεις τι μορφή έχει ο τύπος της παρακάτω γραφικής παράστασης",
+        image: "xisquareNoAxes.png",
+        options: ["\\( f(x)=ax \\)", "\\(f(x)=ax+b \\)", "\\(f(x)=ax^2 \\)", "\\(f(x)=ax^2+bx+c \\)", "\\(f(x)=ax^3 \\)",
+        "\\(f(x)=ax^4 \\)",
+        "\\(f(x)=\\frac{a}{x} \\)", "\\(f(x)=|x| \\)", "\\(f(x)=a \\cdot ημ(bx) \\)", "\\(f(x)=a \\cdot συν(bx) \\)",
+         "\\(f(x)=a \\cdot εφ(bx) \\)", "\\(f(x)=a \\cdot σφ(bx) \\)", "\\(f(x)=a^x \\)", "\\(f(x)=\\log_a (x) \\)"],
+        correct: "\\(f(x)=ax^2 \\)"
       },
       {
-        question: "What is the derivative of \\( f(x) = x^2 \\)?",
-        image: null,
-        options: ["f'(x) = x", "f'(x) = 2x", "f'(x) = x^2", "f'(x) = 2"],
-        correct: "f'(x) = 2x"
+        question: "Να βρεις τι μορφή έχει ο τύπος της παρακάτω γραφικής παράστασης",
+        image: "sinxNoAxes.png",
+        options: ["\\( f(x)=ax \\)", "\\(f(x)=ax+b \\)", "\\(f(x)=ax^2 \\)", "\\(f(x)=ax^2+bx+c \\)", "\\(f(x)=ax^3 \\)",
+        "\\(f(x)=ax^4 \\)",
+        "\\(f(x)=\\frac{a}{x} \\)", "\\(f(x)=|x| \\)", "\\(f(x)=a \\cdot ημ(bx) \\)", "\\(f(x)=a \\cdot συν(bx) \\)",
+         "\\(f(x)=a \\cdot εφ(bx) \\)", "\\(f(x)=a \\cdot σφ(bx) \\)", "\\(f(x)=a^x \\)", "\\(f(x)=\\log_a (x) \\)"],
+        correct: "\\(f(x)=a \\cdot ημ(bx) \\)"
       },
       {
-        question: "Calculate the circumference of a circle with radius \\( r = 5 \\).",
-        image: "https://via.placeholder.com/150?text=Circle",
-        options: ["10π", "15π", "20π", "25π"],
-        correct: "20π"
+        question: "Να βρεις τι μορφή έχει ο τύπος της παρακάτω γραφικής παράστασης",
+        image: "absxNoAxes.png",
+        options: ["\\( f(x)=ax \\)", "\\(f(x)=ax+b \\)", "\\(f(x)=ax^2 \\)", "\\(f(x)=ax^2+bx+c \\)", "\\(f(x)=ax^3 \\)",
+        "\\(f(x)=ax^4 \\)",
+        "\\(f(x)=\\frac{a}{x} \\)", "\\(f(x)=|x| \\)", "\\(f(x)=a \\cdot ημ(bx) \\)", "\\(f(x)=a \\cdot συν(bx) \\)",
+         "\\(f(x)=a \\cdot εφ(bx) \\)", "\\(f(x)=a \\cdot σφ(bx) \\)", "\\(f(x)=a^x \\)", "\\(f(x)=\\log_a (x) \\)"],
+        correct: "\\(f(x)=|x| \\)"
+      },
+      {
+        question: "Να βρεις τι μορφή έχει ο τύπος της παρακάτω γραφικής παράστασης",
+        image: "tanxNoAxes.png",
+        options: ["\\( f(x)=ax \\)", "\\(f(x)=ax+b \\)", "\\(f(x)=ax^2 \\)", "\\(f(x)=ax^2+bx+c \\)", "\\(f(x)=ax^3 \\)",
+        "\\(f(x)=ax^4 \\)",
+        "\\(f(x)=\\frac{a}{x} \\)", "\\(f(x)=|x| \\)", "\\(f(x)=a \\cdot ημ(bx) \\)", "\\(f(x)=a \\cdot συν(bx) \\)",
+         "\\(f(x)=a \\cdot εφ(bx) \\)", "\\(f(x)=a \\cdot σφ(bx) \\)", "\\(f(x)=a^x \\)", "\\(f(x)=\\log_a (x) \\)"],
+        correct: "\\(f(x)=a \\cdot εφ(bx) \\)"
+      },
+      {
+        question: "Να βρεις τι μορφή έχει ο τύπος της παρακάτω γραφικής παράστασης",
+        image: "expxNoAxes.png",
+        options: ["\\( f(x)=ax \\)", "\\(f(x)=ax+b \\)", "\\(f(x)=ax^2 \\)", "\\(f(x)=ax^2+bx+c \\)", "\\(f(x)=ax^3 \\)",
+        "\\(f(x)=ax^4 \\)",
+        "\\(f(x)=\\frac{a}{x} \\)", "\\(f(x)=|x| \\)", "\\(f(x)=a \\cdot ημ(bx) \\)", "\\(f(x)=a \\cdot συν(bx) \\)",
+         "\\(f(x)=a \\cdot εφ(bx) \\)", "\\(f(x)=a \\cdot σφ(bx) \\)", "\\(f(x)=a^x \\)", "\\(f(x)=\\log_a (x) \\)"],
+        correct: "\\(f(x)=a^x \\)"
+      },
+      {
+        question: "Να βρεις τι μορφή έχει ο τύπος της παρακάτω γραφικής παράστασης",
+        image: "xiCubeNoAxes.png",
+        options: ["\\( f(x)=ax \\)", "\\(f(x)=ax+b \\)", "\\(f(x)=ax^2 \\)", "\\(f(x)=ax^2+bx+c \\)", "\\(f(x)=ax^3 \\)",
+        "\\(f(x)=ax^4 \\)",
+        "\\(f(x)=\\frac{a}{x} \\)", "\\(f(x)=|x| \\)", "\\(f(x)=a \\cdot ημ(bx) \\)", "\\(f(x)=a \\cdot συν(bx) \\)",
+         "\\(f(x)=a \\cdot εφ(bx) \\)", "\\(f(x)=a \\cdot σφ(bx) \\)", "\\(f(x)=a^x \\)", "\\(f(x)=\\log_a (x) \\)"],
+        correct: "\\(f(x)=ax^3 \\)"
+      },
+      {
+        question: "Να βρεις τι μορφή έχει ο τύπος της παρακάτω γραφικής παράστασης",
+        image: "cosxNoAxes.png",
+        options: ["\\( f(x)=ax \\)", "\\(f(x)=ax+b \\)", "\\(f(x)=ax^2 \\)", "\\(f(x)=ax^2+bx+c \\)", "\\(f(x)=ax^3 \\)",
+        "\\(f(x)=ax^4 \\)",
+        "\\(f(x)=\\frac{a}{x} \\)", "\\(f(x)=|x| \\)", "\\(f(x)=a \\cdot ημ(bx) \\)", "\\(f(x)=a \\cdot συν(bx) \\)",
+         "\\(f(x)=a \\cdot εφ(bx) \\)", "\\(f(x)=a \\cdot σφ(bx) \\)", "\\(f(x)=a^x \\)", "\\(f(x)=\\log_a (x) \\)"],
+        correct: "\\(f(x)=a \\cdot συν(bx) \\)"
+      },
+      {
+        question: "Να βρεις τι μορφή έχει ο τύπος της παρακάτω γραφικής παράστασης",
+        image: "lineONoAxes.png",
+        options: ["\\( f(x)=ax \\)", "\\(f(x)=ax+b \\)", "\\(f(x)=ax^2 \\)", "\\(f(x)=ax^2+bx+c \\)", "\\(f(x)=ax^3 \\)",
+        "\\(f(x)=ax^4 \\)",
+        "\\(f(x)=\\frac{a}{x} \\)", "\\(f(x)=|x| \\)", "\\(f(x)=a \\cdot ημ(bx) \\)", "\\(f(x)=a \\cdot συν(bx) \\)",
+         "\\(f(x)=a \\cdot εφ(bx) \\)", "\\(f(x)=a \\cdot σφ(bx) \\)", "\\(f(x)=a^x \\)", "\\(f(x)=\\log_a (x) \\)"],
+        correct: "\\(f(x)=a \\cdot συν(bx) \\)"
+      },
+      {
+        question: "Να βρεις τι μορφή έχει ο τύπος της παρακάτω γραφικής παράστασης",
+        image: "logNoAxes.png",
+        options: ["\\( f(x)=ax \\)", "\\(f(x)=ax+b \\)", "\\(f(x)=ax^2 \\)", "\\(f(x)=ax^2+bx+c \\)", "\\(f(x)=ax^3 \\)",
+        "\\(f(x)=ax^4 \\)",
+        "\\(f(x)=\\frac{a}{x} \\)", "\\(f(x)=|x| \\)", "\\(f(x)=a \\cdot ημ(bx) \\)", "\\(f(x)=a \\cdot συν(bx) \\)",
+         "\\(f(x)=a \\cdot εφ(bx) \\)", "\\(f(x)=a \\cdot σφ(bx) \\)", "\\(f(x)=a^x \\)", "\\(f(x)=\\log_a (x) \\)"],
+        correct: "\\(f(x)=\\log_a (x) \\)"
       },
       {
         question: "Ποια είναι η σωστή εικόνα;",
@@ -242,7 +328,7 @@
     document.getElementById("submit").addEventListener("click", checkAnswer);
     document.getElementById("download").addEventListener("click", downloadResults);
     document.getElementById("otherpage").addEventListener("click", () => {
-      window.location.href = "index.html"; // άλλαξε το URL όπως θες
+      window.location.href = "index.html";
     });
   </script>
 </body>

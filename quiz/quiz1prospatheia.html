@@ -105,7 +105,30 @@
         image: "https://via.placeholder.com/150?text=Circle",
         options: ["10π", "15π", "20π", "25π"],
         correct: "20π"
+      },
+      {
+        question: "Ποια είναι η σωστή εικόνα;",
+        image: null,
+        options: [
+          `<img src="WrongImage1.png" alt="Λάθος 1">`,
+          `<img src="WrongImage2.png" alt="Λάθος 2">`,
+          `<img src="RightImage.png" alt="Σωστό">`,
+          `<img src="WrongImage3.png" alt="Λάθος 3">`
+        ],
+        correct: `<img src="RightImage.png" alt="Σωστό">`
+      },
+      {
+        question: "Ποια είναι η σωστή εικόνα;",
+        image: null,
+        options: [
+          `<img src="WrongImage1.png">`,
+          `<img src="WrongImage2.png">`,
+          `<img src="RightImage.png">`,
+          `<img src="WrongImage3.png">`
+        ],
+        correct: `<img src="WrongImage2.png">`
       }
+      
     ];
 
     let currentQuestion = 0;
