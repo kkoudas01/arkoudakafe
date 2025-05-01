@@ -1,217 +1,232 @@
 const subjects = {
-    'Άλγεβρα': ['Εξισώσεις', 'Ανισώσεις'],
-    'Γεωμετρία': ['Σχήματα', 'Γωνίες'],
-    'Φυσική': ['Κινηματική', 'Δυναμική']
-  };
+  'Άλγεβρα': ['Εξισώσεις', 'Ανισώσεις'],
+  'Γεωμετρία': ['Σχήματα', 'Γωνίες'],
+  'Φυσική': ['Κινηματική', 'Δυναμική']
+};
+
+const links = {
+  'Εξισώσεις': [
+    { text: 'Γραμμικές Εξισώσεις', url: 'ex1.html' },
+    { text: 'Δευτεροβάθμιες Εξισώσεις', url: 'ex2.html' }
+  ],
+  'Ανισώσεις': [
+    { text: 'Γραμμικές Ανισώσεις', url: 'an1.html' }
+  ],
+  'Σχήματα': [
+    { text: 'Τρίγωνα', url: 'sx1.html' },
+    { text: 'Τετράπλευρα', url: 'sx2.html' }
+  ],
+  'Γωνίες': [
+    { text: 'Είδη Γωνιών', url: 'gn1.html' },
+    { text: 'Υπολογισμοί', url: 'gn2.html' }
+  ],
+  'Κινηματική': [
+    { text: 'Ομαλή Κίνηση', url: 'kin1.html' },
+    { text: 'Ευθύγραμμη Κίνηση', url: 'kin2.html' }
+  ],
+  'Δυναμική': [
+    { text: 'Νόμοι του Νεύτωνα', url: 'dyn1.html' },
+    { text: 'Δυνάμεις', url: 'dyn2.html' }
+  ]
+};
+
+const ringButtons = document.querySelectorAll('.ring-button');
+const centralCircle = document.getElementById('main-label');
+const dropdownsContainer = document.getElementById('dropdowns');
+const backButton = document.querySelector('.back-button');
+
+let currentlySelectedButton = null;
+let animationInProgress = false;
+
+function getInitialTransform(button) {
+  const index = Array.from(ringButtons).indexOf(button);
+  switch(index) {
+    case 0: return 'translate(160px, 0)';
+    case 1: return 'rotate(120deg) translate(160px) rotate(-120deg)';
+    case 2: return 'rotate(240deg) translate(160px) rotate(-240deg)';
+    default: return '';
+  }
+}
+
+function resetButtonToInitialPosition(button, callback) {
+  if (!button) return;
   
-  const links = {
-    'Εξισώσεις': [
-      { text: 'Γραμμικές Εξισώσεις', url: 'ex1.html' },
-      { text: 'Δευτεροβάθμιες Εξισώσεις', url: 'ex2.html' }
-    ],
-    'Ανισώσεις': [
-      { text: 'Γραμμικές Ανισώσεις', url: 'an1.html' }
-    ],
-    'Σχήματα': [
-      { text: 'Τρίγωνα', url: 'sx1.html' },
-      { text: 'Τετράπλευρα', url: 'sx2.html' }
-    ],
-    'Γωνίες': [
-      { text: 'Είδη Γωνιών', url: 'gn1.html' },
-      { text: 'Υπολογισμοί', url: 'gn2.html' }
-    ],
-    'Κινηματική': [
-      { text: 'Ομαλή Κίνηση', url: 'kin1.html' },
-      { text: 'Ευθύγραμμη Κίνηση', url: 'kin2.html' }
-    ],
-    'Δυναμική': [
-      { text: 'Νόμοι του Νεύτωνα', url: 'dyn1.html' },
-      { text: 'Δυνάμεις', url: 'dyn2.html' }
-    ]
-  };
+  button.classList.remove('selected');
+  button.style.transform = getInitialTransform(button);
+  button.style.opacity = '1';
+  button.style.pointerEvents = 'auto';
   
-  let currentSelection = null;
+  if (callback) callback();
+}
+
+function moveButtonToCenter(button, callback) {
+  if (!button) return;
   
-  // Κλείσιμο όλων των dropdowns όταν γίνεται κλικ έξω από αυτά
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.ring-button') && !e.target.closest('.dropdowns') && !e.target.classList.contains('central-circle')) {
-      closeAllMenus();
+  button.classList.add('selected');
+  
+  setTimeout(() => {
+    button.style.transform = 'scale(0.5) translate(0, 0)';
+    button.style.opacity = '0';
+    button.style.pointerEvents = 'none';
+    
+    if (callback) setTimeout(callback, 500);
+  }, 10);
+}
+
+function selectButton(button) {
+  if (animationInProgress) return;
+  animationInProgress = true;
+  
+  const subject = button.dataset.subject;
+  
+  if (currentlySelectedButton && currentlySelectedButton !== button) {
+    resetButtonToInitialPosition(currentlySelectedButton, () => {
+      moveButtonToCenter(button, () => {
+        currentlySelectedButton = button;
+        centralCircle.innerText = subject;
+        centralCircle.classList.add('can-reset');
+        createDropdownMenu(subject);
+        animationInProgress = false;
+      });
+    });
+  } else {
+    moveButtonToCenter(button, () => {
+      currentlySelectedButton = button;
+      centralCircle.innerText = subject;
+      centralCircle.classList.add('can-reset');
+      createDropdownMenu(subject);
+      animationInProgress = false;
+    });
+  }
+}
+
+function resetToDefaultState() {
+  if (animationInProgress || !currentlySelectedButton) return;
+  animationInProgress = true;
+  
+  resetButtonToInitialPosition(currentlySelectedButton, () => {
+    currentlySelectedButton = null;
+    centralCircle.innerText = 'Επίλεξε';
+    centralCircle.classList.remove('can-reset');
+    dropdownsContainer.innerHTML = '';
+    animationInProgress = false;
+  });
+  
+  centralCircle.style.transform = 'scale(0.9)';
+  setTimeout(() => {
+    centralCircle.style.transform = '';
+  }, 300);
+}
+
+ringButtons.forEach(button => {
+  button.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (button !== currentlySelectedButton) {
+      selectButton(button);
     }
   });
+});
+
+centralCircle.addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (currentlySelectedButton) {
+    resetToDefaultState();
+  }
+});
+
+backButton.addEventListener('click', (e) => {
+  e.stopPropagation();
   
-  // Λειτουργικότητα κεντρικού κύκλου
-  document.querySelector('.central-circle').addEventListener('click', (e) => {
-    e.stopPropagation();
-    resetSelection();
-  });
+  // 1. Επαναφορά της τρέχουσας κατάστασης (αν υπάρχει επιλεγμένο κουμπί)
+  if (currentlySelectedButton) {
+    resetToDefaultState();
+    
+    // 2. Μεταφόρτωση της αρχικής σελίδας με μικρή καθυστέρηση
+    setTimeout(() => {
+      window.location.href = '../index.html';
+    }, 500); // Περιμένετε να ολοκληρωθεί το animation της επαναφοράς
+  } else {
+    // Αν δεν υπάρχει τίποτα επιλεγμένο, πηγαίνετε απευθείας στην αρχική
+    window.location.href = '../index.html';
+  }
+});
+
+document.querySelector('.ring').addEventListener('click', (e) => {
+  e.stopPropagation();
+});
+
+function createDropdownMenu(subject) {
+  dropdownsContainer.innerHTML = '';
   
-  // Επεξεργασία κλικ στα κύρια κουμπιά του δακτυλίου
-  document.querySelectorAll('.ring-button').forEach(button => {
-    button.addEventListener('click', (e) => {
+  const container = document.createElement('div');
+  container.className = 'dropdown-container';
+  
+  const dropdown = document.createElement('div');
+  dropdown.className = 'dropdown';
+  
+  subjects[subject].forEach(topic => {
+    const topicButton = document.createElement('button');
+    topicButton.innerText = topic;
+    topicButton.dataset.topic = topic;
+    
+    topicButton.addEventListener('click', (e) => {
       e.stopPropagation();
-      const subject = button.dataset.subject;
+      document.querySelectorAll('.submenu').forEach(menu => menu.remove());
+      createSubmenu(e.target, topic);
       
-      // Reset όλων των κουμπιών πρώτα
-      resetButtonsPosition();
-      
-      // Αν η επιλογή είναι ίδια με την τρέχουσα, κάνε reset
-      if (currentSelection === subject) {
-        resetSelection();
-        return;
-      }
-      
-      // Ενημέρωση του κεντρικού κύκλου
-      document.getElementById('main-label').innerText = subject;
-      currentSelection = subject;
-      
-      // Δημιουργία dropdown menu
-      createDropdownMenu(subject);
-      
-      // Εστίαση στο κουμπί που επιλέχθηκε
-      animateButtonSelection(button);
+      e.target.style.transform = 'translateX(5px)';
+      setTimeout(() => { e.target.style.transform = ''; }, 200);
     });
+    
+    dropdown.appendChild(topicButton);
   });
   
-  // Δημιουργία dropdown menu
-  function createDropdownMenu(subject) {
-    closeAllMenus();
-    
-    const dropdowns = document.getElementById('dropdowns');
-    const container = document.createElement('div');
-    container.className = 'dropdown-container';
+  container.appendChild(dropdown);
+  dropdownsContainer.appendChild(container);
   
-    const dropdown = document.createElement('div');
-    dropdown.className = 'dropdown';
+  dropdownsContainer.style.opacity = '0';
+  dropdownsContainer.style.transform = 'translateY(-10px)';
+  setTimeout(() => {
+    dropdownsContainer.style.opacity = '1';
+    dropdownsContainer.style.transform = 'translateY(0)';
+  }, 10);
+}
+
+function createSubmenu(parentButton, topic) {
+  const submenu = document.createElement('div');
+  submenu.className = 'submenu';
   
-    subjects[subject].forEach(topic => {
-      const topicButton = document.createElement('button');
-      topicButton.innerText = topic;
-      topicButton.dataset.topic = topic;
-  
-      topicButton.addEventListener('click', (e) => {
-        e.stopPropagation();
-        
-        // Κλείσιμο προηγούμενων submenus
-        document.querySelectorAll('.submenu').forEach(menu => menu.remove());
-        
-        // Δημιουργία νέου submenu
-        createSubmenu(e.target, topic);
-        
-        // Εμφάνιση animation
-        animateButtonClick(e.target);
-      });
-  
-      dropdown.appendChild(topicButton);
+  links[topic].forEach(link => {
+    const linkButton = document.createElement('button');
+    linkButton.innerText = link.text;
+    linkButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      window.location.href = link.url;
     });
-  
-    container.appendChild(dropdown);
-    dropdowns.appendChild(container);
-  }
-  
-  // Δημιουργία submenu
-  function createSubmenu(parentButton, topic) {
-    const submenu = document.createElement('div');
-    submenu.className = 'submenu';
     
-    links[topic].forEach(link => {
-      const linkButton = document.createElement('button');
-      linkButton.innerText = link.text;
-      linkButton.addEventListener('click', (e) => {
-        e.stopPropagation();
-        window.location.href = link.url;
-      });
-      
-      // Προσθήκη hover effect
-      linkButton.addEventListener('mouseenter', () => {
-        linkButton.style.transform = 'translateX(5px)';
-      });
-      linkButton.addEventListener('mouseleave', () => {
-        linkButton.style.transform = '';
-      });
-      
-      submenu.appendChild(linkButton);
+    linkButton.addEventListener('mouseenter', () => { 
+      linkButton.style.transform = 'translateX(3px)'; 
     });
-  
-    parentButton.parentNode.insertBefore(submenu, parentButton.nextSibling);
+    linkButton.addEventListener('mouseleave', () => { 
+      linkButton.style.transform = ''; 
+    });
     
-    // Animation εμφάνισης
-    animateMenuAppearance(submenu);
-  }
-  
-  // Λειτουργικότητα πλήκτρου επιστροφής
-  document.querySelector('.back-button').addEventListener('click', (e) => {
-    e.stopPropagation();
-    resetSelection();
+    submenu.appendChild(linkButton);
   });
+
+  const dropdownContainer = parentButton.closest('.dropdown-container');
   
-  // Απενεργοποίηση κλικ στο ring background
-  document.querySelector('.ring').addEventListener('click', (e) => {
-    e.stopPropagation();
-  });
+  submenu.style.position = 'absolute';
+  submenu.style.left = '100%';
+  submenu.style.top = '0';
+  submenu.style.marginLeft = '10px';
   
-  /************************
-   * ΒΟΗΘΗΤΙΚΕΣ ΣΥΝΑΡΤΗΣΕΙΣ *
-   ***********************/
+  dropdownContainer.appendChild(submenu);
   
-  function resetSelection() {
-    document.getElementById('main-label').innerText = 'Επίλεξε';
-    closeAllMenus();
-    currentSelection = null;
-    resetButtonsPosition();
-    
-    // Animation επιστροφής
-    animateCentralCircle();
-  }
-  
-  function closeAllMenus() {
-    document.getElementById('dropdowns').innerHTML = '';
-  }
-  
-  function resetButtonsPosition() {
-    document.querySelectorAll('.ring-button').forEach((button, index) => {
-      button.style.transform = getOriginalTransform(index);
-      button.style.backgroundColor = 'rgba(255, 192, 203, 0.4)';
-    });
-  }
-  
-  function getOriginalTransform(index) {
-    const positions = [
-      'translate(160px, 0)',
-      'rotate(120deg) translate(160px) rotate(-120deg)',
-      'rotate(240deg) translate(160px) rotate(-240deg)'
-    ];
-    return positions[index];
-  }
-  
-  function animateButtonSelection(button) {
-    button.style.transform = button.style.transform + ' scale(1.1)';
-    button.style.backgroundColor = 'rgba(255, 192, 203, 0.7)';
-    setTimeout(() => {
-      button.style.transform = button.style.transform.replace(' scale(1.1)', '');
-      button.style.backgroundColor = 'rgba(255, 192, 203, 0.6)';
-    }, 300);
-  }
-  
-  function animateButtonClick(button) {
-    button.style.transform = 'translateX(10px)';
-    setTimeout(() => {
-      button.style.transform = '';
-    }, 300);
-  }
-  
-  function animateMenuAppearance(menu) {
-    menu.style.opacity = '0';
-    menu.style.transform = 'translateY(-10px)';
-    setTimeout(() => {
-      menu.style.opacity = '1';
-      menu.style.transform = 'translateY(0)';
-    }, 10);
-  }
-  
-  function animateCentralCircle() {
-    const centralCircle = document.querySelector('.central-circle');
-    centralCircle.style.transform = 'scale(0.9)';
-    setTimeout(() => {
-      centralCircle.style.transform = '';
-    }, 300);
-  }
+  submenu.style.opacity = '0';
+  submenu.style.transform = 'translateX(-10px)';
+  setTimeout(() => {
+    submenu.style.opacity = '1';
+    submenu.style.transform = 'translateX(0)';
+  }, 10);
+}
