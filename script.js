@@ -9,32 +9,32 @@ function showContent(type) {
     if (type === 'cat') {
         imageSrc = 'origamiCat2.png';
         title = 'Α Γυμνασίου';
-        description = 'Ένα χαριτωμένο οριγκάμι γατάκι που σε κοιτά με περιέργεια.';
+        description = 'Περιγραφή Α Γυμν.';
         currentPage = 'GymnasioA/index.html';
     } else if (type === 'bird') {
         imageSrc = 'origamiBird2.png';
         title = 'Β Γυμνασίου';
-        description = 'Ένα λεπτοδουλεμένο πουλί έτοιμο για απογείωση.';
+        description = 'Περιγραφή Β Γυμν.';
         currentPage = 'GymnasioB/index.html';
     } else if (type === 'boat') {
         imageSrc = 'origamiBoat2.png';
         title = 'Γ Γυμνασίου';
-        description = 'Ένα μικρό πλοίο που κουβαλά ιστορίες από πέλαγα.';
+        description = 'Περιγραφή Γ Γυμν.';
         currentPage = 'GymnasioC/index.html';
     } else if (type === 'airplane') {
         imageSrc = 'origamiAirplane2.png';
         title = 'Α Λυκείου';
-        description = 'Ο γερανός, σύμβολο ειρήνης και ελπίδας.';
+        description = 'Περιγραφή Α Λυκειου.';
         currentPage = 'LykeioA/index.html';
     } else if (type === 'rose') {
         imageSrc = 'origamiRose2.png';
         title = 'Β Λυκείου';
-        description = 'Ένα λουλούδι που ανθίζει με την τέχνη του οριγκάμι.';
+        description = 'Περιγραφή Β Λυκείου.';
         currentPage = 'LykeioB/index.html';
     } else if (type === 'butterfly') {
         imageSrc = 'origamibutterfly2.png';
         title = 'Γ Λυκείου';
-        description = 'Μια καρδιά που εκφράζει συναισθήματα και αγάπη.';
+        description = 'Περιγραφή Γ Λυκείου.';
         currentPage = 'LykeioC/index.html';
     }
 
