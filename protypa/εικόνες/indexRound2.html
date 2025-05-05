@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8">
+  <title>Δακτύλιος Επιλογών</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      /* Αντικατέστησε το 'background.png' με ένα πραγματικό URL ή χρώμα αν δεν το έχεις */
+      /* background: url('background.png') no-repeat center center fixed; */
+      background: linear-gradient(135deg, #e0f2f7, #b3e5fc); /* Απλό background για παράδειγμα */
+      background-size: cover;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    .container {
+      position: relative;
+      width: 100%;
+      height: 350px; /* Αύξηση ύψους για να χωράει το SVG */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 60px;
+    }
+
+    .central-circle {
+      width: 120px;
+      height: 120px;
+      background: rgba(200, 200, 200, 0.3);
+      backdrop-filter: blur(12px);
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column; /* Για να στοιχίσουμε εικόνα και κείμενο αν θέλουμε */
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      color: #333;
+      box-shadow:
+        inset 2px 2px 5px rgba(255, 255, 255, 0.5),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.1),
+        0 0 20px rgba(170, 170, 170, 0.5);
+      position: relative; /* Χρειάζεται για να είναι πάνω από το SVG */
+      z-index: 2;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: transform 0.3s ease;
+      text-align: center;
+      overflow: hidden; /* Κροπάρει την εικόνα στο κυκλικό σχήμα */
+    }
+
+    .central-circle.can-reset {
+      cursor: pointer;
+    }
+
+    #central-image {
+        display: block; /* Εμφάνιζε την εικόνα από προεπιλογή */
+        width: 100%; /* Κάνε την εικόνα να γεμίζει τον κύκλο */
+        height: 100%;
+        object-fit: cover; /* Κρατάει το aspect ratio και καλύπτει τον χώρο */
+        border-radius: 50%; /* Σιγουρέψου ότι είναι και η εικόνα κυκλική */
+        position: absolute; /* Τοποθέτησέ την ακριβώς πάνω στον κύκλο */
+        top: 0;
+        left: 0;
+        z-index: 1; /* Βάλε την εικόνα πίσω από το κείμενο αν υπάρχει */
+    }
+
+    #main-label-text {
+        position: relative; /* Κείμενο πάνω από την εικόνα */
+        z-index: 2;
+        padding: 5px; /* Λίγο padding για να μην κολλάει στις άκρες αν είναι μεγάλο */
+        box-sizing: border-box; /* Συμπερίληψη padding στο μέγεθος */
+        max-width: 100%; /* Περιόρισε το πλάτος του κειμένου */
+        word-break: break-word; /* Σπάσιμο λέξεων αν είναι μεγάλες */
+    }
+
+
+    /* -- Νέα Στοιχεία SVG -- */
+    .donut-chart-container {
+        position: absolute;
+        width: 320px; /* Εξωτερική διάμετρος του δακτυλίου */
+        height: 320px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1; /* Πίσω από τον κεντρικό κύκλο */
+    }
+
+    .donut-chart {
+        width: 100%;
+        height: 100%;
+    }
+
+    /* SVG Filter for depth effect (simple drop shadow) */
+     .donut-chart defs filter {
+        /* Ensure filter area covers potential shadows */
+        x: -20%; y: -20%; width: 140%; height: 140%;
+    }
+
+    .donut-arc {
+        fill: rgba(255, 192, 203, 0.4); /* Αρχικό χρώμα τμημάτων */
+        stroke: rgba(255, 255, 255, 0.4); /* Ελαφρύ λευκό stroke */
+        stroke-width: 2; /* Πιο παχύ stroke */
+        cursor: pointer;
+        transition: fill 0.3s ease, opacity 0.3s ease; /* Προσθήκη transition για ομαλότητα */
+        opacity: 1; /* Αρχική ορατότητα */
+        filter: url(#depth-filter); /* Εφαρμογή του filter */
+    }
+
+    .donut-arc:hover {
+        fill: rgba(255, 192, 203, 0.6); /* Χρώμα στο hover */
+    }
+
+     .donut-arc.selected {
+       fill: rgba(255, 160, 173, 0.7); /* Ελαφρώς πιο σκούρο ροζ */
+       /* stroke: #ff69b4; */
+       /* stroke-width: 2; */
+     }
+
+
+    .donut-label {
+        font-family: sans-serif;
+        font-size: 14px;
+        font-weight: bold;
+        fill: black; /* Χρώμα κειμένου */
+        text-anchor: middle; /* Οριζόντια στοίχιση στο κέντρο */
+        dominant-baseline: middle; /* Κάθετη στοίχιση στο κέντρο */
+        pointer-events: none; /* Να μην πιάνει κλικ το κείμενο */
+        user-select: none; /* Να μην επιλέγεται το κείμενο */
+    }
+    /* -- Τέλος Νέων Στοιχείων SVG -- */
+
+    /* Το παλιό .ring δεν χρειάζεται πια */
+    /* .ring { ... } */
+    /* Τα παλιά .ring-button δεν χρειάζονται πια */
+    /* .ring-button { ... } */
+    /* .ring-button:nth-child(...) { ... } */
+
+
+    /* Το .back-button έχει αφαιρεθεί */
+    /*
+    .back-button {
+      ... styles ...
+    }
+    .back-button:hover {
+      ... styles ...
+    }
+    */
+
+    .dropdowns-container {
+      display: flex;
+      justify-content: center;
+      /* Αλλάζουμε το margin-top για να εμφανίζονται πιο κάτω */
+      margin-top: 20px; /* Προσαρμόστε ανάλογα */
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      position: relative; /* Χρήσιμο για την τοποθέτηση των submenu */
+      width: 100%; /* Για καλύτερη κεντράριση */
+      padding-bottom: 30px; /* Χώρος στο κάτω μέρος */
+      min-height: 150px; /* Ελάχιστο ύψος για να μην "πηδάει" η σελίδα */
+    }
+
+    .dropdown-container {
+      /* Αφαιρούμε το margin-left, η κεντράριση γίνεται από τον .dropdowns-container */
+      /* margin-left: 40px; */
+      position: relative; /* Σχετική τοποθέτηση για τα παιδιά του (submenu) */
+      display: flex; /* Κάνουμε και αυτό flex για να κεντράρει το dropdown */
+      justify-content: center;
+    }
+
+    .dropdown {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .dropdown button {
+      background: rgba(255, 182, 193, 0.4);
+      backdrop-filter: blur(8px);
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      width: 180px;
+      box-shadow:
+        0 0 15px rgba(255, 105, 180, 0.4),
+        inset 2px 2px 5px rgba(255, 255, 255, 0.3),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      font-weight: bold;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .dropdown button:hover {
+      background: rgba(255, 182, 193, 0.6);
+    }
+
+    .submenu {
+      position: absolute; /* Παραμένει absolute */
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      z-index: 10;
+        /* Η τοποθέτηση γίνεται από το JS */
+      left: 105%; /* Προεπιλογή, θα διορθωθεί από JS */
+      top: 0; /* Προεπιλογή, θα διορθωθεί από JS */
+    }
+
+    .submenu button {
+      background: rgba(144, 238, 144, 0.4);
+      backdrop-filter: blur(8px);
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      width: 180px;
+      box-shadow:
+        0 0 15px rgba(50, 205, 50, 0.4),
+        inset 2px 2px 5px rgba(255, 255, 255, 0.3),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .submenu button:hover {
+      background: rgba(144, 238, 144, 0.6);
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="central-circle" id="main-label">
+        <img id="central-image" src="wolf.png" alt="Wolf Image">
+        <span id="main-label-text">Επίλεξε</span>
+    </div>
+
+    <div class="donut-chart-container">
+        <svg class="donut-chart" viewBox="0 0 320 320" preserveAspectRatio="xMidYMid meet">
+            <defs>
+                <filter id="depth-filter" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="2" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.2"/>
+                </filter>
+            </defs>
+            </svg>
+    </div>
+      </div>
+
+  <div class="dropdowns-container">
+    <div class="dropdowns" id="dropdowns"></div>
+  </div>
+
+  <script>
+    const subjectsData = {
+      'Φυσική': {
+        topics: ['Κινηματική', 'Δυναμική'],
+        color: 'rgba(255, 192, 203, 0.4)', // Παράδειγμα, μπορούμε να αλλάξουμε χρώμα ανά θέμα
+        hoverColor: 'rgba(255, 192, 203, 0.6)',
+        selectedColor: 'rgba(255, 160, 173, 0.7)',
+        startAngle: 0,
+        endAngle: 120
+      },
+      'Άλγεβρα': {
+        topics: ['Εξισώσεις', 'Ανισώσεις'],
+        color: 'rgba(255, 192, 203, 0.4)',
+        hoverColor: 'rgba(255, 192, 203, 0.6)',
+        selectedColor: 'rgba(255, 160, 173, 0.7)',
+        startAngle: 120,
+        endAngle: 240
+      },
+      'Γεωμετρία': {
+        topics: ['Σχήματα', 'Γωνίες'],
+        color: 'rgba(255, 192, 203, 0.4)',
+        hoverColor: 'rgba(255, 192, 203, 0.6)',
+        selectedColor: 'rgba(255, 160, 173, 0.7)',
+        startAngle: 240,
+        endAngle: 360
+      }
+    };
+
+    const links = {
+      'Εξισώσεις': [
+          { text: 'Γραμμικές Εξισώσεις', url: '#' }, // Αντικατέστησε με τα πραγματικά URL
+          { text: 'Δευτεροβάθμιες Εξισώσεις', url: '#' }
+      ],
+      'Ανισώσεις': [
+          { text: 'Γραμμικές Ανισώσεις', url: '#' }
+      ],
+      'Σχήματα': [
+          { text: 'Τρίγωνα', url: '#' },
+          { text: 'Τετράπλευρα', url: '#' }
+      ],
+      'Γωνίες': [
+          { text: 'Είδη Γωνιών', url: '#' },
+          { text: 'Υπολογισμοί', url: '#' }
+      ],
+      'Κινηματική': [
+          { text: 'Ομαλή Κίνηση', url: '#' },
+          { text: 'Ευθύγραμμη Κίνηση', url: '#' }
+      ],
+      'Δυναμική': [
+          { text: 'Νόμοι του Νεύτωνα', url: '#' },
+          { text: 'Δυνάμεις', url: '#' }
+      ]
+    };
+
+    // --- DOM Elements ---
+    const centralCircle = document.getElementById('main-label');
+    const centralImage = document.getElementById('central-image'); // Αναφορά στην εικόνα
+    const centralLabelText = document.getElementById('main-label-text'); // Αναφορά στο κείμενο
+    const dropdownsContainer = document.getElementById('dropdowns');
+    // const backButton = document.querySelector('.back-button'); // Το κουμπί αφαιρέθηκε
+    const svgContainer = document.querySelector('.donut-chart');
+
+    // --- SVG Donut Chart Settings ---
+    const cx = 160; // Center x
+    const cy = 160; // Center y
+    const outerRadius = 160; // Εξωτερική ακτίνα
+    const innerRadius = 60; // Εσωτερική ακτίνα (μειώθηκε για πιο παχύ δακτύλιο)
+    const labelRadius = (outerRadius + innerRadius) / 2; // Ακτίνα για τοποθέτηση labels
+
+    let currentlySelectedArc = null; // Παρακολουθεί το τρέχον επιλεγμένο arc
+
+    // --- Helper Function to describe an SVG arc ---
+    function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
+      const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0; // -90 γιατί το 0 είναι πάνω στο SVG
+      return {
+        x: centerX + (radius * Math.cos(angleInRadians)),
+        y: centerY + (radius * Math.sin(angleInRadians))
+      };
+    }
+
+    // Η describeArc δεν χρησιμοποιείται πλέον για τα arcs του donut, αλλά την αφήνουμε
+    function describeArc(x, y, radius, startAngle, endAngle) {
+      const start = polarToCartesian(x, y, radius, endAngle);
+      const end = polarToCartesian(x, y, radius, startAngle);
+      const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+      const sweepFlag = "0"; // Αντίστροφα από ρολόι (γιατί το Y μεγαλώνει προς τα κάτω)
+
+      const d = [
+        "M", start.x, start.y,
+        "A", radius, radius, 0, largeArcFlag, sweepFlag, end.x, end.y
+      ].join(" ");
+      return d;
+    }
+
+    function describeDonutSegment(x, y, outerR, innerR, startAngle, endAngle) {
+        const startOuter = polarToCartesian(x, y, outerR, endAngle);
+        const endOuter = polarToCartesian(x, y, outerR, startAngle);
+        const startInner = polarToCartesian(x, y, innerR, endAngle);
+        const endInner = polarToCartesian(x, y, innerR, startAngle);
+
+        const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+
+        const d = [
+            "M", startOuter.x, startOuter.y, // Move to start on outer arc
+            "A", outerR, outerR, 0, largeArcFlag, 0, endOuter.x, endOuter.y, // Draw outer arc
+            "L", endInner.x, endInner.y, // Line to end on inner arc
+            "A", innerR, innerR, 0, largeArcFlag, 1, startInner.x, startInner.y, // Draw inner arc (reverse sweep)
+            "Z" // Close path
+        ].join(" ");
+
+        return d;
+    }
+
+    // --- Function to Create the Donut Chart ---
+    function createDonutChart() {
+        // Διατήρηση του <defs> element αν υπάρχει ή δημιουργία του
+        let defs = svgContainer.querySelector('defs');
+        if (!defs) {
+            defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+            svgContainer.appendChild(defs);
+        }
+
+        // Ελέγχος αν το filter υπάρχει ήδη
+        let filter = defs.querySelector('#depth-filter');
+        if (!filter) {
+             filter = document.createElementNS("http://www.w3.org/2000/svg", "filter");
+             filter.setAttribute("id", "depth-filter");
+             filter.setAttribute("x", "-20%"); filter.setAttribute("y", "-20%");
+             filter.setAttribute("width", "140%"); filter.setAttribute("height", "140%");
+
+             const feDropShadow = document.createElementNS("http://www.w3.org/2000/svg", "feDropShadow");
+             feDropShadow.setAttribute("dx", "2");
+             feDropShadow.setAttribute("dy", "2");
+             feDropShadow.setAttribute("stdDeviation", "3");
+             feDropShadow.setAttribute("flood-color", "#000");
+             feDropShadow.setAttribute("flood-opacity", "0.2");
+
+             filter.appendChild(feDropShadow);
+             defs.appendChild(filter);
+        }
+
+
+        // Αφαίρεση μόνο των path και text elements για αναδημιουργία
+        svgContainer.querySelectorAll('.donut-arc, .donut-label').forEach(el => el.remove());
+
+
+        Object.keys(subjectsData).forEach(subject => {
+            const data = subjectsData[subject];
+
+            // Create Arc Path
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            path.setAttribute("d", describeDonutSegment(cx, cy, outerRadius, innerRadius, data.startAngle, data.endAngle));
+            path.setAttribute("fill", data.color);
+            path.setAttribute("class", "donut-arc");
+            path.dataset.subject = subject; // Store subject name
+
+            // Create Text Label
+            const midAngle = data.startAngle + (data.endAngle - data.startAngle) / 2;
+            const labelPos = polarToCartesian(cx, cy, labelRadius, midAngle);
+            const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            text.setAttribute("x", labelPos.x);
+            text.setAttribute("y", labelPos.y);
+            text.setAttribute("class", "donut-label");
+            text.textContent = subject;
+
+            // Add Hover Effects directly here for simplicity
+            path.addEventListener('mouseenter', () => {
+              if (path !== currentlySelectedArc) { // Μην αλλάζεις χρώμα αν είναι ήδη επιλεγμένο
+                path.style.fill = data.hoverColor;
+              }
+            });
+            path.addEventListener('mouseleave', () => {
+              if (path !== currentlySelectedArc) { // Επαναφορά μόνο αν δεν είναι επιλεγμένο
+                 path.style.fill = data.color;
+              } else {
+                 path.style.fill = data.selectedColor; // Κράτα το selected χρώμα αν είναι επιλεγμένο
+              }
+            });
+
+              // Add Click Listener
+              path.addEventListener('click', handleArcClick);
+
+
+            svgContainer.appendChild(path);
+            svgContainer.appendChild(text);
+        });
+    }
+
+
+    // --- Event Handlers ---
+
+    function handleArcClick(event) {
+        event.stopPropagation();
+        const clickedArc = event.target;
+        const subject = clickedArc.dataset.subject;
+
+        // Αν πατηθεί το ήδη επιλεγμένο, μην κάνεις τίποτα.
+        if (clickedArc === currentlySelectedArc) {
+            return;
+        }
+
+        // Επαναφορά προηγούμενου επιλεγμένου arc (αν υπήρχε)
+        if (currentlySelectedArc) {
+            resetArcState(currentlySelectedArc);
+        }
+
+        // Επιλογή νέου arc
+        selectArc(clickedArc, subject);
+    }
+
+
+    // --- State Management Functions ---
+
+    // Ορίζει ένα arc ως επιλεγμένο
+    function selectArc(arc, subject) {
+        const data = subjectsData[subject];
+
+        // Απόκρυψη εικόνας και εμφάνιση κειμένου θέματος
+        centralImage.style.display = 'none';
+        centralLabelText.innerText = subject;
+        centralLabelText.style.display = 'block'; // Εμφάνιση του κειμένου
+
+        centralCircle.classList.add('can-reset');
+
+        // Οπτική ένδειξη επιλογής στο arc
+        arc.style.fill = data.selectedColor;
+        arc.classList.add('selected'); // Προσθέτουμε κλάση για σιγουριά
+
+        currentlySelectedArc = arc; // Ορισμός ως τρέχον επιλεγμένο
+
+        createDropdownMenu(subject); // Δημιουργία dropdowns
+    }
+
+    // Επαναφέρει ένα arc στην αρχική του οπτική κατάσταση
+    function resetArcState(arc) {
+        if (arc) {
+            const subject = arc.dataset.subject;
+            const data = subjectsData[subject];
+            arc.style.fill = data.color; // Επαναφορά βασικού χρώματος
+            arc.classList.remove('selected');
+        }
+    }
+
+    // Πλήρης επαναφορά στην αρχική κατάσταση
+    function resetToDefaultState() {
+        if (currentlySelectedArc) {
+            resetArcState(currentlySelectedArc); // Επαναφορά του arc οπτικά
+            currentlySelectedArc = null; // Καθαρισμός επιλογής
+        }
+        // Εμφάνιση εικόνας και επαναφορά κειμένου
+        centralImage.style.display = 'block';
+        centralLabelText.innerText = 'Επίλεξε';
+         // Επαναφορά του κειμένου στην αρχική του κατάσταση εμφάνισης
+        centralLabelText.style.display = 'block';
+
+
+        centralCircle.classList.remove('can-reset'); // Αφαίρεση κλάσης cursor
+        dropdownsContainer.innerHTML = ''; // Καθαρισμός dropdowns
+
+        // Animation για τον κεντρικό κύκλο (προαιρετικό)
+        centralCircle.style.transform = 'scale(0.9)';
+        setTimeout(() => {
+            centralCircle.style.transform = '';
+        }, 300);
+    }
+
+
+    // --- Event Listeners (Central Circle) ---
+
+    // Κλικ στον κεντρικό κύκλο (Γκρι Κύκλος)
+    centralCircle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (currentlySelectedArc) { // Κάνει reset μόνο αν κάτι είναι επιλεγμένο
+        resetToDefaultState();
+      }
+    });
+
+    // Το click listener για το backButton αφαιρέθηκε
+
+    // --- Dropdown Functions (Παραμένουν σχεδόν ίδιες) ---
+
+    function createDropdownMenu(subject) {
+      dropdownsContainer.innerHTML = ''; // Καθαρίζει προηγούμενα dropdowns
+
+      const container = document.createElement('div');
+      container.className = 'dropdown-container';
+
+      const dropdown = document.createElement('div');
+      dropdown.className = 'dropdown';
+
+      if (subjectsData[subject] && subjectsData[subject].topics) {
+        subjectsData[subject].topics.forEach(topic => {
+            const topicButton = document.createElement('button');
+            topicButton.innerText = topic;
+            topicButton.dataset.topic = topic;
+
+            topicButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // Κλείνει άλλα ανοιχτά submenu ΠΡΙΝ ανοίξει το νέο
+                document.querySelectorAll('.submenu').forEach(menu => menu.remove());
+                createSubmenu(e.target, topic);
+                // Μικρό animation στο κουμπί θέματος
+                e.target.style.transform = 'translateX(5px)';
+                setTimeout(() => { e.target.style.transform = ''; }, 200);
+            });
+
+            dropdown.appendChild(topicButton);
+        });
+      }
+
+      container.appendChild(dropdown);
+      dropdownsContainer.appendChild(container);
+
+        // Animation εμφάνισης του dropdown container
+      dropdownsContainer.style.opacity = '0';
+      dropdownsContainer.style.transform = 'translateY(-10px)';
+      // Χρησιμοποιούμε requestAnimationFrame για ομαλότερη έναρξη transition
+      requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+               dropdownsContainer.style.opacity = '1';
+               dropdownsContainer.style.transform = 'translateY(0)';
+          });
+      });
+    }
+
+    function createSubmenu(parentButton, topic) {
+      // Αφαίρεσε τυχόν υπάρχοντα submenu ΠΡΙΝ δημιουργήσεις νέο
+      const existingSubmenu = parentButton.closest('.dropdown-container').querySelector('.submenu');
+        if (existingSubmenu) {
+            existingSubmenu.remove();
+        }
+
+      const submenu = document.createElement('div');
+      submenu.className = 'submenu';
+
+      if (links[topic]) {
+        links[topic].forEach(link => {
+            const linkButton = document.createElement('button');
+            linkButton.innerText = link.text;
+            linkButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (link.url && link.url !== '#') {
+                    window.location.href = link.url;
+                } else {
+                    console.warn("No URL defined for:", link.text); // Προειδοποίηση αν λείπει το URL
+                }
+            });
+
+            linkButton.addEventListener('mouseenter', () => { linkButton.style.transform = 'translateX(3px)'; });
+            linkButton.addEventListener('mouseleave', () => { linkButton.style.transform = ''; });
+
+            submenu.appendChild(linkButton);
+        });
+      } else {
+          // Προαιρετικά: Εμφάνισε μήνυμα αν δεν υπάρχουν links
+          const noLinksMsg = document.createElement('div');
+          noLinksMsg.textContent = "Δεν υπάρχουν υποενότητες.";
+          noLinksMsg.style.padding = '12px';
+          noLinksMsg.style.width = '180px';
+          noLinksMsg.style.textAlign = 'center';
+          noLinksMsg.style.color = '#555';
+          submenu.appendChild(noLinksMsg);
+      }
+
+      // Τοποθέτηση του submenu δίπλα στο ΠΕΡΙΕΚΤΗ του parent button
+      const dropdownContainer = parentButton.closest('.dropdown-container');
+      dropdownContainer.appendChild(submenu); // Προσθήκη στο σωστό container
+
+      // Υπολογισμός θέσης submenu
+      // Χρησιμοποιούμε getBoundingClientRect() για πιο ακριβή θέση σε σχέση με το viewport
+      const parentRect = parentButton.getBoundingClientRect();
+      const containerRect = dropdownContainer.getBoundingClientRect(); // Σε σχέση με αυτό τοποθετούμε
+
+       submenu.style.position = 'absolute';
+       // Υπολογίζουμε την θέση αριστερά σε σχέση με την αριστερή άκρη του dropdownContainer
+       // Θέση parent button από αριστερά του container + πλάτος parent button + λίγο κενό
+      submenu.style.left = `${parentButton.offsetLeft + parentButton.offsetWidth + 10}px`;
+       // Υπολογίζουμε την θέση πάνω σε σχέση με την πάνω άκρη του dropdownContainer
+      submenu.style.top = `${parentButton.offsetTop}px`;
+
+
+      // Animation εμφάνισης του submenu
+      submenu.style.opacity = '0';
+      submenu.style.transform = 'translateX(-10px)';
+        requestAnimationFrame(() => {
+           requestAnimationFrame(() => {
+               submenu.style.opacity = '1';
+               submenu.style.transform = 'translateX(0)';
+           });
+      });
+    }
+
+
+    // --- Initialization ---
+    createDonutChart(); // Δημιουργία του γραφήματος κατά την φόρτωση
+    resetToDefaultState(); // Εξασφάλιση ότι η αρχική κατάσταση είναι σωστή (εμφάνιση εικόνας)
+
+  </script>
+</body>
+</html>

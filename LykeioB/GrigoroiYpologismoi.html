@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Κουίζ Μαθηματικών (Συμπλήρωση Απαντήσεων)</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    .quiz-container {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .question {
+      margin-bottom: 20px;
+    }
+    .answer-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 15px 0;
+    }
+    .answer-input {
+      width: 60px;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+      text-align: center;
+    }
+    button {
+      background-color: #28a745;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    #timer, #result {
+      font-size: 1.2em;
+      margin: 10px 0;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <div id="intro">
+      <h1>Κουίζ Μαθηματικών (Συμπλήρωση Απαντήσεων)</h1>
+      <p>Συμπλήρωσε το κενό σε κάθε πρόταση. Χρησιμοποίησε μόνο ακέραιους αριθμούς ή τα σύμβολα «+» και «-».</p>
+      <button id="start">Ξεκίνα το Κουίζ</button>
+            <button id="otherpage">Πήγαινε πίσω στην τάξη σου</button>
+    </div>
+    <div id="timer" class="hidden">Χρόνος: 05:00</div>
+    <div id="quiz" class="hidden"></div>
+    <button id="submit" class="hidden">Υποβολή Απάντησης</button>
+    <div id="result" class="hidden"></div>
+        <button id="download" class="hidden">Λήψη Αποτελεσμάτων (PDF)</button>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        question: "Συμπλήρωσε «+» ή «-»: ",
+        prefix: "\\( ημ(-38) \\)=",
+        suffix: "0,61566",
+        answer: "-"
+      },
+      {
+        question: "Συμπλήρωσε το ακέραιο μέρος: ",
+        prefix: "\\( \\sqrt[3]{30} \\)=",
+        suffix: ",10723",
+        answer: "3"
+      }
+    ];
+
+    const TIME_LIMIT = 300; // 5 λεπτά σε δευτερόλεπτα
+
+    let currentQuestion = 0;
+    let score = 0;
+    let startTime;
+    let timerInterval;
+    let attempt = 1;
+    // Array to store data for each attempt
+    const attemptsData = [];
+
+    function startQuiz() {
+      document.getElementById("intro").classList.add("hidden");
+      document.getElementById("timer").classList.remove("hidden");
+      document.getElementById("quiz").classList.remove("hidden");
+      document.getElementById("submit").classList.remove("hidden");
+      document.getElementById("result").classList.add("hidden"); // Hide previous result
+      document.getElementById("download").classList.add("hidden"); // Hide download button on restart
+
+      startTime = new Date();
+      // Clear any existing timer interval
+      if (timerInterval) {
+        clearInterval(timerInterval);
+      }
+      timerInterval = setInterval(updateTimer, 1000);
+
+      currentQuestion = 0;
+      score = 0;
+      loadQuestion();
+    }
+
+    function updateTimer() {
+      const now = new Date();
+      const elapsed = Math.floor((now - startTime) / 1000);
+      const remaining = TIME_LIMIT - elapsed;
+
+      if (remaining <= 0) {
+        clearInterval(timerInterval);
+        // Handle quiz end specifically for timeout
+        handleQuizEnd(true); // Pass true to indicate timeout
+        return;
+      }
+
+      const minutes = Math.floor(remaining / 60).toString().padStart(2, "0");
+      const seconds = (remaining % 60).toString().padStart(2, "0");
+      document.getElementById("timer").textContent = `Χρόνος: ${minutes}:${seconds}`;
+    }
+
+    // Helper to format time in MM:SS
+    function formatTime(seconds) {
+      const minutes = Math.floor(seconds / 60).toString().padStart(2, "0");
+      const secs = (seconds % 60).toString().padStart(2, "0");
+      return `${minutes}:${secs}`;
+    }
+
+
+    function loadQuestion() {
+      const quiz = document.getElementById("quiz");
+      const q = quizData[currentQuestion];
+      quiz.innerHTML = `
+        <div class="question">
+          <h3>Ερώτηση ${currentQuestion + 1}</h3>
+          <p>${q.question}</p>
+          <div class="answer-container">
+            ${q.prefix ? `<span>${q.prefix}</span>` : ''}
+            <input type="text" class="answer-input" id="user-answer" placeholder="...">
+            ${q.suffix ? `<span>${q.suffix}</span>` : ''}
+          </div>
+        </div>
+      `;
+      MathJax.typeset();
+      // Focus on the input field
+      document.getElementById("user-answer").focus();
+    }
+
+    function checkAnswer() {
+      const userAnswer = document.getElementById("user-answer").value.trim();
+      const correctAnswer = quizData[currentQuestion].answer;
+
+      if (userAnswer === correctAnswer) {
+        score++;
+      }
+
+      currentQuestion++;
+      if (currentQuestion < quizData.length) {
+        loadQuestion();
+      } else {
+        clearInterval(timerInterval);
+        handleQuizEnd(false); // Pass false to indicate quiz finished, not timed out
+      }
+    }
+
+    function handleQuizEnd(timedOut) {
+      const now = new Date();
+      const elapsed = Math.floor((now - startTime) / 1000);
+      const percentage = ((score / quizData.length) * 100).toFixed(2);
+
+      // Store attempt data
+      attemptsData.push({
+        attempt: attempt,
+        score: score,
+        totalQuestions: quizData.length,
+        percentage: percentage,
+        timeTaken: elapsed,
+        timedOut: timedOut // Add info if it timed out
+      });
+
+      const resultDiv = document.getElementById("result");
+      resultDiv.classList.remove("hidden");
+      document.getElementById("quiz").classList.add("hidden");
+      document.getElementById("submit").classList.add("hidden");
+      document.getElementById("timer").classList.add("hidden"); // Hide timer at the end
+
+      let message = "";
+      let restart = false;
+
+      if (score === quizData.length && !timedOut) {
+        message = `Συγχαρητήρια! Τελείωσες το quiz με επιτυχία!<br>Σκορ: ${score}/${quizData.length} (${percentage}%)<br>Χρόνος: ${formatTime(elapsed)}`;
+        // Quiz is successfully finished, no restart
+      } else if (score === quizData.length && timedOut) {
+        message = `Σωστά απάντησες, αλλά αργοπορημένα. Πάμε ξανά πιο γρήγορα. (Τελικό σκορ: ${score}/${quizData.length}, Χρόνος: ${formatTime(elapsed)})`;
+        restart = true;
+      } else if (score < quizData.length && timedOut) {
+        message = `Είχες λάθη και άργησες. Πάμε άλλη μια φορά πιο προσεκτικά και πιο σβέλτα. (Τελικό σκορ: ${score}/${quizData.length}, Χρόνος: ${formatTime(elapsed)})`;
+        restart = true;
+      } else if (score < quizData.length && !timedOut) {
+        message = `Είχες λάθη, αλλά πήγαινες σβέλτα. Πάμε άλλη μια φορά πιο προσεκτικά με την ίδια ταχύτητα. (Τελικό σκορ: ${score}/${quizData.length}, Χρόνος: ${formatTime(elapsed)})`;
+        restart = true;
+      }
+
+      resultDiv.innerHTML = `<p>${message}</p>`;
+
+      if (restart) {
+        attempt++; // Increment attempt counter for the next try
+        setTimeout(() => {
+          // Hide result message before restarting
+          resultDiv.classList.add("hidden");
+          startQuiz();
+        }, 4000); // Wait 4 seconds before restarting
+      } else {
+        // Show download button only on final successful completion
+        document.getElementById("download").classList.remove("hidden");
+      }
+    }
+
+    // Function to generate PDF summary
+    function generatePDF() {
+        try {
+          if (typeof window.jspdf !== 'undefined') {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Set font - no Greek characters needed now
+            doc.setFont("helvetica", "bold");
+            
+            // Title
+            doc.setFontSize(18);
+            doc.setTextColor(0, 0, 0); // Black
+            doc.text("Math Quiz Attempts Summary", 105, 15, { align: 'center' });
+            
+            // Date and time
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "normal");
+            const now = new Date();
+            doc.text(`Generated on: ${now.toLocaleString('en-US')}`, 105, 25, { align: 'center' });
+            
+            let yPos = 40; // Starting Y position for attempts
+            
+            // Loop through each attempt
+            attemptsData.forEach((attempt, index) => {
+              // Draw black box
+              doc.setFillColor(0, 0, 0); // Black
+              doc.rect(20, yPos - 5, 170, 30, 'F'); // Filled rectangle
+              
+              // Set text color to white for visibility on black
+              doc.setTextColor(255, 255, 255); // White
+              
+              // Attempt number (big)
+              doc.setFontSize(14);
+              doc.setFont("helvetica", "bold");
+              doc.text(`Attempt #${attempt.attempt}`, 25, yPos);
+              
+              // Score information
+              doc.setFontSize(12);
+              doc.setFont("helvetica", "normal");
+              doc.text(`Correct: ${attempt.score}`, 25, yPos + 8);
+              doc.text(`Wrong: ${attempt.totalQuestions - attempt.score}`, 25, yPos + 16);
+              doc.text(`Total: ${attempt.totalQuestions}`, 25, yPos + 24);
+              
+              // Time information on the right side
+              doc.text(`Time taken: ${formatTime(attempt.timeTaken)}`, 120, yPos + 8);
+              doc.text(`Completion: ${attempt.timedOut ? "TIMED OUT" : (attempt.score === attempt.totalQuestions ? "COMPLETED" : "INCOMPLETE")}`, 120, yPos + 16);
+              doc.text(`Score: ${attempt.percentage}%`, 120, yPos + 24);
+              
+              yPos += 40; // Move down for next attempt
+              
+              // Add new page if we're running out of space
+              if (yPos > 250 && index < attemptsData.length - 1) {
+                doc.addPage();
+                yPos = 30;
+              }
+            });
+            
+            // Final completion message if all attempts were successful
+            if (attemptsData[attemptsData.length - 1].score === attemptsData[attemptsData.length - 1].totalQuestions) {
+              doc.addPage();
+              doc.setFontSize(20);
+              doc.setTextColor(0, 0, 0); // Black
+              doc.text("CONGRATULATIONS!", 105, 50, { align: 'center' });
+              doc.setFontSize(16);
+              doc.text(`You completed the quiz successfully`, 105, 70, { align: 'center' });
+              doc.text(`in ${attemptsData.length} attempt(s)`, 105, 90, { align: 'center' });
+            }
+            
+            // Save the PDF
+            doc.save('math_quiz_results.pdf');
+          } else {
+            throw new Error("jsPDF not loaded");
+          }
+        } catch (error) {
+          console.error("PDF generation error:", error);
+          alert("PDF generation error. Please try again or refresh the page.");
+        }
+      }
+      
+      // Helper function to format time as MM:SS (already exists in your code)
+      function formatTime(seconds) {
+        const minutes = Math.floor(seconds / 60).toString().padStart(2, "0");
+        const secs = (seconds % 60).toString().padStart(2, "0");
+        return `${minutes}:${secs}`;
+      }
+
+    document.getElementById("start").addEventListener("click", startQuiz);
+    document.getElementById("submit").addEventListener("click", checkAnswer);
+    // Event listener for the "Go Back" button
+    document.getElementById("otherpage").addEventListener("click", function() {
+      // *** Replace 'your_class_url_here' with the actual URL of your class page ***
+      window.location.href = 'your_class_url_here';
+    });
+    // Event listener for the "Download Results" button
+    document.getElementById("download").addEventListener("click", generatePDF);
+
+
+    // Υποβολή με Enter
+    document.addEventListener('keypress', function(e) {
+      // Check if the quiz is currently displayed and the Enter key is pressed
+      if (e.key === 'Enter' && !document.getElementById("quiz").classList.contains("hidden")) {
+        // Prevent default to avoid form submission issues if the input was part of a form
+        e.preventDefault();
+        document.getElementById("submit").click();
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8">
+  <title>Cyberpunk Interface</title>
+  <style>
+    :root {
+      --neon-pink: #ff2a6d;
+      --neon-blue: #05d9e8;
+      --neon-purple: #d300c5;
+      --dark-bg: #0d0221;
+      --glow: 0 0 10px, 0 0 20px;
+    }
+    
+    body {
+      margin: 0;
+      font-family: 'Courier New', monospace;
+      background-color: var(--dark-bg);
+      color: var(--neon-blue);
+      overflow-x: hidden;
+      min-height: 100vh;
+      background-image: 
+        linear-gradient(rgba(5, 217, 232, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(5, 217, 232, 0.1) 1px, transparent 1px);
+      background-size: 30px 30px;
+    }
+
+    .cyber-glitch {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAEklEQVQImWNgYGD4z0AswK4SAFXuAf8EPy+xAAAAAElFTkSuQmCC') repeat;
+      opacity: 0.02;
+      pointer-events: none;
+      z-index: 100;
+      animation: glitch 5s infinite linear;
+    }
+
+    @keyframes glitch {
+      0% { transform: translate(0); }
+      20% { transform: translate(-2px, 2px); }
+      40% { transform: translate(-2px, -2px); }
+      60% { transform: translate(2px, 2px); }
+      80% { transform: translate(2px, -2px); }
+      100% { transform: translate(0); }
+    }
+
+    .container {
+      position: relative;
+      width: 100%;
+      height: 300px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 60px;
+      filter: drop-shadow(0 0 15px var(--neon-blue));
+    }
+
+    .central-circle {
+      width: 120px;
+      height: 120px;
+      background: rgba(13, 2, 33, 0.7);
+      backdrop-filter: blur(12px);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      border: 1px solid var(--neon-pink);
+      box-shadow:
+          inset 0 0 15px var(--neon-pink),
+          0 0 30px var(--neon-pink);
+      position: relative;
+      z-index: 2;
+      transition: transform 0.3s ease;
+      overflow: hidden;
+    }
+
+    .central-circle::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        to bottom right,
+        transparent 45%,
+        var(--neon-pink) 50%,
+        transparent 55%
+      );
+      opacity: 0.5;
+      transform: rotate(45deg);
+      animation: shine 3s infinite linear;
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) rotate(45deg); }
+    }
+
+    .central-circle.can-reset {
+      cursor: pointer;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 10px var(--neon-pink); }
+      50% { box-shadow: 0 0 30px var(--neon-pink); }
+      100% { box-shadow: 0 0 10px var(--neon-pink); }
+    }
+
+    .ring {
+      position: absolute;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      z-index: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgba(13, 2, 33, 0.5);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--neon-blue);
+      box-shadow:
+          inset 0 0 20px var(--neon-blue),
+          0 0 40px var(--neon-blue);
+      pointer-events: none;
+    }
+
+    .ring::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 1px dashed var(--neon-purple);
+      animation: rotate 30s linear infinite;
+    }
+
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .ring-button {
+      position: absolute;
+      width: 90px;
+      height: 90px;
+      background: rgba(13, 2, 33, 0.6);
+      border: 1px solid var(--neon-purple);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow:
+          0 0 15px var(--neon-purple),
+          inset 0 0 10px var(--neon-purple);
+      transition: all 0.3s ease;
+      pointer-events: auto;
+      transform-origin: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 1;
+      padding: 0;
+      font-size: 0;
+      z-index: 3;
+    }
+
+    .ring-button:hover {
+      box-shadow:
+          0 0 25px var(--neon-purple),
+          inset 0 0 15px var(--neon-purple);
+      transform: scale(1.05);
+    }
+
+    .ring-button:nth-child(1) {
+      transform: translate(160px, 0);
+    }
+    .ring-button:nth-child(2) {
+      transform: rotate(120deg) translate(160px) rotate(-120deg);
+    }
+    .ring-button:nth-child(3) {
+      transform: rotate(240deg) translate(160px) rotate(-240deg);
+    }
+
+    .back-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(13, 2, 33, 0.7);
+      border: 1px solid var(--neon-blue);
+      padding: 8px 15px 8px 30px;
+      color: var(--neon-blue);
+      font-weight: bold;
+      box-shadow:
+          0 0 15px var(--neon-blue),
+          inset 0 0 10px var(--neon-blue);
+      cursor: pointer;
+      clip-path: polygon(0% 0%, 80% 0%, 100% 50%, 80% 100%, 0% 100%);
+      transition: all 0.3s ease;
+      font-family: 'Courier New', monospace;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .back-button:hover {
+      background: rgba(255, 42, 109, 0.2);
+      color: var(--neon-pink);
+      box-shadow:
+          0 0 20px var(--neon-pink),
+          inset 0 0 10px var(--neon-pink);
+    }
+
+    .dropdowns-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 50px;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      position: relative;
+    }
+
+    .dropdown-container {
+      margin-left: 40px;
+      position: relative;
+    }
+
+    .dropdown {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .dropdown button {
+      background: rgba(13, 2, 33, 0.7);
+      border: 1px solid var(--neon-pink);
+      padding: 12px;
+      border-radius: 0;
+      width: 180px;
+      box-shadow:
+          0 0 10px var(--neon-pink),
+          inset 0 0 5px var(--neon-pink);
+      cursor: pointer;
+      font-weight: bold;
+      color: var(--neon-blue);
+      transition: all 0.3s ease;
+      font-family: 'Courier New', monospace;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .dropdown button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 42, 109, 0.4),
+        transparent
+      );
+      transition: 0.5s;
+    }
+
+    .dropdown button:hover {
+      background: rgba(255, 42, 109, 0.2);
+      color: white;
+    }
+
+    .dropdown button:hover::before {
+      left: 100%;
+    }
+
+    .submenu {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      z-index: 10;
+    }
+
+    .submenu button {
+      background: rgba(13, 2, 33, 0.7);
+      border: 1px solid var(--neon-blue);
+      padding: 12px;
+      border-radius: 0;
+      width: 180px;
+      box-shadow:
+          0 0 10px var(--neon-blue),
+          inset 0 0 5px var(--neon-blue);
+      cursor: pointer;
+      color: var(--neon-blue);
+      transition: all 0.3s ease;
+      font-family: 'Courier New', monospace;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .submenu button:hover {
+      background: rgba(5, 217, 232, 0.2);
+      color: white;
+    }
+
+    .circle-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      filter: drop-shadow(0 0 5px currentColor);
+    }
+
+    .cyber-text {
+      text-shadow: 0 0 5px currentColor;
+      animation: text-flicker 3s infinite alternate;
+    }
+
+    @keyframes text-flicker {
+      0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+        text-shadow: 
+          0 0 5px var(--neon-blue),
+          0 0 10px var(--neon-blue),
+          0 0 20px var(--neon-blue);
+      }
+      20%, 24%, 55% {
+        text-shadow: none;
+      }
+    }
+
+    .scanlines {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        linear-gradient(
+          to bottom,
+          rgba(5, 217, 232, 0.1) 1px,
+          transparent 1px
+        );
+      background-size: 100% 3px;
+      pointer-events: none;
+      z-index: 999;
+      animation: scanline 8s linear infinite;
+    }
+
+    @keyframes scanline {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-100%); }
+    }
+  </style>
+</head>
+<body>
+  <div class="cyber-glitch"></div>
+  <div class="scanlines"></div>
+
+  <button class="back-button cyber-text">◄ back</button>
+
+  <div class="container">
+    <div class="central-circle" id="main-label">
+      <img src="wolf.png" alt="Επίλεξε" class="circle-image">
+    </div>
+    <div class="ring">
+      <button class="ring-button" data-subject="Άλγεβρα">
+        <img src="science.png" alt="Άλγεβρα" class="circle-image">
+      </button>
+      <button class="ring-button" data-subject="Γεωμετρία">
+        <img src="social.png" alt="Γεωμετρία" class="circle-image">
+      </button>
+      <button class="ring-button" data-subject="Φυσική">
+        <img src="info.png" alt="Φυσική" class="circle-image">
+      </button>
+    </div>
+  </div>
+
+  <div class="dropdowns-container">
+    <div class="dropdowns" id="dropdowns"></div>
+  </div>
+
+  <script>
+    const subjects = {
+      'Άλγεβρα': ['Εξισώσεις', 'Ανισώσεις'],
+      'Γεωμετρία': ['Σχήματα', 'Γωνίες'],
+      'Φυσική': ['Κινηματική', 'Δυναμική']
+    };
+
+    const links = {
+      'Εξισώσεις': [
+          { text: 'Γραμμικές Εξισώσεις', url: 'ex1.html' },
+          { text: 'Δευτεροβάθμιες Εξισώσεις', url: 'ex2.html' }
+      ],
+      'Ανισώσεις': [
+          { text: 'Γραμμικές Ανισώσεις', url: 'an1.html' }
+      ],
+      'Σχήματα': [
+          { text: 'Τρίγωνα', url: 'sx1.html' },
+          { text: 'Τετράπλευρα', url: 'sx2.html' }
+      ],
+      'Γωνίες': [
+          { text: 'Είδη Γωνιών', url: 'gn1.html' },
+          { text: 'Υπολογισμοί', url: 'gn2.html' }
+      ],
+      'Κινηματική': [
+          { text: 'Ομαλή Κίνηση', url: 'kin1.html' },
+          { text: 'Ευθύγραμμη Κίνηση', url: 'kin2.html' }
+      ],
+      'Δυναμική': [
+          { text: 'Νόμοι του Νεύτωνα', url: 'dyn1.html' },
+          { text: 'Δυνάμεις', url: 'dyn2.html' }
+      ]
+    };
+
+    const ringButtons = document.querySelectorAll('.ring-button');
+    const centralCircle = document.getElementById('main-label');
+    const dropdownsContainer = document.getElementById('dropdowns');
+    const backButton = document.querySelector('.back-button');
+
+    let currentlySelectedButton = null;
+
+    function resetButtonState(button) {
+      if (button) {
+          button.style.opacity = '1';
+          button.style.pointerEvents = 'auto';
+      }
+    }
+
+    function selectButton(button) {
+      const subject = button.dataset.subject;
+      const imgSrc = button.querySelector('img').src;
+
+      centralCircle.innerHTML = `<img src="${imgSrc}" alt="${subject}" class="circle-image">`;
+      centralCircle.classList.add('can-reset');
+
+      button.style.opacity = '0';
+      button.style.pointerEvents = 'none';
+
+      currentlySelectedButton = button;
+
+      createDropdownMenu(subject);
+    }
+
+    function resetToDefaultState() {
+      if (currentlySelectedButton) {
+          resetButtonState(currentlySelectedButton);
+          currentlySelectedButton = null;
+      }
+      centralCircle.innerHTML = '<img src="wolf.png" alt="Επίλεξε" class="circle-image">';
+      centralCircle.classList.remove('can-reset');
+      dropdownsContainer.innerHTML = '';
+
+      centralCircle.style.transform = 'scale(0.9)';
+      setTimeout(() => {
+          centralCircle.style.transform = '';
+      }, 300);
+    }
+
+    ringButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const clickedButton = e.target.closest('.ring-button');
+
+          if (clickedButton === currentlySelectedButton) {
+              return;
+          }
+
+          if (currentlySelectedButton) {
+              resetButtonState(currentlySelectedButton);
+          }
+
+          selectButton(clickedButton);
+      });
+    });
+
+    centralCircle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (currentlySelectedButton) {
+          resetToDefaultState();
+      }
+    });
+
+    backButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      resetToDefaultState();
+    });
+
+    document.querySelector('.ring').addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+
+    function createDropdownMenu(subject) {
+      dropdownsContainer.innerHTML = '';
+
+      const container = document.createElement('div');
+      container.className = 'dropdown-container';
+
+      const dropdown = document.createElement('div');
+      dropdown.className = 'dropdown';
+
+      if (subjects[subject]) {
+          subjects[subject].forEach(topic => {
+              const topicButton = document.createElement('button');
+              topicButton.innerText = topic;
+              topicButton.dataset.topic = topic;
+              topicButton.classList.add('cyber-text');
+
+              topicButton.addEventListener('click', (e) => {
+                  e.stopPropagation();
+                  document.querySelectorAll('.submenu').forEach(menu => menu.remove());
+                  createSubmenu(e.target, topic);
+                  e.target.style.transform = 'translateX(5px)';
+                  setTimeout(() => { e.target.style.transform = ''; }, 200);
+              });
+
+              dropdown.appendChild(topicButton);
+          });
+      }
+
+      container.appendChild(dropdown);
+      dropdownsContainer.appendChild(container);
+
+      dropdownsContainer.style.opacity = '0';
+      dropdownsContainer.style.transform = 'translateY(-10px)';
+      setTimeout(() => {
+          dropdownsContainer.style.opacity = '1';
+          dropdownsContainer.style.transform = 'translateY(0)';
+      }, 10);
+    }
+
+    function createSubmenu(parentButton, topic) {
+      const submenu = document.createElement('div');
+      submenu.className = 'submenu';
+
+      if (links[topic]) {
+          links[topic].forEach(link => {
+              const linkButton = document.createElement('button');
+              linkButton.innerText = link.text;
+              linkButton.classList.add('cyber-text');
+              linkButton.addEventListener('click', (e) => {
+                  e.stopPropagation();
+                  window.location.href = link.url;
+              });
+
+              linkButton.addEventListener('mouseenter', () => { linkButton.style.transform = 'translateX(3px)'; });
+              linkButton.addEventListener('mouseleave', () => { linkButton.style.transform = ''; });
+
+              submenu.appendChild(linkButton);
+          });
+      }
+
+      parentButton.closest('.dropdown-container').appendChild(submenu);
+
+      submenu.style.opacity = '0';
+      submenu.style.transform = 'translateX(-10px)';
+      setTimeout(() => {
+          submenu.style.opacity = '1';
+          submenu.style.transform = 'translateX(0)';
+      }, 10);
+
+      const parentRect = parentButton.getBoundingClientRect();
+      const containerRect = dropdownsContainer.getBoundingClientRect();
+      submenu.style.position = 'absolute';
+      submenu.style.left = `${parentRect.right - containerRect.left + 10}px`;
+      submenu.style.top = `${parentRect.top - containerRect.top}px`;
+    }
+  </script>
+</body>
+</html>

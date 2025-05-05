@@ -618,39 +618,54 @@
     // --- ΤΕΛΟΣ ΕΝΗΜΕΡΩΜΕΝΗΣ ΣΥΝΑΡΤΗΣΗΣ ---
 
     function handleQuizEnd() {
-      const now = new Date();
-      const elapsed = Math.floor((now - startTime) / 1000);
-      const percentage = ((score / quizData.length) * 100).toFixed(2);
-
-      attemptsData.push({
-        attemptNumber: attempt,
-        score: score,
-        total: quizData.length,
-        percentage: percentage,
-        elapsed: elapsed,
-        timestamp: now.toISOString()
-      });
-
-      if (score < quizData.length) {
-        document.getElementById("result").classList.remove("hidden");
-        document.getElementById("result").innerHTML = `
-          <p>Είχες λάθη. Ας ξανακάνουμε το quiz!</p>
-        `;
-        setTimeout(() => {
-          document.getElementById("result").classList.add("hidden");
-          startQuiz();
-          attempt++;
-        }, 3000);
-      } else {
+        const now = new Date();
+        const elapsed = Math.floor((now - startTime) / 1000); // σε δευτερόλεπτα
+        const percentage = ((score / quizData.length) * 100).toFixed(2);
+      
+        attemptsData.push({
+          attemptNumber: attempt,
+          score: score,
+          total: quizData.length,
+          percentage: percentage,
+          elapsed: elapsed,
+          timestamp: now.toISOString()
+        });
+      
+        const resultDiv = document.getElementById("result");
+        resultDiv.classList.remove("hidden");
         document.getElementById("quiz").classList.add("hidden");
         document.getElementById("submit").classList.add("hidden");
-        document.getElementById("result").classList.remove("hidden");
-        document.getElementById("download").classList.remove("hidden");
-        document.getElementById("result").innerHTML = `
-          <p>Συγχαρητήρια! Τελείωσες το quiz με επιτυχία!</p>
-        `;
+      
+        const tenMinutes = 600;
+        let message = "";
+        let restart = false;
+      
+        if (score === quizData.length && elapsed > tenMinutes) {
+          message = "Σωστά απάντησες, αλλά αργοπορημένα. Πάμε ξανά πιο γρήγορα.";
+          restart = true;
+        } else if (score < quizData.length && elapsed > tenMinutes) {
+          message = "Είχες λάθη και άργησες. Πάμε άλλη μια φορά πιο προσεκτικά και πιο σβέλτα.";
+          restart = true;
+        } else if (score < quizData.length && elapsed <= tenMinutes) {
+          message = "Είχες λάθη, αλλά πήγαινες σβέλτα. Πάμε άλλη μια φορά πιο προσεκτικά με την ίδια ταχύτητα.";
+          restart = true;
+        } else {
+          message = "Συγχαρητήρια! Τελείωσες το quiz με επιτυχία!";
+          document.getElementById("download").classList.remove("hidden");
+        }
+      
+        resultDiv.innerHTML = `<p>${message}</p>`;
+      
+        if (restart) {
+          setTimeout(() => {
+            resultDiv.classList.add("hidden");
+            document.getElementById("download").classList.add("hidden");
+            attempt++;
+            startQuiz();
+          }, 4000);
+        }
       }
-    }
+      
 
     function downloadResults() {
       const { jsPDF } = window.jspdf;
