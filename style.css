@@ -19,11 +19,12 @@ body {
 }
 
 .container h1 {
-    background: rgba(255, 248, 220, 0.2);
+    /*background: rgba(255, 248, 220, 0.2);
     padding: 10px 20px;
     border: 2px solid #bfa76f;
     border-radius: 10px;
-    display: inline-block;
+    display: inline-block;*/
+    display: none;  /* Απλά το αφαιρείς εντελώς */
 }
 
 
