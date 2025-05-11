@@ -176,6 +176,15 @@
       correctAnswers: ["\\(a^2\\)", "\\(b^2\\)"],
       options: ["\\(a^2\\)", "\\(b^2\\)", "\\(ab\\)", "\\(2a\\)"],
       orderMatters: true
+  },
+  {
+    questionPrompt: "Συμπλήρωσε το κενό στην εκθετική εξίσωση:",
+    sentenceTemplate: [ // Ένα ενιαίο string που περιέχει την πλήρη LaTeX έκφραση
+      "\\( e^{%%BLANK_0%%} = 1 \\)" // Ο placeholder %%BLANK_0%% είναι ΜΕΣΑ στην LaTeX έκφραση
+    ],
+    correctAnswers: ["0"],
+    options: ["0", "1", "\\(i\\pi\\)", "e", "-1", "\\(\\ln(1)\\)"],
+    orderMatters: true
   }
     ];
 
@@ -240,93 +249,77 @@
     }
 
     function loadQuestion() {
-      const q = quizData[currentQuestion];
-      const questionNumberTitle = document.getElementById("question-number-title");
-      const questionPromptText = document.getElementById("question-prompt-text");
-      const questionImageContainer = document.getElementById("question-image-container"); // Πάρτε το νέο container
-      const sentenceContainer = document.getElementById("sentence-container");
-      const optionsContainer = document.getElementById("options-container");
-  
-      questionNumberTitle.textContent = `Ερώτηση ${currentQuestion + 1}`;
-      questionPromptText.textContent = q.questionPrompt;
-  
-      // Διαχείριση και εμφάνιση της εικόνας
-      questionImageContainer.innerHTML = ''; // Καθαρισμός τυχόν προηγούμενης εικόνας
-      if (q.imageURL) {
-          const imgElement = document.createElement("img");
-          imgElement.src = q.imageURL;
-          imgElement.alt = q.questionPrompt || "Εικόνα Ερώτησης"; // Καλό για προσβασιμότητα
-          // Μπορείτε να προσθέσετε κλάσεις ή στυλ απευθείας εδώ αν θέλετε
-          // imgElement.classList.add("question-image-style");
-          imgElement.style.maxWidth = "100%"; // Απλό στυλ για να μην ξεχειλίζει
-          imgElement.style.height = "auto";
-          imgElement.style.marginTop = "10px";
-          imgElement.style.marginBottom = "15px";
-          questionImageContainer.appendChild(imgElement);
-      }
-  
-      sentenceContainer.innerHTML = '';
-      optionsContainer.innerHTML = '';
-  
-      userAnswersForCurrentQuestion = new Array(q.correctAnswers.length).fill(null);
-      nextBlankToFillIndex = 0;
-      optionButtons = [];
-  
-      let blankIndex = 0;
-      if (q.sentenceTemplate && Array.isArray(q.sentenceTemplate)) { // Έλεγχος αν υπάρχει και είναι πίνακας
-          q.sentenceTemplate.forEach(part => {
-              if (part === null) {
-                  const blankSpan = document.createElement("span");
-                  blankSpan.classList.add("blank-space");
-                  blankSpan.dataset.blankIndex = blankIndex;
-                  blankSpan.innerHTML = "___";
-                  sentenceContainer.appendChild(blankSpan);
-                  blankIndex++;
-              } else {
-                  const partSpan = document.createElement("span");
-                  partSpan.innerHTML = part;
-                  sentenceContainer.appendChild(partSpan);
-              }
-          });
-      }
-  
-      if (q.options && Array.isArray(q.options)) { // Έλεγχος αν υπάρχει και είναι πίνακας
-          q.options.forEach(optionText => {
-              const button = document.createElement("button");
-              button.classList.add("option-button");
-              button.innerHTML = optionText;
-              button.dataset.value = optionText;
-              button.addEventListener("click", handleOptionClick);
-              optionsContainer.appendChild(button);
-              optionButtons.push(button);
-          });
-      }
-  
-      document.getElementById("clear-choices").classList.remove("hidden");
-  
-      // Ανανέωση MathJax για όλα τα σχετικά στοιχεία
-      const elementsToTypeset = [sentenceContainer, optionsContainer, questionPromptText];
-      MathJax.typesetPromise(elementsToTypeset).catch(err => console.error("MathJax typeset error:", err));
-  }
-
-    function handleOptionClick(event) {
-      const selectedButton = event.currentTarget;
-
-
-      const valueToFill = selectedButton.dataset.value;
-      console.log("Value to fill:", valueToFill); // Για έλεγχο
-      
-      if (nextBlankToFillIndex < quizData[currentQuestion].correctAnswers.length) {
-        const blankToFill = document.querySelector(`.blank-space[data-blank-index="${nextBlankToFillIndex}"]`);
-        if (blankToFill) {
-          blankToFill.innerHTML = valueToFill; // Χρησιμοποιούμε innerHTML για LaTeX
-          blankToFill.classList.add("filled");
-          userAnswersForCurrentQuestion[nextBlankToFillIndex] = valueToFill;
-          nextBlankToFillIndex++;
-          selectedButton.disabled = true; // Απενεργοποίηση του κουμπιού
-          MathJax.typesetPromise([blankToFill]).catch(err => console.error("MathJax error on fill:", err));
+        const q = quizData[currentQuestion];
+        const questionNumberTitle = document.getElementById("question-number-title");
+        const questionPromptText = document.getElementById("question-prompt-text");
+        const questionImageContainer = document.getElementById("question-image-container");
+        const sentenceContainer = document.getElementById("sentence-container");
+        const optionsContainer = document.getElementById("options-container");
+    
+        // Αρχικοποιήσεις
+        questionNumberTitle.textContent = `Ερώτηση ${currentQuestion + 1}`;
+        questionPromptText.textContent = q.questionPrompt;
+    
+        questionImageContainer.innerHTML = '';
+        if (q.imageURL) {
+            const imgElement = document.createElement("img");
+            imgElement.src = q.imageURL;
+            imgElement.alt = q.questionPrompt || "Εικόνα Ερώτησης";
+            imgElement.style.maxWidth = "100%";
+            imgElement.style.height = "auto";
+            imgElement.style.marginTop = "10px";
+            imgElement.style.marginBottom = "15px";
+            questionImageContainer.appendChild(imgElement);
         }
-      }
+    
+        sentenceContainer.innerHTML = ''; // Καθαρισμός πριν την προσθήκη νέου περιεχομένου
+        optionsContainer.innerHTML = '';
+    
+        userAnswersForCurrentQuestion = new Array(q.correctAnswers.length).fill(null);
+        nextBlankToFillIndex = 0;
+        optionButtons = [];
+    
+        let currentGlobalBlankIndex = 0; // Μετρητής για τα data-blank-index
+    
+        if (q.sentenceTemplate && Array.isArray(q.sentenceTemplate)) {
+            let finalHTMLForSentence = "";
+            q.sentenceTemplate.forEach(partString => { // Κάθε partString είναι ένα string από τον πίνακα sentenceTemplate
+                let processedPartString = partString;
+                // Αντικατάσταση όλων των placeholders %%BLANK_i%% με τα πραγματικά span των κενών
+                // Η συνάρτηση αντικατάστασης καλείται για κάθε ταίριασμα του RegExp
+                processedPartString = processedPartString.replace(/%%BLANK_\d+%%/g, () => {
+                    const blankSpanHTML = `<span class="blank-space" data-blank-index="${currentGlobalBlankIndex}">___</span>`;
+                    currentGlobalBlankIndex++; // Αύξηση του μετρητή για το επόμενο κενό
+                    return blankSpanHTML;
+                });
+                finalHTMLForSentence += processedPartString; // Προσθήκη του επεξεργασμένου τμήματος στο τελικό HTML
+            });
+            sentenceContainer.innerHTML = finalHTMLForSentence; // Ορισμός του περιεχομένου του sentenceContainer μία φορά
+        }
+    
+        // Δημιουργία κουμπιών επιλογών
+        if (q.options && Array.isArray(q.options)) {
+            q.options.forEach(optionText => {
+                const button = document.createElement("button");
+                button.classList.add("option-button");
+                button.innerHTML = optionText; // Το MathJax θα το επεξεργαστεί αν περιέχει LaTeX
+                button.dataset.value = optionText;
+                button.addEventListener("click", handleOptionClick);
+                optionsContainer.appendChild(button);
+                optionButtons.push(button);
+            });
+        }
+    
+        document.getElementById("clear-choices").classList.remove("hidden");
+    
+        // Ανανέωση MathJax για όλα τα σχετικά στοιχεία ΑΦΟΥ έχει οριστεί το innerHTML
+        const elementsToTypeset = [sentenceContainer, optionsContainer, questionPromptText];
+        if (window.MathJax && typeof MathJax.typesetPromise === 'function') {
+            MathJax.typesetPromise(elementsToTypeset)
+                .catch(err => console.error("MathJax typeset error:", err));
+        } else {
+            console.warn("MathJax not fully loaded or typesetPromise not available.");
+        }
     }
 
     function clearCurrentQuestionChoices() {

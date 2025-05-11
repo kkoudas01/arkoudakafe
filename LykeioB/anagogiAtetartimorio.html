@@ -142,41 +142,149 @@
     // ΠΡΟΣΑΡΜΟΣΜΕΝΟ quizData
     const quizData = [
       {
-        questionPrompt: "Συμπλήρωσε το πρόσημο:",
-        sentenceTemplate: ["\\( ημ(-38^\\circ) \\approx\\) ", null, " \\(0,61566\\)"],
-        correctAnswers: ["-"],
-        options: ["+", "-", "±", "0"]
+        questionPrompt: "Συμπλήρωσε την ισότητα:",
+        sentenceTemplate: ["\\( ημ(- x)=\\) ", null, null," \\((x)\\)"],
+        correctAnswers: ["-","\\(ημ\\)"],
+        options: ["+", "-","\\(ημ\\)", "\\(συν\\)", "\\(εφ\\)", "\\(σφ\\)"]
       },
-      {
-        questionPrompt: "Να συμπληρώσεις τα κενά επιλέγοντας τα κατάλληλα στοιχεία (η σειρά ΔΕΝ έχει σημασία):",
-        sentenceTemplate: [
-            "Τα στοιχεία που αποτελούν το νερό είναι το ", null, " και το ", null, "."
-            // Π.χ. ο χρήστης μπορεί να βάλει "Οξυγόνο" στο πρώτο κενό και "Υδρογόνο" στο δεύτερο, ή ανάποδα.
-        ],
-        correctAnswers: ["\\(Οξυγόνο\\)", "\\(Υδρογόνο\\)"], // Οι σωστές απαντήσεις
-        options: ["\\(Άζωτο\\)", "\\(Οξυγόνο\\)", "\\(Άνθρακας\\)", "\\(Υδρογόνο\\)"],
-        orderMatters: false // ΣΗΜΑΝΤΙΚΟ: Η σειρά δεν έχει σημασία
-    },
-    {
-        questionPrompt: "Να συμπληρώσεις τα κενά επιλέγοντας τα κατάλληλα στοιχεία (η σειρά ΕΧΕΙ σημασία):",
-        sentenceTemplate: [
-            "\\( (α+β)^2 = \\)", null, "\\( + 2αβ + \\)", null, ""
-        ],
-        correctAnswers: ["\\(α^2\\)", "\\(β^2\\)"],
-        options: ["\\(β^2\\)", "\\(α\\)", "\\(αβ\\)", "\\(α^2\\)", "\\(α^3\\)"],
-        // Μπορείτε να παραλείψετε το 'orderMatters: true' αν η προεπιλογή είναι true
-        // orderMatters: true
-    },      // Μπορείτε να προσθέσετε περισσότερες ερωτήσεις εδώ ακολουθώντας την ίδια δομή
-    {
-      questionPrompt: "Ποια ταυτότητα απεικονίζει το παρακάτω σχήμα;",
-      imageURL: "background.png", // Αντικαταστήστε με το πραγματικό URL της εικόνας
-      sentenceTemplate: [
-          "Η ταυτότητα είναι \\( (a+b)^2 = \\)", null, "\\( + 2ab + \\)", null, "."
-      ],
-      correctAnswers: ["\\(a^2\\)", "\\(b^2\\)"],
-      options: ["\\(a^2\\)", "\\(b^2\\)", "\\(ab\\)", "\\(2a\\)"],
-      orderMatters: true
-  }
+{
+        questionPrompt: "Συμπλήρωσε την ισότητα:",
+        sentenceTemplate: ["\\( σφ\\left(\\frac{π}{2} - x\\right)=\\) ", null, null," \\((x)\\)"],
+        correctAnswers: ["+","\\(εφ\\)"],
+        options: ["+", "-","\\(ημ\\)", "\\(συν\\)", "\\(εφ\\)", "\\(σφ\\)"]
+      },
+{
+        questionPrompt: "Συμπλήρωσε την ισότητα:",
+        sentenceTemplate: ["\\( εφ\\left(\\frac{π}{2} + x\\right)=\\) ", null, null," \\((x)\\)"],
+        correctAnswers: ["-","\\(σφ\\)"],
+        options: ["+", "-","\\(ημ\\)", "\\(συν\\)", "\\(εφ\\)", "\\(σφ\\)"]
+      },
+{
+        questionPrompt: "Συμπλήρωσε την ισότητα:",
+        sentenceTemplate: ["\\( συν(π - x)=\\) ", null, null," \\((x)\\)"],
+        correctAnswers: ["-", "\\(συν\\)"],
+        options: ["+", "-","\\(ημ\\)", "\\(συν\\)", "\\(εφ\\)", "\\(σφ\\)"]
+      },
+{
+        questionPrompt: "Συμπλήρωσε την ισότητα:",
+        sentenceTemplate: ["\\( εφ(π + x)=\\) ", null, null," \\((x)\\)"],
+        correctAnswers: ["+", "\\(εφ\\)"],
+        options: ["+", "-","\\(ημ\\)", "\\(συν\\)", "\\(εφ\\)", "\\(σφ\\)"]
+      },
+{
+        questionPrompt: "Συμπλήρωσε την ισότητα:",
+        sentenceTemplate: ["\\( συν\\left(\\frac{π}{2} - x\\right)=\\) ", null, null," \\((x)\\)"],
+        correctAnswers: ["+","\\(ημ\\)"],
+        options: ["+", "-","\\(ημ\\)", "\\(συν\\)", "\\(εφ\\)", "\\(σφ\\)"]
+      },
+{
+        questionPrompt: "Συμπλήρωσε την ισότητα:",
+        sentenceTemplate: ["\\( ημ\\left(\\frac{π}{2} + x\\right)=\\) ", null, null," \\((x)\\)"],
+        correctAnswers: ["+","\\(συν\\)"],
+        options: ["+", "-","\\(ημ\\)", "\\(συν\\)", "\\(εφ\\)", "\\(σφ\\)"]
+      },
+{
+        questionPrompt: "Συμπλήρωσε την ισότητα:",
+        sentenceTemplate: ["\\( σφ(2π + x)=\\) ", null, null," \\((x)\\)"],
+        correctAnswers: ["+", "\\(σφ\\)"],
+        options: ["+", "-","\\(ημ\\)", "\\(συν\\)", "\\(εφ\\)", "\\(σφ\\)"]
+      },
+{
+        questionPrompt: "Συμπλήρωσε την ισότητα:",
+        sentenceTemplate: ["\\( ημ(π- x)=\\) ", null, null," \\((x)\\)"],
+        correctAnswers: ["+","\\(ημ\\)"],
+        options: ["+", "-","\\(ημ\\)", "\\(συν\\)", "\\(εφ\\)", "\\(σφ\\)"]
+      },
+{
+        questionPrompt: "Συμπλήρωσε την ισότητα:",
+        sentenceTemplate: ["\\( σφ\\left(\\frac{π}{2} + x\\right)=\\) ", null, null," \\((x)\\)"],
+        correctAnswers: ["-","\\(εφ\\)"],
+        options: ["+", "-","\\(ημ\\)", "\\(συν\\)", "\\(εφ\\)", "\\(σφ\\)"]
+      },
+{
+        questionPrompt: "Συμπλήρωσε την ισότητα:",
+        sentenceTemplate: ["\\( εφ\\left(\\frac{π}{2} - x\\right)=\\) ", null, null," \\((x)\\)"],
+        correctAnswers: ["+","\\(σφ\\)"],
+        options: ["+", "-","\\(ημ\\)", "\\(συν\\)", "\\(εφ\\)", "\\(σφ\\)"]
+      },
+{
+        questionPrompt: "Συμπλήρωσε την ισότητα:",
+        sentenceTemplate: ["\\( συν(π+ x)=\\) ", null, null," \\((x)\\)"],
+        correctAnswers: ["-", "\\(συν\\)"],
+        options: ["+", "-","\\(ημ\\)", "\\(συν\\)", "\\(εφ\\)", "\\(σφ\\)"]
+      },
+{
+        questionPrompt: "Συμπλήρωσε την ισότητα:",
+        sentenceTemplate: ["\\( εφ(2π+ x)=\\) ", null, null," \\((x)\\)"],
+        correctAnswers: ["+", "\\(εφ\\)"],
+        options: ["+", "-","\\(ημ\\)", "\\(συν\\)", "\\(εφ\\)", "\\(σφ\\)"]
+      },
+{
+        questionPrompt: "Συμπλήρωσε την ισότητα:",
+        sentenceTemplate: ["\\( ημ\\left(\\frac{π}{2} - x\\right)=\\) ", null, null," \\((x)\\)"],
+        correctAnswers: ["+","\\(συν\\)"],
+        options: ["+", "-","\\(ημ\\)", "\\(συν\\)", "\\(εφ\\)", "\\(σφ\\)"]
+      },
+{
+        questionPrompt: "Συμπλήρωσε την ισότητα:",
+        sentenceTemplate: ["\\( συν\\left(\\frac{π}{2} + x\\right)=\\) ", null, null," \\((x)\\)"],
+        correctAnswers: ["-","\\(ημ\\)"],
+        options: ["+", "-","\\(ημ\\)", "\\(συν\\)", "\\(εφ\\)", "\\(σφ\\)"]
+      },
+{
+        questionPrompt: "Συμπλήρωσε την ισότητα:",
+        sentenceTemplate: ["\\( σφ(- x)=\\) ", null, null," \\((x)\\)"],
+        correctAnswers: ["-", "\\(σφ\\)"],
+        options: ["+", "-","\\(ημ\\)", "\\(συν\\)", "\\(εφ\\)", "\\(σφ\\)"]
+      },
+{
+        questionPrompt: "Συμπλήρωσε την ισότητα:",
+        sentenceTemplate: ["\\( ημ(π+ x)=\\) ", null, null," \\((x)\\)"],
+        correctAnswers: ["-","\\(ημ\\)"],
+        options: ["+", "-","\\(ημ\\)", "\\(συν\\)", "\\(εφ\\)", "\\(σφ\\)"]
+      },
+{
+        questionPrompt: "Συμπλήρωσε την ισότητα:",
+        sentenceTemplate: ["\\( συν(2π+ x)=\\) ", null, null," \\((x)\\)"],
+        correctAnswers: ["+", "\\(συν\\)"],
+        options: ["+", "-","\\(ημ\\)", "\\(συν\\)", "\\(εφ\\)", "\\(σφ\\)"]
+      },
+{
+        questionPrompt: "Συμπλήρωσε την ισότητα:",
+        sentenceTemplate: ["\\( εφ(- x)=\\) ", null, null," \\(εφ(x)\\)"],
+        correctAnswers: ["-", "\\(εφ\\)"],
+        options: ["+", "-","\\(ημ\\)", "\\(συν\\)", "\\(εφ\\)", "\\(σφ\\)"]
+      },
+{
+        questionPrompt: "Συμπλήρωσε την ισότητα:",
+        sentenceTemplate: ["\\( σφ(π- x)=\\) ", null, null," \\((x)\\)"],
+        correctAnswers: ["-", "\\(σφ\\)"],
+        options: ["+", "-","\\(ημ\\)", "\\(συν\\)", "\\(εφ\\)", "\\(σφ\\)"]
+      },
+{
+        questionPrompt: "Συμπλήρωσε την ισότητα:",
+        sentenceTemplate: ["\\( ημ(2π+ x)=\\) ", null, null," \\((x)\\)"],
+        correctAnswers: ["+","\\(ημ\\)"],
+        options: ["+", "-","\\(ημ\\)", "\\(συν\\)", "\\(εφ\\)", "\\(σφ\\)"]
+      },
+{
+        questionPrompt: "Συμπλήρωσε την ισότητα:",
+        sentenceTemplate: ["\\( συν(- x)=\\) ", null, null," \\((x)\\)"],
+        correctAnswers: ["+", "\\(συν\\)"],
+        options: ["+", "-","\\(ημ\\)", "\\(συν\\)", "\\(εφ\\)", "\\(σφ\\)"]
+      },
+{
+        questionPrompt: "Συμπλήρωσε την ισότητα:",
+        sentenceTemplate: ["\\( εφ(π- x)=\\) ", null, null," \\((x)\\)"],
+        correctAnswers: ["-", "\\(εφ\\)"],
+        options: ["+", "-","\\(ημ\\)", "\\(συν\\)", "\\(εφ\\)", "\\(σφ\\)"]
+      },
+{
+        questionPrompt: "Συμπλήρωσε την ισότητα:",
+        sentenceTemplate: ["\\( σφ(π+ x)=\\) ", null, null," \\((x)\\)"],
+        correctAnswers: ["+", "\\(σφ\\)"],
+        options: ["+", "-","\\(ημ\\)", "\\(συν\\)", "\\(εφ\\)", "\\(σφ\\)"]
+      }
     ];
 
     const TIME_LIMIT = 900; // 15 λεπτά σε δευτερόλεπτα
