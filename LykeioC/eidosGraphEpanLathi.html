@@ -564,7 +564,8 @@
     let currentRound = 1;
     let questionsForCurrentRound = [];
     let questionsToRetryNextRound = [];
-    const roundSummaries = []; // Για αποθήκευση σύνοψης κάθε γύρου
+    const roundSummaries = [];
+    let currentRoundIncorrectQuestionDisplayNumbers = []; // Νέα μεταβλητή
 
     const startButton = document.getElementById("start");
     const submitButton = document.getElementById("submit");
@@ -580,22 +581,24 @@
       timerDiv.classList.remove("hidden");
       quizDiv.classList.remove("hidden");
       submitButton.classList.remove("hidden");
-      downloadButton.classList.add("hidden"); // Απόκρυψη μέχρι την τελική επιτυχία
+      downloadButton.classList.add("hidden");
       resultDiv.classList.add("hidden");
 
+      currentRoundIncorrectQuestionDisplayNumbers = []; // Αρχικοποίηση για τον νέο γύρο
+
       if (currentRound === 1) {
-        questionsForCurrentRound = JSON.parse(JSON.stringify(initialQuizData)); // Βαθύ αντίγραφο για τον 1ο γύρο
+        questionsForCurrentRound = JSON.parse(JSON.stringify(initialQuizData));
       } else {
         questionsForCurrentRound = [...questionsToRetryNextRound];
       }
-      questionsToRetryNextRound = []; // Καθαρισμός για τον τρέχοντα γύρο
+      questionsToRetryNextRound = [];
 
       currentQuestionIndex = 0;
       currentScore = 0;
       roundStartTime = new Date();
-      clearInterval(timerInterval); // Καθαρισμός προηγούμενου interval αν υπάρχει
+      clearInterval(timerInterval);
       timerInterval = setInterval(updateTimer, 1000);
-      updateTimer(); // Αρχική εμφάνιση χρόνου
+      updateTimer();
       loadQuestion();
     }
 
@@ -629,7 +632,6 @@
             MathJax.typesetPromise().catch((err) => console.error('MathJax typesetting error:', err));
         }
       } else {
-        // Αυτό δεν θα έπρεπε να συμβεί εδώ, το τέλος γύρου χειρίζεται στην checkAnswer
         console.warn("LoadQuestion called without more questions for the round.");
       }
     }
@@ -647,8 +649,8 @@
       if (correct) {
         currentScore++;
       } else {
-        // Προσθήκη της λανθασμένης ερώτησης στη λίστα για τον επόμενο γύρο
         questionsToRetryNextRound.push(questionsForCurrentRound[currentQuestionIndex]);
+        currentRoundIncorrectQuestionDisplayNumbers.push(currentQuestionIndex + 1); // Καταγραφή λανθασμένης
       }
 
       currentQuestionIndex++;
@@ -671,8 +673,9 @@
         totalQuestions: questionsForCurrentRound.length,
         correctAnswers: currentScore,
         errors: questionsForCurrentRound.length - currentScore,
+        incorrectQuestionDisplayNumbers: [...currentRoundIncorrectQuestionDisplayNumbers], // Αποθήκευση λίστας
         successPercentage: percentage,
-        timestamp: roundEndTime.toLocaleString('el-GR') // Timestamp for on-page display
+        timestamp: roundEndTime.toLocaleString('el-GR')
       });
 
       quizDiv.classList.add("hidden");
@@ -680,29 +683,23 @@
       resultDiv.classList.remove("hidden");
 
       let message = "";
-      const tenMinutes = 600; // 10 λεπτά σε δευτερόλεπτα
+      const tenMinutes = 600; 
 
-      if (questionsToRetryNextRound.length > 0) { // Αν υπάρχουν λάθη σε αυτόν τον γύρο
+      if (questionsToRetryNextRound.length > 0) {
         message = `Ο Γύρος ${currentRound} ολοκληρώθηκε. Είχες ${questionsForCurrentRound.length - currentScore} λάθη από τις ${questionsForCurrentRound.length} ερωτήσεις.`;
         message += "<br>Θα συνεχίσεις με τις ερωτήσεις που απάντησες λανθασμένα.";
         if (currentRound === 1 && elapsedSeconds > tenMinutes) {
-            message += "<br>Προσπάθησε να είσαι πιο γρήγορος!";
+            message += "<br>Προσπάθησε να είσαι πιο γρήγορος στον επόμενο γύρο με τις διορθώσεις σου!";
         }
         currentRound++;
-        setTimeout(startNewRound, 4000); // Έναρξη επόμενου γύρου μετά από 4 δευτερόλεπτα
-      } else { // Δεν υπάρχουν λάθη σε αυτόν τον γύρο
+        setTimeout(startNewRound, 4000); 
+      } else { 
+        message = `Συγχαρητήρια! Ολοκλήρωσες το κουίζ με επιτυχία στον Γύρο ${currentRound}, απαντώντας σωστά σε όλες τις ερωτήσεις αυτού του γύρου (${currentScore}/${questionsForCurrentRound.length})!`;
+        message += `<br>Συνολικός χρόνος για αυτόν τον γύρο: ${formatTime(elapsedSeconds)}.`;
         if (currentRound === 1 && elapsedSeconds > tenMinutes) {
-             // Όλα σωστά στον 1ο γύρο, αλλά αργά
-            message = `Συγχαρητήρια! Απάντησες σωστά σε όλες τις ερωτήσεις του Γύρου ${currentRound} (${currentScore}/${questionsForCurrentRound.length}), αλλά ο συνολικός σου χρόνος (${formatTime(elapsedSeconds)}) ήταν πάνω από 10 λεπτά. Για καλύτερη εμπέδωση, θα ξανακάνεις όλο το κουίζ.`;
-            currentRound = 1; // Επαναφορά στον 1ο γύρο
-            questionsToRetryNextRound = []; // Καθαρισμός για να μην πάρει τις προηγούμενες
-            setTimeout(startNewRound, 5000); // Ξανά από την αρχή
-        } else {
-            // Επιτυχής ολοκλήρωση (είτε γρήγορα στον 1ο γύρο, είτε ολοκλήρωση των διορθώσεων)
-            message = `Συγχαρητήρια! Ολοκλήρωσες το κουίζ με επιτυχία στον Γύρο ${currentRound}, απαντώντας σωστά σε όλες τις ερωτήσεις αυτού του γύρου (${currentScore}/${questionsForCurrentRound.length})!`;
-            message += `<br>Συνολικός χρόνος για αυτόν τον γύρο: ${formatTime(elapsedSeconds)}.`;
-            downloadButton.classList.remove("hidden");
+             message += "<br>Για την ιστορία, ο πρώτος σου γύρος πήρε λίγο παραπάνω, αλλά τα κατάφερες!";
         }
+        downloadButton.classList.remove("hidden");
       }
       resultDiv.innerHTML = `<p>${message}</p>`;
     }
@@ -713,19 +710,18 @@
         return `${minutes}:${seconds}`;
     }
 
-
     function downloadResultsPDF() {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
 
-      doc.setFont("Helvetica", "normal"); // Using a standard font
+      doc.setFont("Helvetica", "normal"); 
 
       doc.setFontSize(18);
       doc.text("Quiz Results Report", 105, 15, null, null, "center");
       let yPosition = 30;
 
       roundSummaries.forEach(summary => {
-        if (yPosition > 260) { // Check for new page
+        if (yPosition > 260) { 
           doc.addPage();
           yPosition = 20;
         }
@@ -734,9 +730,6 @@
         yPosition += 8;
 
         doc.setFontSize(10);
-        // The summary.timestamp is already formatted (e.g., 'el-GR').
-        // If an English format is strictly needed IN THE PDF, it should be generated and stored
-        // separately in the roundSummaries object or formatted here using summary.timestamp (if it was a raw Date object).
         doc.text(`   - Round Completion Date & Time: ${summary.timestamp}`, 14, yPosition);
         yPosition += 6;
         doc.text(`   - Round Execution Time: ${formatTime(summary.time)}`, 14, yPosition);
@@ -745,24 +738,31 @@
         yPosition += 6;
         doc.text(`   - Correct Answers: ${summary.correctAnswers}`, 14, yPosition);
         yPosition += 6;
-        doc.text(`   - Mistakes: ${summary.errors}`, 14, yPosition);
+        doc.text(`   - Mistakes (count): ${summary.errors}`, 14, yPosition); // Εμφάνιση του πλήθους των λαθών
         yPosition += 6;
+
+        // Εμφάνιση της λίστας των αριθμών των λανθασμένων ερωτήσεων (σειρά εμφάνισης στον γύρο)
+        if (summary.incorrectQuestionDisplayNumbers && summary.incorrectQuestionDisplayNumbers.length > 0) {
+          doc.text(`   - Incorrect Question Nos. (in round sequence): ${summary.incorrectQuestionDisplayNumbers.join(', ')}`, 14, yPosition);
+          yPosition += 6;
+        }
+        
         doc.text(`   - Round Success Percentage: ${summary.successPercentage}%`, 14, yPosition);
-        yPosition += 12; // Space for the next round
+        yPosition += 12; 
       });
 
-      doc.save("Quiz_Results_Function_Graphs.pdf"); // Changed filename to English
+      doc.save("Quiz_Results_Function_Graphs.pdf");
     }
 
     startButton.addEventListener("click", () => {
-        currentRound = 1; // Επαναφορά γύρου αν ο χρήστης ξαναπατήσει έναρξη
-        roundSummaries.length = 0; // Καθαρισμός προηγούμενων περιλήψεων
+        currentRound = 1; 
+        roundSummaries.length = 0; 
         startNewRound();
     });
     submitButton.addEventListener("click", handleSubmit);
     downloadButton.addEventListener("click", downloadResultsPDF);
     otherPageButton.addEventListener("click", () => {
-      window.location.href = "index.html"; // Βεβαιωθείτε ότι υπάρχει το αρχείο index.html
+      window.location.href = "index.html";
     });
 
   </script>

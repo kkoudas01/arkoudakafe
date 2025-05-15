@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Είδη γραφικών παραστάσεων - Κουίζ (Πολλαπλές Επιλογές)</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    .quiz-container {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .question {
+      margin-bottom: 20px;
+    }
+    .options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px 40px;
+    }
+    .options label {
+      cursor: pointer;
+      break-inside: avoid;
+      padding: 8px;
+      border: 1px solid #eee;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    .options label:hover {
+      background-color: #f0f0f0;
+    }
+    /* ΑΛΛΑΓΗ: Στυλ για checkbox αντί για radio */
+    .options input[type="checkbox"] {
+        margin-right: 8px;
+    }
+    .options img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+    @media (max-width: 600px) {
+      .options {
+        grid-template-columns: 1fr;
+      }
+    }
+    button {
+      background-color: #28a745;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+      font-size: 1em;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    #timer, #result {
+      font-size: 1.2em;
+      margin: 10px 0;
+    }
+    .hidden {
+      display: none;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      border: 1px solid #ddd;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+    h1, h3 {
+        color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <div id="intro">
+      <h1>Κουίζ Μαθηματικών: Είδη Γραφικών Παραστάσεων (Πολλαπλές Επιλογές)</h1>
+      <p>Κάνε το κουίζ. Για κάποιες ερωτήσεις, μπορείς να επιλέξεις περισσότερες από μία απαντήσεις. Αν κάνεις λάθη, θα επαναλάβεις μόνο τις ερωτήσεις που απάντησες λανθασμένα, μέχρι να τις πετύχεις όλες!</p>
+      <button id="start">Ξεκίνα το Κουίζ</button>
+      <button id="otherpage">Πήγαινε πίσω στην τάξη σου</button>
+    </div>
+    <div id="timer" class="hidden">Ώρα: 00:00</div>
+    <div id="quiz" class="hidden"></div>
+    <button id="submit" class="hidden">Υποβολή Απάντησης</button>
+    <div id="result" class="hidden"></div>
+    <button id="download" class="hidden">Λήψη Αποτελεσμάτων (PDF)</button>
+  </div>
+
+  <script>
+    // ΑΛΛΑΓΗ: Παραδείγματα ερωτήσεων με correctIndices για πολλαπλές σωστές απαντήσεις
+    const initialQuizData = [
+      {
+        question: "Πώς θα χαρακτήριζες τη συνάρτηση \\(f\\);",
+        image: "fARTIA.png",
+        options: [
+        "γνησίως αύξουσα", //0
+        "γνησίως φθίνουσα",  //1
+        "άρτια", //2
+        "περιττή", //3
+        "περιοδική", //4
+        "έχει ολικό ελάχιστο", //5
+        "έχει ολικό μέγιστο" //6
+        ],
+        correctIndices: [2, 5] // ΔΙΟΡΘΩΜΕΝΟ
+      },
+      {
+        question: "Ποια από τις παρακάτω γραφικές παραστάσεις είναι η γραφική παράσταση της \\( f(x)=-3x \\);",
+        image: null,
+        options: [
+          `<img src="lineNoAxes2.png">`,  // index 0
+          `<img src="lineONoAxes.png">`,  // index 1
+          `<img src="axBNoAxes2.png">`,   // index 2
+          `<img src="axBNoAxes3.png">`    // index 3
+        ],
+        correctIndices: [0] // ΔΙΟΡΘΩΜΕΝΟ
+      }
+      // Προσθέστε περισσότερες ερωτήσεις εδώ με τη νέα δομή
+    ];
+
+    let currentQuestionIndex = 0;
+    let currentScore = 0;
+    let roundStartTime;
+    let timerInterval;
+    let currentRound = 1;
+    let questionsForCurrentRound = [];
+    let questionsToRetryNextRound = [];
+    const roundSummaries = [];
+    let currentRoundIncorrectQuestionDisplayNumbers = [];
+
+    const startButton = document.getElementById("start");
+    const submitButton = document.getElementById("submit");
+    const downloadButton = document.getElementById("download");
+    const otherPageButton = document.getElementById("otherpage");
+    const introDiv = document.getElementById("intro");
+    const timerDiv = document.getElementById("timer");
+    const quizDiv = document.getElementById("quiz");
+    const resultDiv = document.getElementById("result");
+
+    function startNewRound() {
+      introDiv.classList.add("hidden");
+      timerDiv.classList.remove("hidden");
+      quizDiv.classList.remove("hidden");
+      submitButton.classList.remove("hidden");
+      downloadButton.classList.add("hidden");
+      resultDiv.classList.add("hidden");
+
+      currentRoundIncorrectQuestionDisplayNumbers = [];
+
+      if (currentRound === 1) {
+        questionsForCurrentRound = JSON.parse(JSON.stringify(initialQuizData));
+      } else {
+        questionsForCurrentRound = [...questionsToRetryNextRound];
+      }
+      questionsToRetryNextRound = [];
+
+      currentQuestionIndex = 0;
+      currentScore = 0;
+      roundStartTime = new Date();
+      clearInterval(timerInterval);
+      timerInterval = setInterval(updateTimer, 1000);
+      updateTimer();
+      loadQuestion();
+    }
+
+    function updateTimer() {
+      const now = new Date();
+      const elapsed = Math.floor((now - roundStartTime) / 1000);
+      const minutes = Math.floor(elapsed / 60).toString().padStart(2, "0");
+      const seconds = (elapsed % 60).toString().padStart(2, "0");
+      timerDiv.textContent = `Ώρα Γύρου ${currentRound}: ${minutes}:${seconds}`;
+    }
+
+    function loadQuestion() {
+      if (currentQuestionIndex < questionsForCurrentRound.length) {
+        const q = questionsForCurrentRound[currentQuestionIndex];
+        quizDiv.innerHTML = `
+          <div class="question">
+            <h3>Ερώτηση ${currentQuestionIndex + 1} από ${questionsForCurrentRound.length} (Γύρος ${currentRound})</h3>
+            <p>${q.question}</p>
+            ${q.image ? `<img src="${q.image}" alt="Εικόνα Ερώτησης ${currentQuestionIndex + 1}">` : ""}
+            <div class="options">
+              ${q.options.map((option, index) => `
+                <label>
+                  <input type="checkbox" name="option" value="${index}">
+                  ${option}
+                </label>
+              `).join("")}
+            </div>
+          </div>
+        `;
+        if (window.MathJax) {
+            MathJax.typesetPromise().catch((err) => console.error('MathJax typesetting error:', err));
+        }
+      } else {
+        // Αυτό δεν θα έπρεπε κανονικά να συμβεί αν η λογική είναι σωστή
+        console.warn("LoadQuestion called without more questions for the round.");
+      }
+    }
+
+    function handleSubmit() {
+      // ΑΛΛΑΓΗ: Συλλογή όλων των επιλεγμένων checkboxes
+      const selectedOptions = document.querySelectorAll('input[name="option"]:checked');
+      if (selectedOptions.length === 0) {
+        alert("Παρακαλώ επιλέξτε τουλάχιστον μία απάντηση!");
+        return;
+      }
+
+      const selectedIndices = [];
+      selectedOptions.forEach(option => {
+        selectedIndices.push(parseInt(option.value));
+      });
+      selectedIndices.sort((a, b) => a - b); // Ταξινόμηση για συνεπή σύγκριση
+
+      const currentQ = questionsForCurrentRound[currentQuestionIndex];
+      // ΑΛΛΑΓΗ: Λογική ελέγχου για πολλαπλές σωστές απαντήσεις
+      let isCorrect = false;
+      if (currentQ.correctIndices) { // Τώρα αυτό θα λειτουργεί σωστά
+          const correctAnswers = [...currentQ.correctIndices].sort((a, b) => a - b); // Ταξινόμηση και των σωστών
+          // Έλεγχος αν οι επιλεγμένες απαντήσεις είναι ακριβώς ίδιες με τις σωστές
+          if (selectedIndices.length === correctAnswers.length &&
+              selectedIndices.every((val, index) => val === correctAnswers[index])) {
+              isCorrect = true;
+          }
+      } else if (currentQ.correctIndex !== undefined) { // Υποστήριξη για παλιές ερωτήσεις (αν υπάρχουν, αν και δεν χρησιμοποιούνται πλέον με τη διόρθωση)
+          if (selectedIndices.length === 1 && selectedIndices[0] === currentQ.correctIndex) {
+            isCorrect = true;
+          }
+      }
+
+
+      if (isCorrect) {
+        currentScore++;
+      } else {
+        questionsToRetryNextRound.push(currentQ);
+        currentRoundIncorrectQuestionDisplayNumbers.push(currentQuestionIndex + 1);
+      }
+
+      currentQuestionIndex++;
+      if (currentQuestionIndex < questionsForCurrentRound.length) {
+        loadQuestion();
+      } else {
+        endRound();
+      }
+    }
+
+    function endRound() {
+      clearInterval(timerInterval);
+      const roundEndTime = new Date();
+      const elapsedSeconds = Math.floor((roundEndTime - roundStartTime) / 1000);
+      const percentage = questionsForCurrentRound.length > 0 ? ((currentScore / questionsForCurrentRound.length) * 100).toFixed(2) : 0;
+
+      roundSummaries.push({
+        round: currentRound,
+        time: elapsedSeconds,
+        totalQuestions: questionsForCurrentRound.length,
+        correctAnswers: currentScore,
+        errors: questionsForCurrentRound.length - currentScore,
+        incorrectQuestionDisplayNumbers: [...currentRoundIncorrectQuestionDisplayNumbers],
+        successPercentage: percentage,
+        timestamp: roundEndTime.toLocaleString('el-GR')
+      });
+
+      quizDiv.classList.add("hidden");
+      submitButton.classList.add("hidden");
+      resultDiv.classList.remove("hidden");
+
+      let message = "";
+      const tenMinutes = 600;
+
+      if (questionsToRetryNextRound.length > 0) {
+        message = `Ο Γύρος ${currentRound} ολοκληρώθηκε. Είχες ${questionsForCurrentRound.length - currentScore} λάθη από τις ${questionsForCurrentRound.length} ερωτήσεις.`;
+        message += "<br>Θα συνεχίσεις με τις ερωτήσεις που απάντησες λανθασμένα.";
+        if (currentRound === 1 && elapsedSeconds > tenMinutes) {
+            message += "<br>Προσπάθησε να είσαι πιο γρήγορος στον επόμενο γύρο με τις διορθώσεις σου!";
+        }
+        currentRound++;
+        setTimeout(startNewRound, 4000);
+      } else {
+        message = `Συγχαρητήρια! Ολοκλήρωσες το κουίζ με επιτυχία στον Γύρο ${currentRound}, απαντώντας σωστά σε όλες τις ερωτήσεις αυτού του γύρου (${currentScore}/${questionsForCurrentRound.length})!`;
+        message += `<br>Συνολικός χρόνος για αυτόν τον γύρο: ${formatTime(elapsedSeconds)}.`;
+        // Προσαρμοσμένο μήνυμα για τον χρόνο, λαμβάνοντας υπόψη αν είναι ο πρώτος γύρος ή γύρος διόρθωσης.
+        if (roundSummaries.length === 1 && elapsedSeconds > tenMinutes) { // Αν είναι το summary του πρώτου γύρου
+            message += "<br>Για την ιστορία, ο πρώτος σου γύρος πήρε λίγο παραπάνω, αλλά τα κατάφερες!";
+        } else if (roundSummaries.length > 1 && elapsedSeconds > tenMinutes) { // Αν είναι summary επόμενου γύρου
+            message += "<br>Ο γύρος διόρθωσης πήρε λίγο παραπάνω, αλλά τα κατάφερες!";
+        }
+        downloadButton.classList.remove("hidden");
+      }
+      resultDiv.innerHTML = `<p>${message}</p>`;
+    }
+
+    function formatTime(totalSeconds) {
+        const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, "0");
+        const seconds = (totalSeconds % 60).toString().padStart(2, "0");
+        return `${minutes}:${seconds}`;
+    }
+
+    function downloadResultsPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  doc.setFont("Helvetica", "normal");
+  doc.setFontSize(18);
+  doc.text("Quiz Results Report", 105, 15, null, null, "center"); // Αγγλικά
+  let yPosition = 30;
+
+  roundSummaries.forEach(summary => {
+    if (yPosition > 260) {
+      doc.addPage();
+      yPosition = 20;
+    }
+    doc.setFontSize(14);
+    doc.text(`Round ${summary.round} Summary:`, 14, yPosition); // Αγγλικά
+    yPosition += 8;
+
+    doc.setFontSize(10);
+    doc.text(`   - Round Completion Date & Time: ${summary.timestamp}`, 14, yPosition); // Αγγλικά
+    yPosition += 6;
+    doc.text(`   - Round Execution Time: ${formatTime(summary.time)}`, 14, yPosition); // Αγγλικά
+    yPosition += 6;
+    doc.text(`   - Number of Questions in Round: ${summary.totalQuestions}`, 14, yPosition); // Αγγλικά
+    yPosition += 6;
+    doc.text(`   - Correct Answers: ${summary.correctAnswers}`, 14, yPosition); // Αγγλικά
+    yPosition += 6;
+    doc.text(`   - Mistakes (count): ${summary.errors}`, 14, yPosition); // Αγγλικά
+    yPosition += 6;
+
+    if (summary.incorrectQuestionDisplayNumbers.length > 0) {
+      doc.text(`   - Incorrect Question Nos. (in round sequence): ${summary.incorrectQuestionDisplayNumbers.join(', ')}`, 14, yPosition); // Αγγλικά
+      yPosition += 6;
+    }
+    
+    doc.text(`   - Round Success Percentage: ${summary.successPercentage}%`, 14, yPosition); // Αγγλικά
+    yPosition += 12;
+  });
+
+  doc.save("Quiz_Results_Function_Graphs_MultipleChoice.pdf");
+}
+    startButton.addEventListener("click", () => {
+        currentRound = 1;
+        roundSummaries.length = 0;
+        startNewRound();
+    });
+    submitButton.addEventListener("click", handleSubmit);
+    downloadButton.addEventListener("click", downloadResultsPDF);
+    otherPageButton.addEventListener("click", () => {
+      window.location.href = "index.html"; // Βεβαιωθείτε ότι το "index.html" είναι η σωστή σελίδα επιστροφής
+    });
+
+  </script>
+</body>
+</html>

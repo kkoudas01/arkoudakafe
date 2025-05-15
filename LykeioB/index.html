@@ -288,9 +288,9 @@
   <div class="container">
     <div class="central-circle" id="main-label">Β Λυκείου</div>
     <div class="ring">
-      <button class="ring-button" data-subject="Λογισμός">Λογισμός</button>
+      <button class="ring-button" data-subject="Άλγεβρα">Άλγεβρα</button>
       <button class="ring-button" data-subject="Γεωμετρία">Γεωμετρία</button>
-      <button class="ring-button" data-subject="Στοχαστικά">Στοχαστικά</button>
+      <button class="ring-button" data-subject="Κατεύθυνση">Κατεύθυνση</button>
     </div>
   </div>
 
@@ -300,18 +300,23 @@
 
   <script>
     const subjects = {
-      'Λογισμός': ['Γραφικές παραστάσεις', 'Ανισώσεις'],
+      'Άλγεβρα': ['Γραφικές παραστάσεις', 'Τριγωνομετρία','Επαναληπτικά'],
       'Γεωμετρία': ['Σχήματα', 'Γωνίες'],
-      'Στοχαστικά': ['Κινηματική', 'Δυναμική']
+      'Κατεύθυνση': ['Κινηματική', 'Δυναμική']
     };
 
     const links = {
       'Γραφικές παραστάσεις': [
-        { text: 'Βρες τη γραφική παράσταση (Quiz)', url: 'EidosGrapg.html' },
+        { text: 'Βασικοί μετασχηματισμοί (Quiz με επανάληψη λαθών)', url: 'symmetriesEpanalLathi.html' },
         { text: 'Βρες τη γραφική παράσταση (Quiz με χρόνο)', url: 'EidosGrapgTime.html' }
       ],
-      'Ανισώσεις': [
-        { text: 'Γραμμικές Ανισώσεις', url: 'an1.html' }
+      'Τριγωνομετρία': [
+        { text: 'Χρήση τριγωνομετρικού κύκλου (Quiz ☢️)', url: 'TrigonCyklos.html' },
+        { text: 'Αναγωγή στο 1ο τεταρτημόριο (Quiz ☢️)', url: 'anagogiAtetartimorio.html' },
+        { text: 'Επανάληψη στην τριγωνομετρία (Quiz ☢️)', url: 'Trigonometria.html' }
+      ],
+      'Επαναληπτικά': [
+        { text: 'Γρήγοροι υπολογισμοί (Quiz ☢️)', url: 'GrigoroiYpologismoi.html' }
       ],
       'Σχήματα': [
         { text: 'Τρίγωνα', url: 'sx1.html' },

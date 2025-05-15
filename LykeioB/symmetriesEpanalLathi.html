@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Συνδυασμένο Κουίζ Μαθηματικών</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    .quiz-container {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .question-area {
+      margin-bottom: 20px;
+    }
+    .question-prompt {
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+    .sentence-container {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 5px;
+      margin: 15px 0;
+      min-height: 30px;
+    }
+    .blank-space {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 8px 12px;
+      min-width: 50px;
+      text-align: center;
+      font-weight: bold;
+      background-color: #f9f9f9;
+      display: inline-block;
+    }
+    .blank-space.filled {
+      background-color: #e0ffe0;
+      border-color: #a0c0a0;
+    }
+    #question-image-container img {
+      display: block;
+      margin: 10px auto 15px auto;
+      max-width: 80%;
+      max-height: 300px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    .options-container {
+      margin-top: 15px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .option-button {
+      background-color: #007bff;
+      color: white;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+    }
+    .option-button:hover {
+      background-color: #0056b3;
+    }
+    .option-button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    #clear-choices {
+      background-color: #ffc107;
+      color: black;
+    }
+    #clear-choices:hover {
+      background-color: #e0a800;
+    }
+    button {
+      background-color: #28a745;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    #timer, #result {
+      font-size: 1.2em;
+      margin: 10px 0;
+    }
+    .hidden {
+      display: none;
+    }
+    .timeout {
+      color: red;
+    }
+    /* Στυλ για ερωτήσεις πολλαπλής επιλογής */
+    .multiple-choice-question {
+      margin-bottom: 20px;
+    }
+    .multiple-choice-options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px 40px;
+    }
+    .multiple-choice-options label {
+      cursor: pointer;
+      break-inside: avoid;
+        /* Προσθέτουμε padding για να δώσουμε χώρο γύρω από τις εικόνες αν χρειάζεται */
+        padding: 5px; 
+    }
+    .multiple-choice-options img {
+      max-width: 70%; /* Μείωση μέγιστου πλάτους για τις εικόνες επιλογών */
+      height: auto;
+      display: block;
+      margin: 0 auto; /* Κεντράρισμα εικόνας μέσα στην επιλογή */
+    }
+    @media (max-width: 600px) {
+      .multiple-choice-options {
+        grid-template-columns: 1fr;
+      }
+      /* Στις μικρές οθόνες, μπορούν να είναι λίγο μεγαλύτερες */
+      .multiple-choice-options img {
+        max-width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <div id="intro">
+      <h1>Συνδυασμένο Κουίζ Μαθηματικών</h1>
+      <p>Σε κάποιες ερωτήσεις θα συμπληρώσεις κενά και σε άλλες θα επιλέξεις τη σωστή απάντηση.</p>
+      <p>Χρονικό όριο ανά γύρο: 15 λεπτά</p>
+      <button id="start">Ξεκίνα το Κουίζ</button>
+      <button id="otherpage">Πήγαινε πίσω στην τάξη σου</button>
+    </div>
+    <div id="timer" class="hidden">Χρόνος: 15:00</div>
+    <div id="quiz" class="hidden">
+      <div class="question-area">
+        <h3 id="question-number-title"></h3>
+        <div id="question-prompt-text" class="question-prompt"></div>
+        <div id="question-image-container"></div>
+        <div id="question-content"></div>
+      </div>
+      <button id="clear-choices" class="hidden">Καθαρισμός Επιλογών</button>
+    </div>
+    <button id="submit" class="hidden">Υποβολή Απάντησης</button>
+    <div id="result" class="hidden"></div>
+    <button id="download" class="hidden">Λήψη Αποτελεσμάτων (PDF)</button>
+  </div>
+
+  <script>
+    // Δεδομένα για το quiz - συνδυασμός και των δύο τύπων ερωτήσεων
+    const quizData = [
+      // Ερώτηση τύπου συμπλήρωσης κενών
+      {//1
+        type: "fillBlank",
+        questionPrompt: "Να συμπληρώσεις τα κενά:",
+        imageURL: "fPARALx.png",
+        sentenceTemplate: [
+          "\\( g(x)= \\)", null, " και \\( h(x)= \\)", null
+        ],
+        correctAnswers: ["\\(f(x+1)\\)", "\\(f(x-1)\\)"],
+        options: ["\\(f(x+1)\\)", "\\(f(x)+1\\)", "\\(f(x-1)\\)","\\(f(x)-1\\)"]
+      },
+      {//2
+        type: "fillBlank",
+        questionPrompt: "Να συμπληρώσεις τα κενά:",
+        imageURL: "fKATAKx.png",
+        sentenceTemplate: [
+          "\\( g(x)= \\)", null, " και \\( h(x)= \\)", null
+        ],
+        correctAnswers: ["\\(f(x)-2\\)", "\\(f(x)+2\\)"],
+        options: ["\\(f(x+2)\\)", "\\(f(x)+2\\)", "\\(f(x-2)\\)","\\(f(x)-2\\)"]
+      },
+      {//3
+        type: "multipleChoice",
+        question: "Ποιος είναι ο τύπος της συνάρτησης \\(g\\);",
+        image: "fxMINUS2.png",
+        options: [
+        "\\( g(x)=-f(x) \\)", //0
+        "\\( g(x)=f(-x) \\)",  //1
+        "\\( g(x)=-f(-x) \\)", //2
+        "\\( g(x)=f(x+2) \\)", //3
+        "\\( g(x)=f(x-2) \\)", //4
+        "\\( g(x)=f(x)+2 \\)", //5
+        "\\( g(x)=f(x)-2 \\)" //6
+        ],
+        correctIndex: 4
+      },
+      {//4
+        type: "multipleChoice",
+        question: "Ποιος είναι ο τύπος της συνάρτησης \\(g\\);",
+        image: "fMINUSx.png",
+        options: [
+        "\\( g(x)=-f(x) \\)", //0
+        "\\( g(x)=f(-x) \\)",  //1
+        "\\( g(x)=-f(-x) \\)", //2
+        "\\( g(x)=f(x+3) \\)", //3
+        "\\( g(x)=f(x-3) \\)", //4
+        "\\( g(x)=f(x)+3 \\)", //5
+        "\\( g(x)=f(x)-3 \\)" //6
+        ],
+        correctIndex: 1
+      },
+      {//5
+        type: "multipleChoice",
+        question: "Ποιος είναι ο τύπος της συνάρτησης \\(g\\);",
+        image: "fPLUS7.png",
+        options: [
+        "\\( g(x)=-f(x) \\)", //0
+        "\\( g(x)=f(-x) \\)",  //1
+        "\\( g(x)=-f(-x) \\)", //2
+        "\\( g(x)=f(x+7) \\)", //3
+        "\\( g(x)=f(x-7) \\)", //4
+        "\\( g(x)=f(x)+7 \\)", //5
+        "\\( g(x)=f(x)-7 \\)" //6
+        ],
+        correctIndex: 5
+      },
+      {//6
+        type: "multipleChoice",
+        question: "Ποιος είναι ο τύπος της συνάρτησης \\(g\\);",
+        image: "fxPLUS3.png",
+        options: [
+        "\\( g(x)=-f(x) \\)", //0
+        "\\( g(x)=f(-x) \\)",  //1
+        "\\( g(x)=-f(-x) \\)", //2
+        "\\( g(x)=f(x+3) \\)", //3
+        "\\( g(x)=f(x-3) \\)", //4
+        "\\( g(x)=f(x)+3 \\)", //5
+        "\\( g(x)=f(x)-3 \\)" //6
+        ],
+        correctIndex: 3
+      },
+      {//7
+        type: "multipleChoice",
+        question: "Ποιος είναι ο τύπος της συνάρτησης \\(g\\);",
+        image: "minusf.png",
+        options: [
+        "\\( g(x)=-f(x) \\)", //0
+        "\\( g(x)=f(-x) \\)",  //1
+        "\\( g(x)=-f(-x) \\)", //2
+        "\\( g(x)=f(x+3) \\)", //3
+        "\\( g(x)=f(x-3) \\)", //4
+        "\\( g(x)=f(x)+3 \\)", //5
+        "\\( g(x)=f(x)-3 \\)" //6
+        ],
+        correctIndex: 0
+      },
+      {//8
+        type: "multipleChoice",
+        question: "Ποιος είναι ο τύπος της συνάρτησης \\(g\\);",
+        image: "fMINUS2.png",
+        options: [
+        "\\( g(x)=-f(x) \\)", //0
+        "\\( g(x)=f(-x) \\)",  //1
+        "\\( g(x)=-f(-x) \\)", //2
+        "\\( g(x)=f(x+1) \\)", //3
+        "\\( g(x)=f(x-1) \\)", //4
+        "\\( g(x)=f(x)+1 \\)", //5
+        "\\( g(x)=f(x)-1 \\)" //6
+        ],
+        correctIndex: 6
+      },
+      {//9
+        type: "multipleChoice",
+        question: "Ποιος είναι ο τύπος της συνάρτησης \\(g\\);",
+        image: "minusfminusx.png",
+        options: [
+        "\\( g(x)=-f(x) \\)", //0
+        "\\( g(x)=f(-x) \\)",  //1
+        "\\( g(x)=-f(-x) \\)", //2
+        "\\( g(x)=f(x+1) \\)", //3
+        "\\( g(x)=f(x-1) \\)", //4
+        "\\( g(x)=f(x)+1 \\)", //5
+        "\\( g(x)=f(x)-1 \\)" //6
+        ],
+        correctIndex: 2
+      },
+      {//10
+        type: "multipleChoice",
+        question: "Ποιος είναι ο τύπος της συνάρτησης \\(g\\);",
+        image: "fxPLYS1PLUS3.png",
+        options: [
+        "\\( g(x)=-f(x) \\)", //0
+        "\\( g(x)=f(-x) \\)",  //1
+        "\\( g(x)=-f(-x) \\)", //2
+        "\\( g(x)=f(x+1)+3 \\)", //3
+        "\\( g(x)=f(x-1)+3 \\)", //4
+        "\\( g(x)=f(x+1)-3 \\)", //5
+        "\\( g(x)=f(x-1)-3 \\)" //6
+        ],
+        correctIndex: 3
+      },
+      {//11
+        type: "multipleChoice",
+        question: "Ποιος είναι ο τύπος της συνάρτησης \\(g\\);",
+        image: "fxMINUS1MINUS3.png",
+        options: [
+        "\\( g(x)=-f(x) \\)", //0
+        "\\( g(x)=f(-x) \\)",  //1
+        "\\( g(x)=-f(-x) \\)", //2
+        "\\( g(x)=f(x+1)+3 \\)", //3
+        "\\( g(x)=f(x-1)+3 \\)", //4
+        "\\( g(x)=f(x+1)-3 \\)", //5
+        "\\( g(x)=f(x-1)-3 \\)" //6
+        ],
+        correctIndex: 6
+      },
+      {//12
+        type: "multipleChoice",
+        question: "Ποιος είναι ο τύπος της συνάρτησης \\(g\\);",
+        image: "ABSf.png",
+        options: [
+        "\\( g(x)=-f(x) \\)", //0
+        "\\( g(x)=f(-x) \\)",  //1
+        "\\( g(x)=-f(-x) \\)", //2
+        "\\( g(x)=f(|x|) \\)", //3
+        "\\( g(x)=|f(x)| \\)", //4
+        ],
+        correctIndex: 4
+      },
+      {//13
+        type: "multipleChoice",
+        question: "Ποιος είναι ο τύπος της συνάρτησης \\(g\\);",
+        image: "fPLUS1MINUS3.png",
+        options: [
+        "\\( g(x)=-f(x) \\)", //0
+        "\\( g(x)=f(-x) \\)",  //1
+        "\\( g(x)=-f(-x) \\)", //2
+        "\\( g(x)=f(x+2)+4 \\)", //3
+        "\\( g(x)=f(x-2)+4 \\)", //4
+        "\\( g(x)=f(x+2)-4 \\)", //5
+        "\\( g(x)=f(x-2)-4 \\)" //6
+        ],
+        correctIndex: 5
+      },
+      {//14
+        type: "multipleChoice",
+        question: "Ποιος είναι ο τύπος της συνάρτησης \\(g\\);",
+        image: "fMINUS1PLUS3.png",
+        options: [
+        "\\( g(x)=-f(x) \\)", //0
+        "\\( g(x)=f(-x) \\)",  //1
+        "\\( g(x)=-f(-x) \\)", //2
+        "\\( g(x)=f(x+1)+3 \\)", //3
+        "\\( g(x)=f(x-1)+3 \\)", //4
+        "\\( g(x)=f(x+1)-3 \\)", //5
+        "\\( g(x)=f(x-1)-3 \\)" //6
+        ],
+        correctIndex: 4
+      },
+      {//15
+        type: "multipleChoice",
+        question: "Ποιος είναι ο τύπος της συνάρτησης \\(g\\);",
+        image: "fABSx.png",
+        options: [
+        "\\( g(x)=-f(x) \\)", //0
+        "\\( g(x)=f(-x) \\)",  //1
+        "\\( g(x)=-f(-x) \\)", //2
+        "\\( g(x)=f(|x|) \\)", //3
+        "\\( g(x)=|f(x)| \\)", //4
+        ],
+        correctIndex: 3
+      },
+      {//16
+        type: "multipleChoice",
+        question: "Ποιανής συνάρτησης ο τύπος είναι \\(f(x-1)\\);",
+        image: "fPARKAT.png",
+        options: [
+        "Καμίας", //0
+        "Της \\( g(x) \\)",  //1
+        "Της \\( h(x) \\)", //2
+        ],
+        correctIndex: 2
+      },
+      {//17
+        type: "multipleChoice",
+        question: "Ποιανής συνάρτησης ο τύπος είναι \\(f(x)+2\\);",
+        image: "fKATPAR.png",
+        options: [
+        "Καμίας", //0
+        "Της \\( g(x) \\)",  //1
+        "Της \\( h(x) \\)", //2
+        ],
+        correctIndex: 2
+      },
+      {//18
+        type: "fillBlank",
+        questionPrompt: "Να συμπληρώσεις τα κενά:",
+        imageURL: "fPARALKATdialogi1.png",
+        sentenceTemplate: [
+          null, "\\( =f(x+1)+2 \\) και ", null, "\\( =f(x-1)-2 \\)"
+        ],
+        correctAnswers: ["\\(g(x)\\)", "\\(m(x)\\)"],
+        options: ["\\(f(x)\\)","\\(g(x)\\)","\\(h(x)\\)","\\(k(x)\\)", "\\(m(x)\\)"]
+      },
+      {//19
+        type: "fillBlank",
+        questionPrompt: "Να συμπληρώσεις τα κενά:",
+        imageURL: "fPARALKATdialogi2.png",
+        sentenceTemplate: [
+          null, "\\( =f(x+1)-2 \\) και ", null, "\\( =f(x-1)+2 \\)"
+        ],
+        correctAnswers: ["\\(k(x)\\)", "\\(h(x)\\)"],
+        options: ["\\(f(x)\\)","\\(g(x)\\)","\\(h(x)\\)","\\(k(x)\\)", "\\(m(x)\\)"]
+      },
+      {//20
+        type: "multipleChoice",
+        question: "Ποιανής συνάρτησης ο τύπος είναι \\(-f(x)\\);",
+        image: "MINUSfMINUSxf1.png",
+        options: [
+        "Καμίας", //0
+        "Της \\( g(x) \\)",  //1
+        "Της \\( h(x) \\)", //2
+        ],
+        correctIndex: 1
+      },
+      {//21
+        type: "multipleChoice",
+        question: "Ποιανής συνάρτησης ο τύπος είναι \\(f(-x)\\);",
+        image: "MINUSfMINUSxf2.png",
+        options: [
+        "Καμίας", //0
+        "Της \\( g(x) \\)",  //1
+        "Της \\( h(x) \\)", //2
+        ],
+        correctIndex: 1
+      }
+    ];
+    
+
+    const TIME_LIMIT = 900; // 15 λεπτά σε δευτερόλεπτα
+
+    let currentQuizQuestions = []; // Array holding questions for the current round
+    let currentQuestion = 0; // Index within currentQuizQuestions
+    let currentAttemptScore = 0; // Score for the current round
+    let currentAttemptErrors = 0; // Errors for the current round
+    let incorrectQuestionsThisRound = []; // Questions objects answered incorrectly in the current round
+    let currentRoundIncorrectQuestionNumbersDisplay = []; // Store display numbers of incorrect questions
+
+    let startTime; // Start time for the current round
+    let timerInterval;
+    let attempt = 1; // Attempt number
+    let timeLimitExceeded = false; // Status for the current round
+    const attemptsData = []; // Stores data for all completed attempts
+
+    let userAnswersForCurrentQuestion = []; // For fill-in-the-blank
+    let nextBlankToFillIndex = 0; // For fill-in-the-blank
+    let optionButtons = []; // For fill-in-the-blank options
+    let selectedOption = null; // For multiple choice
+
+    function startQuiz() {
+      document.getElementById("intro").classList.add("hidden");
+      document.getElementById("timer").classList.remove("hidden");
+      document.getElementById("quiz").classList.remove("hidden");
+      document.getElementById("submit").classList.remove("hidden");
+      document.getElementById("result").classList.add("hidden");
+      document.getElementById("download").classList.add("hidden");
+      document.getElementById("timer").classList.remove("timeout");
+
+
+      // If it's the first attempt or a new round is starting after errors
+      if (attempt === 1 || incorrectQuestionsThisRound.length > 0) {
+        if (attempt === 1) {
+          currentQuizQuestions = [...quizData]; // Start with all questions
+          // shuffleArray(currentQuizQuestions); // Shuffle only on the very first attempt
+        } else {
+          currentQuizQuestions = [...incorrectQuestionsThisRound]; // Use only incorrect questions
+          // Optionally shuffle incorrect questions for variety
+          // shuffleArray(currentQuizQuestions);
+        }
+        incorrectQuestionsThisRound = []; // Clear incorrect list for the new round
+      } else {
+          // This case should only happen if there was an issue in the logic
+          console.error("Attempted to start a round with no questions.");
+          showResults(true); // Force end the quiz if somehow we get here without questions
+          return;
+      }
+
+      currentQuestion = 0;
+      currentAttemptScore = 0;
+      currentAttemptErrors = 0;
+      currentRoundIncorrectQuestionNumbersDisplay = []; // Reset list of incorrect numbers
+      timeLimitExceeded = false; // Reset time limit status for the new round
+
+      startTime = new Date();
+      if (timerInterval) {
+        clearInterval(timerInterval);
+      }
+      timerInterval = setInterval(updateTimer, 1000);
+
+      loadQuestion();
+    }
+    
+    // Fisher-Yates Shuffle Algorithm
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+        }
+    }
+
+
+    function updateTimer() {
+      const now = new Date();
+      const elapsed = Math.floor((now - startTime) / 1000);
+      const remaining = TIME_LIMIT - elapsed;
+
+      const minutes = Math.floor(remaining / 60).toString().padStart(2, "0");
+      const seconds = (remaining % 60).toString().padStart(2, "0");
+      
+      const timerElement = document.getElementById("timer");
+      timerElement.textContent = `Χρόνος (${attempt}ος Γύρος): ${minutes}:${seconds}`; // Add attempt number to timer
+      
+      if (remaining <= 0) {
+        timeLimitExceeded = true;
+        timerElement.classList.add("timeout");
+        timerElement.textContent = `Χρόνος (${attempt}ος Γύρος): 00:00 (Έχει παρέλθει ο χρόνος)`;
+      }
+    }
+
+    function formatTime(seconds) {
+      const minutes = Math.floor(seconds / 60).toString().padStart(2, "0");
+      const secs = (seconds % 60).toString().padStart(2, "0");
+      return `${minutes}:${secs}`;
+    }
+
+    function loadQuestion() {
+      if (currentQuestion >= currentQuizQuestions.length) {
+          // This should be handled by checkAnswer calling showResults
+          console.error("Attempted to load question beyond quiz length.");
+          showResults(); // Ensure quiz ends if this state is reached
+          return;
+      }
+      
+      const q = currentQuizQuestions[currentQuestion];
+      const questionNumberTitle = document.getElementById("question-number-title");
+      const questionPromptText = document.getElementById("question-prompt-text");
+      const questionImageContainer = document.getElementById("question-image-container");
+      const questionContent = document.getElementById("question-content");
+      
+      // Display question number relative to the current round and total for the round
+      questionNumberTitle.textContent = `Ερώτηση ${currentQuestion + 1} / ${currentQuizQuestions.length} (Γύρος ${attempt})`;
+      
+      // Καθαρίζουμε τα περιεχόμενα
+      questionImageContainer.innerHTML = '';
+      questionContent.innerHTML = '';
+      
+      // Φόρτωση εικόνας (αν υπάρχει)
+      if (q.imageURL || q.image) {
+        const imgElement = document.createElement("img");
+        imgElement.src = q.imageURL || q.image;
+        imgElement.alt = q.questionPrompt || q.question || "Εικόνα Ερώτησης";
+        questionImageContainer.appendChild(imgElement);
+      }
+      
+      // Φόρτωση περιεχομένου ερώτησης ανάλογα με τον τύπο
+      if (q.type === "fillBlank") {
+        loadFillBlankQuestion(q, questionPromptText, questionContent);
+      } else if (q.type === "multipleChoice") {
+        loadMultipleChoiceQuestion(q, questionPromptText, questionContent);
+      }
+      
+      // Ανανέωση MathJax
+      MathJax.typesetPromise([questionContent, questionPromptText]).catch(err => console.error("MathJax typeset error:", err));
+    }
+
+    function loadFillBlankQuestion(q, questionPromptText, questionContent) {
+      questionPromptText.textContent = q.questionPrompt;
+      
+      // Δημιουργία προτύπου πρότασης με κενά
+      const sentenceContainer = document.createElement("div");
+      sentenceContainer.classList.add("sentence-container");
+      
+      const optionsContainer = document.createElement("div");
+      optionsContainer.classList.add("options-container");
+      
+      userAnswersForCurrentQuestion = new Array(q.correctAnswers.length).fill(null);
+      nextBlankToFillIndex = 0;
+      optionButtons = []; // Reset option buttons array
+      
+      let blankIndex = 0;
+      if (q.sentenceTemplate && Array.isArray(q.sentenceTemplate)) {
+        q.sentenceTemplate.forEach(part => {
+          if (part === null) {
+            const blankSpan = document.createElement("span");
+            blankSpan.classList.add("blank-space");
+            blankSpan.dataset.blankIndex = blankIndex;
+            blankSpan.innerHTML = "___";
+            sentenceContainer.appendChild(blankSpan);
+            blankIndex++;
+          } else {
+            const partSpan = document.createElement("span");
+            partSpan.innerHTML = part;
+            sentenceContainer.appendChild(partSpan);
+          }
+        });
+      }
+      
+      if (q.options && Array.isArray(q.options)) {
+        q.options.forEach(optionText => {
+          const button = document.createElement("button");
+          button.classList.add("option-button");
+          button.innerHTML = optionText;
+          button.dataset.value = optionText;
+          button.addEventListener("click", handleOptionClick);
+          optionsContainer.appendChild(button);
+          optionButtons.push(button);
+        });
+      }
+      
+      questionContent.appendChild(sentenceContainer);
+      questionContent.appendChild(optionsContainer);
+      
+      document.getElementById("clear-choices").classList.remove("hidden");
+    }
+
+    function loadMultipleChoiceQuestion(q, questionPromptText, questionContent) {
+      questionPromptText.textContent = q.question;
+      
+      const questionDiv = document.createElement("div");
+      questionDiv.classList.add("multiple-choice-question");
+      
+      const optionsDiv = document.createElement("div");
+      optionsDiv.classList.add("multiple-choice-options");
+      
+      selectedOption = null;
+      
+      q.options.forEach((option, index) => {
+        const label = document.createElement("label");
+        const radio = document.createElement("input");
+        radio.type = "radio";
+        radio.name = "option";
+        radio.value = index;
+        radio.addEventListener("change", function() {
+          selectedOption = parseInt(this.value, 10); // Parse value as integer
+        });
+        
+        label.appendChild(radio);
+        label.appendChild(document.createTextNode(" ")); // Κενό μεταξύ radio και περιεχομένου
+        label.insertAdjacentHTML('beforeend', option);
+        
+        optionsDiv.appendChild(label);
+      });
+      
+      questionDiv.appendChild(optionsDiv);
+      questionContent.appendChild(questionDiv);
+      
+      document.getElementById("clear-choices").classList.add("hidden");
+    }
+
+    function handleOptionClick(event) {
+      const selectedButton = event.currentTarget;
+      const valueToFill = selectedButton.dataset.value;
+      
+      const q = currentQuizQuestions[currentQuestion];
+
+      if (q.type === "fillBlank" && nextBlankToFillIndex < q.correctAnswers.length) {
+        const blankToFill = document.querySelector(`.blank-space[data-blank-index="${nextBlankToFillIndex}"]`);
+        if (blankToFill) {
+          blankToFill.innerHTML = valueToFill;
+          blankToFill.classList.add("filled");
+          userAnswersForCurrentQuestion[nextBlankToFillIndex] = valueToFill;
+          nextBlankToFillIndex++;
+          selectedButton.disabled = true; // Disable used option button
+          MathJax.typesetPromise([blankToFill]).catch(err => console.error("MathJax error on fill:", err));
+        }
+      }
+      // Multiple choice doesn't use handleOptionClick for selecting, only fillBlank options
+    }
+
+    function clearCurrentQuestionChoices() {
+      const q = currentQuizQuestions[currentQuestion];
+      
+      if (q.type === "fillBlank") {
+        userAnswersForCurrentQuestion = new Array(q.correctAnswers.length).fill(null);
+        nextBlankToFillIndex = 0;
+
+        const blankSpaces = document.querySelectorAll(".blank-space");
+        blankSpaces.forEach(blank => {
+          blank.innerHTML = "___";
+          blank.classList.remove("filled");
+        });
+
+        optionButtons.forEach(button => {
+          button.disabled = false;
+        });
+        // Re-render MathJax for cleared blanks if needed, but probably not necessary until filled again
+        // MathJax.typesetPromise([document.querySelector(".sentence-container")]).catch(err => console.error("MathJax error on clear:", err));
+      } else if (q.type === "multipleChoice") {
+        const radios = document.querySelectorAll('input[name="option"]');
+        radios.forEach(radio => {
+          radio.checked = false;
+        });
+        selectedOption = null;
+      }
+    }
+
+    function checkAnswer() {
+      const q = currentQuizQuestions[currentQuestion];
+      let isCorrect = false;
+      
+      if (q.type === "fillBlank") {
+        // Έλεγχος για ερώτηση συμπλήρωσης κενών
+        const allBlanksFilled = userAnswersForCurrentQuestion.every(answer => answer !== null);
+        
+        if (allBlanksFilled && userAnswersForCurrentQuestion.length === q.correctAnswers.length) {
+          isCorrect = true;
+          for (let i = 0; i < q.correctAnswers.length; i++) {
+            if (userAnswersForCurrentQuestion[i] !== q.correctAnswers[i]) {
+              isCorrect = false;
+              break;
+            }
+          }
+        }
+      } else if (q.type === "multipleChoice") {
+        // Έλεγχος για ερώτηση πολλαπλής επιλογής
+        if (selectedOption !== null && selectedOption === q.correctIndex) {
+          isCorrect = true;
+        }
+      }
+      
+      if (isCorrect) {
+        currentAttemptScore++;
+      } else {
+          currentAttemptErrors++;
+          incorrectQuestionsThisRound.push(q); // Add the question object to the incorrect list
+          currentRoundIncorrectQuestionNumbersDisplay.push(currentQuestion + 1); // Add display number
+      }
+      
+      currentQuestion++;
+      if (currentQuestion < currentQuizQuestions.length) {
+        loadQuestion();
+      } else {
+        // End of the current round
+        clearInterval(timerInterval);
+        showResults();
+      }
+    }
+
+    function showResults(forceEnd = false) {
+      const now = new Date();
+      const elapsed = Math.floor((now - startTime) / 1000);
+      const totalQuestionsInRound = currentQuizQuestions.length;
+      const percentage = (totalQuestionsInRound > 0) ? ((currentAttemptScore / totalQuestionsInRound) * 100).toFixed(2) : 0;
+
+      // Record stats for the just completed round
+      attemptsData.push({
+        attempt: attempt,
+        score: currentAttemptScore, // Correct in this round
+        errors: currentAttemptErrors, // Incorrect in this round
+        totalQuestions: totalQuestionsInRound, // Total in this round
+        percentage: percentage,
+        timeTaken: elapsed, // Time for this round
+        timeLimitExceeded: timeLimitExceeded, // Status for this round
+        incorrectQuestionNumbers: [...currentRoundIncorrectQuestionNumbersDisplay] // Add list of incorrect numbers
+      });
+
+      const resultDiv = document.getElementById("result");
+      resultDiv.classList.remove("hidden");
+      document.getElementById("quiz").classList.add("hidden");
+      document.getElementById("submit").classList.add("hidden");
+      document.getElementById("clear-choices").classList.add("hidden");
+      document.getElementById("timer").classList.remove("timeout"); // Remove red color
+
+
+      let message = "";
+      let startNextRound = false;
+
+      // Determine outcome based on errors in *this* round
+      if (currentAttemptErrors === 0) {
+        message = `Συγχαρητήρια! Ολοκλήρωσες τον Γύρο ${attempt} με επιτυχία (0 λάθη)!`;
+          if (attempt === 1 && totalQuestionsInRound === quizData.length) {
+               // This is the first attempt and they got everything right
+               message += `<br>Τελείωσες όλο το quiz!`;
+          } else if (currentQuizQuestions.length < quizData.length) {
+               // They finished a round of incorrect questions successfully
+               message += `<br>Απάντησες σωστά σε όλες τις ερωτήσεις αυτής της επανάληψης.`;
+          }
+          message += `<br>Σκορ γύρου: ${currentAttemptScore}/${totalQuestionsInRound} (${percentage}%)<br>Χρόνος γύρου: ${formatTime(elapsed)}`;
+          if (timeLimitExceeded) {
+               message += ` (Υπέρβαση χρονικού ορίου)`;
+          }
+
+           // Quiz finished successfully overall as there are no errors to repeat
+      } else { // currentAttemptErrors > 0
+        message = `Στον Γύρο ${attempt}, είχες ${currentAttemptErrors} λάθη από τις ${totalQuestionsInRound} ερωτήσεις.`;
+          if (currentRoundIncorrectQuestionNumbersDisplay.length > 0) {
+              message += ` (Ερωτήσεις: ${currentRoundIncorrectQuestionNumbersDisplay.join(', ')})`;
+          }
+        message += `<br>Θα επαναλάβεις ${incorrectQuestionsThisRound.length} ερώτηση(εις) που απάντησες λανθασμένα.`;
+          if (timeLimitExceeded) {
+              message += `<br>Προσοχή και στον χρόνο στον επόμενο γύρο.`;
+          }
+          message += `<br>Σκορ γύρου: ${currentAttemptScore}/${totalQuestionsInRound} (${percentage}%)<br>Χρόνος γύρου: ${formatTime(elapsed)}`;
+        startNextRound = true;
+      }
+
+      resultDiv.innerHTML = `<p>${message}</p>`;
+      
+      // Display timer status for the finished round
+      const timerElement = document.getElementById("timer");
+      timerElement.textContent = `Τελικός Χρόνος Γύρου ${attempt}: ${formatTime(elapsed)}${timeLimitExceeded ? " (Υπέρβαση χρονικού ορίου)" : ""}`;
+
+
+      if (startNextRound && incorrectQuestionsThisRound.length > 0 && !forceEnd) {
+        attempt++;
+        setTimeout(() => {
+          resultDiv.classList.add("hidden");
+          startQuiz(); // Start the next round with incorrect questions
+        }, 5000); // Wait 5 seconds before starting next round
+      } else {
+          // Quiz finished successfully (0 errors in the last round) or forced end
+          document.getElementById("download").classList.remove("hidden");
+          // Ensure timer shows the final time for the last round
+          // This is already done above message setting.
+      }
+    }
+
+    function generatePDF() {
+      try {
+        if (typeof window.jspdf !== 'undefined') {
+          const { jsPDF } = window.jspdf;
+          const doc = new jsPDF();
+          
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(18);
+          doc.setTextColor(0, 0, 0);
+          doc.text("Combined Math Quiz - Results", 105, 15, { align: 'center' }); // Translated
+          
+          doc.setFontSize(12);
+          doc.setFont("helvetica", "normal");
+          const now = new Date();
+          doc.text(`Date: ${now.toLocaleString('en-US')}`, 105, 25, { align: 'center' }); // Translated, using en-US for date format
+          
+          let yPos = 40;
+          
+          attemptsData.forEach((attemptData, index) => {
+            doc.setFillColor(0, 0, 0);
+            doc.rect(15, yPos - 7, 180, 10, 'F');
+            
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "bold");
+            doc.text(`Round #${attemptData.attempt}`, 20, yPos); // Translated
+            
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "normal");
+            yPos += 10;
+            
+            doc.text(`Questions: ${attemptData.totalQuestions}`, 20, yPos); // Translated
+            doc.text(`Correct: ${attemptData.score}`, 20, yPos + 8); // Translated
+            doc.text(`Errors: ${attemptData.errors}`, 20, yPos + 16); // Translated
+
+            doc.text(`Time: ${formatTime(attemptData.timeTaken)}`, 100, yPos); // Translated
+            doc.text(`Percentage: ${attemptData.percentage}%`, 100, yPos + 8); // Translated
+            doc.text(`Status: ${attemptData.errors === 0 ? "Completed" : "Errors"}`, 100, yPos + 16); // Translated
+
+            if (attemptData.timeLimitExceeded) {
+                  doc.text(`(Time limit exceeded)`, 100, yPos + 24); // Translated
+              }
+
+              // List incorrect question numbers if available
+              if (attemptData.incorrectQuestionNumbers && attemptData.incorrectQuestionNumbers.length > 0) {
+                  let numbersText = attemptData.incorrectQuestionNumbers.join(', ');
+                   // Wrap text if too long
+                   const splitText = doc.splitTextToSize(`Incorrect Question Nos. (in round sequence): ${numbersText}`, 180); // Translated, Adjust width as needed
+                   doc.text(splitText, 20, yPos + 24 + (attemptData.timeLimitExceeded ? 8 : 0)); // Position below errors or time note
+                   yPos += (splitText.length * 6) + (attemptData.timeLimitExceeded ? 8 : 0); // Adjust yPos for text height and potential time note
+              } else {
+                  yPos += (attemptData.timeLimitExceeded ? 8 : 0); // Adjust yPos for potential time note even if no errors
+              }
+            
+            yPos += 30; // Standard spacing between attempts
+            
+            if (yPos > 250 && index < attemptsData.length - 1) {
+              doc.addPage();
+              yPos = 30;
+            }
+          });
+          
+          // Check if the *last* attempt recorded was fully correct (0 errors)
+          if (attemptsData.length > 0 && attemptsData[attemptsData.length - 1].errors === 0) {
+            doc.addPage();
+            doc.setFontSize(22);
+            doc.setTextColor(0, 128, 0);
+            doc.setFont("helvetica", "bold");
+            doc.text("CONGRATULATIONS!", 105, 50, { align: 'center' }); // Translated
+            doc.setFontSize(16);
+            doc.setTextColor(0, 0, 0);
+            doc.setFont("helvetica", "normal");
+            doc.text(`You completed the entire quiz successfully`, 105, 70, { align: 'center' }); // Translated
+            // Using pluralize logic for "round(s)"
+              const finalRoundAttempt = attemptsData[attemptsData.length - 1].attempt;
+            doc.text(`in ${finalRoundAttempt} round${finalRoundAttempt > 1 ? 's' : ''}!`, 105, 90, { align: 'center' }); // Translated and pluralized
+          }
+          
+          doc.save('math_quiz_results.pdf');
+        } else {
+          throw new Error("jsPDF not loaded");
+        }
+      } catch (error) {
+        console.error("PDF generation error:", error);
+        alert("Παρουσιάστηκε σφάλμα κατά τη δημιουργία του PDF. Παρακαλώ δοκιμάστε ξανά ή ανανεώστε τη σελίδα."); // This alert is still in Greek
+      }
+    }
+
+    document.getElementById("start").addEventListener("click", startQuiz);
+    document.getElementById("submit").addEventListener("click", checkAnswer);
+    document.getElementById("clear-choices").addEventListener("click", clearCurrentQuestionChoices);
+    document.getElementById("otherpage").addEventListener("click", function() {
+      window.location.href = 'index.html'; 
+    });
+    document.getElementById("download").addEventListener("click", generatePDF);
+
+    document.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter' && !document.getElementById("quiz").classList.contains("hidden") && !document.getElementById("submit").classList.contains("hidden")) {
+        e.preventDefault();
+        document.getElementById("submit").click();
+      }
+    });
+  </script>
+</body>
+</html>
