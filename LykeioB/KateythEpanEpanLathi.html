@@ -209,6 +209,24 @@
         options: ["\\(\\overrightarrow{ΑΓ}\\)","\\(\\overrightarrow{ΓΑ}\\)",
         "\\(\\overrightarrow{ΒΓ}\\)","\\(\\overrightarrow{ΓΒ}\\)"]
       },
+      {
+        type: "fillBlank",
+        questionPrompt: "Αν ισχύει \\(\\vec{v}=(-1,-\\sqrt{3})\\), τότε:",
+        sentenceTemplate: [
+          "το \\(\\vec{v}\\) σχηματίζει με τον άξονα \\(x'x\\) γωνία", null
+        ],
+        correctAnswers: ["\\(240^\\circ\\)"],
+        options: ["\\(60^\\circ\\)","\\(120^\\circ\\)", "\\(240^\\circ\\)", "\\(300^\\circ\\)"]
+      },
+      {
+        type: "fillBlank",
+        questionPrompt: "Να συμπληρώσεις τα κενά:",
+        sentenceTemplate: [
+          "το \\(\\vec{v}=\\)", null,"είναι παράλληλο με την ευθεία \\(Ax+By+Γ=0\\), ενώ το \\(\\vec{v}=\\)", null, "είναι κάθετο στην ευθεία \\(Ax+By+Γ=0\\)."
+        ],
+        correctAnswers: ["\\((-Β,Α)\\)","\\((Α,Β)\\)"],
+        options: ["\\((Α,Β)\\)", "\\((Α,-Β)\\)","\\((Β,Α)\\)","\\((-Β,Α)\\)"]
+      },
       // Άλλη ερώτηση τύπου συμπλήρωσης κενών
       {
         type: "fillBlank",
