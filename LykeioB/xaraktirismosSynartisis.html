@@ -10,7 +10,7 @@
         });
 
         timeLimitInfo.textContent = `Χρόνος για κάθε ${quizModeToggle.checked ? 'προσπάθεια' : 'γύρο'}: 15 λεπτά`;
- <span class="toggle-label">Επανάνηψη λαθών</span>
+ <span class="toggle-label">Επανάληψη λαθών </span>
  <span class="toggle-label">Επανάληψη όλου του quiz</span>
  <button id="start">Άρχισε το Quiz</button>
  <button id="otherpage">Πήγαινε πίσω στην τάξη σου</button>
@@ -44,7 +44,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Γρήγοροι υπολογισμοί</title>
+    <title>Χαρακτηρισμός συνάρτησης</title>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -288,9 +288,11 @@
 <body>
     <div class="quiz-container">
         <div id="intro">
-            <h1>Γρήγοροι υπολογισμοί</h1>
-            <p>Σε πολλές ασκήσεις θα χρειάζεται να βρίσκεις γρήγορα το πρόσημο μιας παράστασης ή να υπολογίζεις άμεσα μια προσέγγισης κάποιας άλλης. Το quiz αυτό θα ελέγξει κατά πόσον έχεις αυτή την ικανότητα. Θα χρειαστεί να μελετήσεις λίγη τριγωνομετρία, λίγους λογαρίθμους καθώς και να θυμιθείς κάποια πράγματα στα κλάσματα και τις ρίζες.</p>
-            <p id="time-limit-info">Χρόνος για κάθε γύρο: 10 λεπτά</p>
+            <h1>Πώς θα χαρακτήριζες τη συνάρτηση;</h1>
+            <p>Στο quiz αυτό θα πρέπει να εκμεταλλευτείς τη γραφική παράσταση της κάθε συνάρτησης για εντοπίσεις 
+                κάποια βασικά χαρακτηριστικά της, όπως η μονοτονία, τα ακρότατα ή το αν είναι άρτια, περιττή ή περιοδική. 
+                Προφανώς, μπορούν να συνυπάρχουν μια πλειάδα χαρακτιριστικών.</p>
+            <p id="time-limit-info">Χρόνος για κάθε γύρο: 3,5 λεπτά</p>
 
             <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
                 <span class="toggle-label">Επανάληψη λαθών </span>
@@ -324,359 +326,159 @@
         const quizData = [
             // Multiple choice question (single select)
             {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( ημ(-38^\\circ) \\approx\\) ",
-        suffix: "0,61566",
-        answer: "-"
+        type: "multipleChoiceMultSelect",
+        question: "Πώς θα χαρακτήριζες τη συνάρτηση \\(f\\);",
+        imageURL: "fARTIA.png",
+        options: [
+        "γνησίως αύξουσα", //0
+        "γνησίως φθίνουσα",  //1
+        "άρτια", //2
+        "περιττή", //3
+        "περιοδική", //4
+        "έχει ολικό ελάχιστο", //5
+        "έχει ολικό μέγιστο" //6
+        ],
+        correctIndices: [2, 5] // ΔΙΟΡΘΩΜΕΝΟ
       },
       {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε τη σχέση με την μικρότερη δυνατή γωνία θετικού μέτρου (σε μοίρες): ",
-        prefix: "\\( εφ( \\)",
-        suffix: "): δεν ορίζεται",
-        answer: "90"
+        type: "multipleChoiceMultSelect",
+        question: "Πώς θα χαρακτήριζες τη συνάρτηση \\(f\\);",
+        imageURL: "fPERmaxmin.png",
+        options: [
+        "γνησίως αύξουσα", //0
+        "γνησίως φθίνουσα",  //1
+        "άρτια", //2
+        "περιττή", //3
+        "περιοδική", //4
+        "έχει ολικό ελάχιστο", //5
+        "έχει ολικό μέγιστο" //6
+        ],
+        correctIndices: [3, 5, 6] // ΔΙΟΡΘΩΜΕΝΟ
       },
       {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( σφ(18^\\circ) \\approx\\)",
-        suffix: "3,07768",
-        answer: "+"
+        type: "multipleChoiceMultSelect",
+        question: "Πώς θα χαρακτήριζες τη συνάρτηση \\(f\\);",
+        imageURL: "fARTperiod.png",
+        options: [
+        "γνησίως αύξουσα", //0
+        "γνησίως φθίνουσα",  //1
+        "άρτια", //2
+        "περιττή", //3
+        "περιοδική", //4
+        "έχει ολικό ελάχιστο", //5
+        "έχει ολικό μέγιστο" //6
+        ],
+        correctIndices: [2, 4, 5, 6] // ΔΙΟΡΘΩΜΕΝΟ
       },
       {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( ημ(157^\\circ) \\approx\\)",
-        suffix: "0,3907",
-        answer: "+"
+        type: "multipleChoiceMultSelect",
+        question: "Πώς θα χαρακτήριζες τη συνάρτηση \\(f\\);",
+        imageURL: "fPERayj.png",
+        options: [
+        "γνησίως αύξουσα", //0
+        "γνησίως φθίνουσα",  //1
+        "άρτια", //2
+        "περιττή", //3
+        "περιοδική", //4
+        "έχει ολικό ελάχιστο", //5
+        "έχει ολικό μέγιστο" //6
+        ],
+        correctIndices: [0, 3] // ΔΙΟΡΘΩΜΕΝΟ
       },
       {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( σφ(-70^\\circ) \\approx\\)",
-        suffix: "0,36397",
-        answer: "-"
+        type: "multipleChoiceMultSelect",
+        question: "Πώς θα χαρακτήριζες τη συνάρτηση \\(f\\);",
+        imageURL: "fPer.png",
+        options: [
+        "γνησίως αύξουσα", //0
+        "γνησίως φθίνουσα",  //1
+        "άρτια", //2
+        "περιττή", //3
+        "περιοδική", //4
+        "έχει ολικό ελάχιστο", //5
+        "έχει ολικό μέγιστο" //6
+        ],
+        correctIndices: [3] // ΔΙΟΡΘΩΜΕΝΟ
       },
       {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( συν(220^\\circ) \\approx\\)",
-        suffix: "0,766",
-        answer: "-"
+        type: "multipleChoiceMultSelect",
+        question: "Πώς θα χαρακτήριζες τη συνάρτηση \\(f\\);",
+        imageURL: "fARTNOminmax.png",
+        options: [
+        "γνησίως αύξουσα", //0
+        "γνησίως φθίνουσα",  //1
+        "άρτια", //2
+        "περιττή", //3
+        "περιοδική", //4
+        "έχει ολικό ελάχιστο", //5
+        "έχει ολικό μέγιστο" //6
+        ],
+        correctIndices: [2] // ΔΙΟΡΘΩΜΕΝΟ
       },
       {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε το ακέραιο μέρος: ",
-        prefix: "\\( \\frac{13}{15}= \\)",
-        suffix: ",866667 ",
-        answer: "0"
+        type: "multipleChoiceMultSelect",
+        question: "Πώς θα χαρακτήριζες τη συνάρτηση \\(f\\);",
+        imageURL: "fPerPeriod.png",
+        options: [
+        "γνησίως αύξουσα", //0
+        "γνησίως φθίνουσα",  //1
+        "άρτια", //2
+        "περιττή", //3
+        "περιοδική", //4
+        "έχει ολικό ελάχιστο", //5
+        "έχει ολικό μέγιστο" //6
+        ],
+        correctIndices: [3, 4, 5, 6] // ΔΙΟΡΘΩΜΕΝΟ
       },
       {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( \\ln(\\)",
-        suffix: ")=0",
-        answer: "1"
+        type: "multipleChoiceMultSelect",
+        question: "Πώς θα χαρακτήριζες τη συνάρτηση \\(f\\);",
+        imageURL: "fPerFthin.png",
+        options: [
+        "γνησίως αύξουσα", //0
+        "γνησίως φθίνουσα",  //1
+        "άρτια", //2
+        "περιττή", //3
+        "περιοδική", //4
+        "έχει ολικό ελάχιστο", //5
+        "έχει ολικό μέγιστο" //6
+        ],
+        correctIndices: [1] // ΔΙΟΡΘΩΜΕΝΟ
       },
       {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( εφ(180^\\circ) =\\)",
-        suffix: "",
-        answer: "0"
+        type: "multipleChoiceMultSelect",
+        question: "Πώς θα χαρακτήριζες τη συνάρτηση \\(f\\);",
+        imageURL: "fMAX.png",
+        options: [
+        "γνησίως αύξουσα", //0
+        "γνησίως φθίνουσα",  //1
+        "άρτια", //2
+        "περιττή", //3
+        "περιοδική", //4
+        "έχει ολικό ελάχιστο", //5
+        "έχει ολικό μέγιστο" //6
+        ],
+        correctIndices: [5] // ΔΙΟΡΘΩΜΕΝΟ
       },
       {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( σφ(193^\\circ) \\approx\\)",
-        suffix: "4,33148",
-        answer: "+"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( ημ(90^\\circ) =\\)",
-        suffix: "",
-        answer: "1"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( εφ(-25^\\circ) \\approx\\)",
-        suffix: "0,133526 ",
-        answer: "-"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( συν(0^\\circ) =\\)",
-        suffix: "",
-        answer: "1"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( ημ(270^\\circ) =\\)",
-        suffix: "",
-        answer: "-1"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε το ακέραιο μέρος: ",
-        prefix: "\\( \\frac{47}{8}= \\)",
-        suffix: ",875",
-        answer: "5"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( \\ln(\\)",
-        suffix: ")=1",
-        answer: "e"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( σφ(90^\\circ) =\\)",
-        suffix: "",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( συν(32^\\circ) \\approx\\)",
-        suffix: "0,848048",
-        answer: "+"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( εφ(103^\\circ) \\approx\\)",
-        suffix: "4,33148 ",
-        answer: "-"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( ημ(0^\\circ) =\\)",
-        suffix: "",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( εφ(19^\\circ) \\approx\\)",
-        suffix: "0,344328",
-        answer: "+"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( συν(270^\\circ) =\\)",
-        suffix: "",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( \\sqrt[5]{32}= \\)",
-        suffix: "",
-        answer: "2"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( \\ln\\left(\\frac{2}{3}\\right) \\approx\\)",
-        suffix: "0,405465 ",
-        answer: "-"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( σφ(300^\\circ) \\approx\\)",
-        suffix: "0,57735",
-        answer: "-"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( ημ(180^\\circ) =\\)",
-        suffix: "",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( συν(125^\\circ) \\approx\\)",
-        suffix: "0,573576",
-        answer: "-"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( εφ(0^\\circ) =\\)",
-        suffix: "",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( σφ(170^\\circ) \\approx\\)",
-        suffix: "5,67128",
-        answer: "-"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( συν(90^\\circ) =\\)",
-        suffix: "",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( \\sqrt[3]{64}= \\)",
-        suffix: "",
-        answer: "4"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε το ακέραιο μέρος: ",
-        prefix: "\\( \\ln( \\)",
-        suffix: "\\(,47)\\approx -0,755023\\)",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε τη σχέση με μια γωνία μεταξύ των \\( 91^\\circ \\) και των των \\( 361^\\circ \\): ",
-        prefix: "\\( εφ( \\)",
-        suffix: "): δεν ορίζεται",
-        answer: "270"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( ημ(200^\\circ) \\approx\\)",
-        suffix: "0,34202",
-        answer: "-"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( συν(-50^\\circ) \\approx\\)",
-        suffix: "0,642788",
-        answer: "+"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( εφ(325^\\circ) \\approx\\)",
-        suffix: "0,700208",
-        answer: "-"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε τη σχέση με την μικρότερη δυνατή μη αρνητική γωνία (σε μοίρες): ",
-        prefix: "\\( σφ( \\)",
-        suffix: "): δεν ορίζεται",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( ημ(19^\\circ) \\approx\\)",
-        suffix: "0,325568",
-        answer: "+"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε το ακέραιο μέρος: ",
-        prefix: "\\( \\sqrt[5]{35} \\approx\\)",
-        suffix: ",03617 ",
-        answer: "2"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε το ακέραιο μέρος: ",
-        prefix: "\\( \\ln(2)\\approx \\)",
-        suffix: ",69315",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( συν(180^\\circ) =\\)",
-        suffix: "",
-        answer: "-1"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( εφ(42^\\circ) \\approx\\)",
-        suffix: "0,900404",
-        answer: "+"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( σφ(270^\\circ) =\\)",
-        suffix: "",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( ημ(310^\\circ) \\approx\\)",
-        suffix: "0,766044",
-        answer: "-"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( εφ(203^\\circ) \\approx\\)",
-        suffix: "0,424475",
-        answer: "+"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε τη σχέση με μια γωνία μεταξύ της \\( 1^\\circ \\) και των των \\( 359^\\circ \\): ",
-        prefix: "\\( σφ( \\)",
-        suffix: "): δεν ορίζεται",
-        answer: "180"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε το ακέραιο μέρος: ",
-        prefix: "\\( \\sqrt[3]{30}\\approx \\)",
-        suffix: ",10723",
-        answer: "3"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε το ακέραιο μέρος: ",
-        prefix: "\\( \\ln(\\pi) \\approx\\)",
-        suffix: ",1447",
-        answer: "1"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( συν(319^\\circ) \\approx\\)",
-        suffix: "0,75471",
-        answer: "+"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε το ακέραιο μέρος: ",
-        prefix: "\\( \\sqrt{15} \\approx\\)",
-        suffix: ",87298",
-        answer: "3"
+        type: "multipleChoiceMultSelect",
+        question: "Πώς θα χαρακτήριζες τη συνάρτηση \\(f\\);",
+        imageURL: "fPERIODmaxmin.png",
+        options: [
+        "γνησίως αύξουσα", //0
+        "γνησίως φθίνουσα",  //1
+        "άρτια", //2
+        "περιττή", //3
+        "περιοδική", //4
+        "έχει ολικό ελάχιστο", //5
+        "έχει ολικό μέγιστο" //6
+        ],
+        correctIndices: [4, 5, 6] // ΔΙΟΡΘΩΜΕΝΟ
       }
             // END: New question type "multipleChoiceMultSelect"
         ];
 
-        const TIME_LIMIT = 600; // 10 minutes in seconds
+        const TIME_LIMIT = 210; // 15 minutes in seconds
 
         let isMode2 = false;
 
@@ -1428,10 +1230,10 @@
 
         quizModeToggle.addEventListener('change', function() {
             isMode2 = this.checked;
-            timeLimitInfo.textContent = `Χρόνος για κάθε ${this.checked ? 'προσπάθεια' : 'γύρο'}: 10 λεπτά`;
+            timeLimitInfo.textContent = `Χρόνος για κάθε ${this.checked ? 'προσπάθεια' : 'γύρο'}: 3,5 λεπτά`;
         });
 
-        timeLimitInfo.textContent = `Χρόνος για κάθε ${quizModeToggle.checked ? 'προσπάθεια' : 'γύρο'}: 10 λεπτά`;
+        timeLimitInfo.textContent = `Χρόνος για κάθε ${quizModeToggle.checked ? 'προσπάθεια' : 'γύρο'}: 3,5 λεπτά`;
 
 
         document.getElementById("start").addEventListener("click", startQuiz);

@@ -10,7 +10,7 @@
         });
 
         timeLimitInfo.textContent = `Χρόνος για κάθε ${quizModeToggle.checked ? 'προσπάθεια' : 'γύρο'}: 15 λεπτά`;
- <span class="toggle-label">Επανάνηψη λαθών</span>
+ <span class="toggle-label">Επανάληψη λαθών </span>
  <span class="toggle-label">Επανάληψη όλου του quiz</span>
  <button id="start">Άρχισε το Quiz</button>
  <button id="otherpage">Πήγαινε πίσω στην τάξη σου</button>
@@ -44,7 +44,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Γρήγοροι υπολογισμοί</title>
+    <title>Τίτλος καρτέλας</title>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -288,9 +288,9 @@
 <body>
     <div class="quiz-container">
         <div id="intro">
-            <h1>Γρήγοροι υπολογισμοί</h1>
-            <p>Σε πολλές ασκήσεις θα χρειάζεται να βρίσκεις γρήγορα το πρόσημο μιας παράστασης ή να υπολογίζεις άμεσα μια προσέγγισης κάποιας άλλης. Το quiz αυτό θα ελέγξει κατά πόσον έχεις αυτή την ικανότητα. Θα χρειαστεί να μελετήσεις λίγη τριγωνομετρία, λίγους λογαρίθμους καθώς και να θυμιθείς κάποια πράγματα στα κλάσματα και τις ρίζες.</p>
-            <p id="time-limit-info">Χρόνος για κάθε γύρο: 10 λεπτά</p>
+            <h1>Τίτλος Quiz</h1>
+            <p>Γενικές οδηγίες στην είσοδο του Quiz.</p>
+            <p id="time-limit-info">Χρόνος για κάθε γύρο: 15 λεπτά</p>
 
             <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
                 <span class="toggle-label">Επανάληψη λαθών </span>
@@ -322,361 +322,99 @@
     <script>
         // Quiz data - combination of question types
         const quizData = [
-            // Multiple choice question (single select)
-            {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( ημ(-38^\\circ) \\approx\\) ",
-        suffix: "0,61566",
-        answer: "-"
+       {
+        type: "fillBlank",
+        questionPrompt: "Να βρεις τον τύπο της κάθε συνάρτησης:",
+        imageURL: "sincostan.png",
+        sentenceTemplate: [
+          "\\( f(x) = \\)", null, ", \\(g(x)=\\)", null, " και \\(h(x)=\\)", null
+        ],
+        correctAnswers: ["\\(συν(x)\\)", "\\(ημ(x)\\)", "\\(εφ(x)\\)"],
+        options: ["\\(x^2\\)","\\(x^3\\)","\\(ημ(x)\\)","\\(συν(x)\\)", "\\(εφ(x)\\)"]
       },
       {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε τη σχέση με την μικρότερη δυνατή γωνία θετικού μέτρου (σε μοίρες): ",
-        prefix: "\\( εφ( \\)",
-        suffix: "): δεν ορίζεται",
-        answer: "90"
+        type: "fillBlank",
+        questionPrompt: "Να βρεις τον τύπο της κάθε συνάρτησης:",
+        imageURL: "cosPM.png",
+        sentenceTemplate: [
+          "\\( f(x) = \\)", null, ", \\(g(x)=\\)", null
+        ],
+        correctAnswers: ["2\\(συν(3x)\\)", "\\(-2συν(3x)\\)"],
+        options: ["-2\\(ημ(3x)\\)", "\\(2ημ(3x)\\)","-2\\(συν(3x)\\)", "\\(2συν(3x)\\)"]
       },
       {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( σφ(18^\\circ) \\approx\\)",
-        suffix: "3,07768",
-        answer: "+"
+        type: "fillBlank",
+        questionPrompt: "Να βρεις τον τύπο της κάθε συνάρτησης:",
+        imageURL: "sinPM.png",
+        sentenceTemplate: [
+          "\\( f(x) = \\)", null, ", \\(g(x)=\\)", null
+        ],
+        correctAnswers: ["-5\\(ημ(2x)\\)", "\\(5ημ(2x)\\)"],
+        options: ["-5\\(ημ(2x)\\)", "\\(5ημ(2x)\\)", "-5\\(συν(2x)\\)", "\\(5συν(2x)\\)"]
       },
       {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( ημ(157^\\circ) \\approx\\)",
-        suffix: "0,3907",
-        answer: "+"
+        type: "fillBlank",
+        questionPrompt: "Να βρεις τον τύπο της κάθε συνάρτησης:",
+        imageURL: "sinCDOT21.png",
+        sentenceTemplate: [
+          "\\( f(x) = \\)", null, " και \\(g(x)=\\)", null
+        ],
+        correctAnswers: ["\\(2ημ(4x)\\)", "\\(3ημ(4x)\\)"],
+        options: ["\\(2ημ(4x)\\)", "\\(-2ημ(4x)\\)", "\\(3ημ(4x)\\)", "\\(-3ημ(4x)\\)",
+        "\\(2συν(4x)\\)", "\\(-2συν(4x)\\)","\\(3συν(4x)\\)", "\\(-3συν(4x)\\)"]
       },
       {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( σφ(-70^\\circ) \\approx\\)",
-        suffix: "0,36397",
-        answer: "-"
+        type: "fillBlank",
+        questionPrompt: "Να βρεις τον τύπο της κάθε συνάρτησης:",
+        imageURL: "cosT24.png",
+        sentenceTemplate: [
+          "\\( f(x) = \\)", null, " και \\(g(x)=\\)", null
+        ],
+        correctAnswers: ["\\(3συν(2x)\\)","\\(3συν(4x)\\)"],
+        options: ["\\(3ημ(2x)\\)","\\(3συν(2x)\\)","\\(3ημ(4x)\\)","\\(3συν(4x)\\)"]
       },
       {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( συν(220^\\circ) \\approx\\)",
-        suffix: "0,766",
-        answer: "-"
+        type: "fillBlank",
+        questionPrompt: "Να βρεις τον τύπο της κάθε συνάρτησης:",
+        imageURL: "cosCDOT45.png",
+        sentenceTemplate: [
+          "\\( f(x) = \\)", null, " και \\(g(x)=\\)", null
+        ],
+        correctAnswers: ["\\(4συν(3x)\\)", "\\(5συν(3x)\\)"],
+        options: ["\\(4ημ(3x)\\)", "\\(-4ημ(3x)\\)", "\\(5ημ(3x)\\)", "\\(-5ημ(3x)\\)", 
+        "\\(4συν(3x)\\)", "\\(-4συν(3x)\\)","\\(5συν(3x)\\)", "\\(-5συν(3x)\\)"]
       },
       {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε το ακέραιο μέρος: ",
-        prefix: "\\( \\frac{13}{15}= \\)",
-        suffix: ",866667 ",
-        answer: "0"
+        type: "fillBlank",
+        questionPrompt: "Να βρεις τον τύπο της κάθε συνάρτησης:",
+        imageURL: "sinT34.png",
+        sentenceTemplate: [
+          "\\( f(x) = \\)", null, " και \\(g(x)=\\)", null
+        ],
+        correctAnswers: ["\\(2ημ(4x)\\)","\\(2ημ(3x)\\)"],
+        options: ["\\(2ημ(3x)\\)","\\(2συν(3x)\\)","\\(2ημ(4x)\\)","\\(2συν(4x)\\)"]
       },
       {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( \\ln(\\)",
-        suffix: ")=0",
-        answer: "1"
-      },
+                type: "fillBlankKeyboard",
+                question: "Fill in '+' or '-':",
+                prefix: "\\( sin(200^\\circ) \\approx \\)",
+                suffix: "\\(0.34202\\)",
+                answer: "-"
+            },
       {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( εφ(180^\\circ) =\\)",
-        suffix: "",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( σφ(193^\\circ) \\approx\\)",
-        suffix: "4,33148",
-        answer: "+"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( ημ(90^\\circ) =\\)",
-        suffix: "",
-        answer: "1"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( εφ(-25^\\circ) \\approx\\)",
-        suffix: "0,133526 ",
-        answer: "-"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( συν(0^\\circ) =\\)",
-        suffix: "",
-        answer: "1"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( ημ(270^\\circ) =\\)",
-        suffix: "",
-        answer: "-1"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε το ακέραιο μέρος: ",
-        prefix: "\\( \\frac{47}{8}= \\)",
-        suffix: ",875",
-        answer: "5"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( \\ln(\\)",
-        suffix: ")=1",
-        answer: "e"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( σφ(90^\\circ) =\\)",
-        suffix: "",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( συν(32^\\circ) \\approx\\)",
-        suffix: "0,848048",
-        answer: "+"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( εφ(103^\\circ) \\approx\\)",
-        suffix: "4,33148 ",
-        answer: "-"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( ημ(0^\\circ) =\\)",
-        suffix: "",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( εφ(19^\\circ) \\approx\\)",
-        suffix: "0,344328",
-        answer: "+"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( συν(270^\\circ) =\\)",
-        suffix: "",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( \\sqrt[5]{32}= \\)",
-        suffix: "",
-        answer: "2"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( \\ln\\left(\\frac{2}{3}\\right) \\approx\\)",
-        suffix: "0,405465 ",
-        answer: "-"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( σφ(300^\\circ) \\approx\\)",
-        suffix: "0,57735",
-        answer: "-"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( ημ(180^\\circ) =\\)",
-        suffix: "",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( συν(125^\\circ) \\approx\\)",
-        suffix: "0,573576",
-        answer: "-"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( εφ(0^\\circ) =\\)",
-        suffix: "",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( σφ(170^\\circ) \\approx\\)",
-        suffix: "5,67128",
-        answer: "-"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( συν(90^\\circ) =\\)",
-        suffix: "",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( \\sqrt[3]{64}= \\)",
-        suffix: "",
-        answer: "4"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε το ακέραιο μέρος: ",
-        prefix: "\\( \\ln( \\)",
-        suffix: "\\(,47)\\approx -0,755023\\)",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε τη σχέση με μια γωνία μεταξύ των \\( 91^\\circ \\) και των των \\( 361^\\circ \\): ",
-        prefix: "\\( εφ( \\)",
-        suffix: "): δεν ορίζεται",
-        answer: "270"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( ημ(200^\\circ) \\approx\\)",
-        suffix: "0,34202",
-        answer: "-"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( συν(-50^\\circ) \\approx\\)",
-        suffix: "0,642788",
-        answer: "+"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( εφ(325^\\circ) \\approx\\)",
-        suffix: "0,700208",
-        answer: "-"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε τη σχέση με την μικρότερη δυνατή μη αρνητική γωνία (σε μοίρες): ",
-        prefix: "\\( σφ( \\)",
-        suffix: "): δεν ορίζεται",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( ημ(19^\\circ) \\approx\\)",
-        suffix: "0,325568",
-        answer: "+"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε το ακέραιο μέρος: ",
-        prefix: "\\( \\sqrt[5]{35} \\approx\\)",
-        suffix: ",03617 ",
-        answer: "2"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε το ακέραιο μέρος: ",
-        prefix: "\\( \\ln(2)\\approx \\)",
-        suffix: ",69315",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( συν(180^\\circ) =\\)",
-        suffix: "",
-        answer: "-1"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( εφ(42^\\circ) \\approx\\)",
-        suffix: "0,900404",
-        answer: "+"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( σφ(270^\\circ) =\\)",
-        suffix: "",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( ημ(310^\\circ) \\approx\\)",
-        suffix: "0,766044",
-        answer: "-"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( εφ(203^\\circ) \\approx\\)",
-        suffix: "0,424475",
-        answer: "+"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε τη σχέση με μια γωνία μεταξύ της \\( 1^\\circ \\) και των των \\( 359^\\circ \\): ",
-        prefix: "\\( σφ( \\)",
-        suffix: "): δεν ορίζεται",
-        answer: "180"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε το ακέραιο μέρος: ",
-        prefix: "\\( \\sqrt[3]{30}\\approx \\)",
-        suffix: ",10723",
-        answer: "3"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε το ακέραιο μέρος: ",
-        prefix: "\\( \\ln(\\pi) \\approx\\)",
-        suffix: ",1447",
-        answer: "1"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( συν(319^\\circ) \\approx\\)",
-        suffix: "0,75471",
-        answer: "+"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε το ακέραιο μέρος: ",
-        prefix: "\\( \\sqrt{15} \\approx\\)",
-        suffix: ",87298",
-        answer: "3"
+        type: "fillBlank",
+        questionPrompt: "Να συμπληρώσεις τον τύπο της συνάρτησης.",
+        imageURL: "sinCDOT2.png",
+        sentenceTemplate: [
+          "\\( f(x) = \\)", null, "\\( \\cdot \\)", null, "\\((x)\\)"
+        ],
+        correctAnswers: ["\\(2\\)", "\\(ημ\\)"],
+        options: ["\\(2\\)", "\\(-2\\)", "\\(ημ\\)", "\\(συν\\)", "\\(εφ\\)", "\\(σφ\\)"]
       }
             // END: New question type "multipleChoiceMultSelect"
         ];
 
-        const TIME_LIMIT = 600; // 10 minutes in seconds
+        const TIME_LIMIT = 900; // 15 minutes in seconds
 
         let isMode2 = false;
 
@@ -1428,10 +1166,10 @@
 
         quizModeToggle.addEventListener('change', function() {
             isMode2 = this.checked;
-            timeLimitInfo.textContent = `Χρόνος για κάθε ${this.checked ? 'προσπάθεια' : 'γύρο'}: 10 λεπτά`;
+            timeLimitInfo.textContent = `Χρόνος για κάθε ${this.checked ? 'προσπάθεια' : 'γύρο'}: 15 λεπτά`;
         });
 
-        timeLimitInfo.textContent = `Χρόνος για κάθε ${quizModeToggle.checked ? 'προσπάθεια' : 'γύρο'}: 10 λεπτά`;
+        timeLimitInfo.textContent = `Χρόνος για κάθε ${quizModeToggle.checked ? 'προσπάθεια' : 'γύρο'}: 15 λεπτά`;
 
 
         document.getElementById("start").addEventListener("click", startQuiz);

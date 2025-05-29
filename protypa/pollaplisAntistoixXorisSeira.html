@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combined Math Quiz</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .quiz-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .question-area {
+            margin-bottom: 20px;
+        }
+        .question-prompt {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .sentence-container {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 5px;
+            margin: 15px 0;
+            min-height: 30px;
+        }
+        .blank-space {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 8px 12px;
+            min-width: 50px;
+            text-align: center;
+            font-weight: bold;
+            background-color: #f9f9f9;
+            display: inline-block;
+        }
+        .blank-space.filled {
+            background-color: #e0ffe0;
+            border-color: #a0c0a0;
+        }
+        #question-image-container img {
+            display: block;
+            margin: 10px auto 15px auto;
+            max-width: 80%;
+            max-height: 300px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .options-container {
+            margin-top: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .option-button {
+            background-color: #007bff;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        .option-button:hover {
+            background-color: #0056b3;
+        }
+        .option-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        #clear-choices {
+            background-color: #ffc107;
+            color: black;
+        }
+        #clear-choices:hover {
+            background-color: #e0a800;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #timer, #result {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+        .hidden {
+            display: none;
+        }
+        .timeout {
+            color: red;
+        }
+        /* Styles for multiple choice questions */
+        .multiple-choice-question {
+            margin-bottom: 20px;
+        }
+        .multiple-choice-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px 40px;
+        }
+        .multiple-choice-options label {
+            cursor: pointer;
+            break-inside: avoid;
+            padding: 5px;
+        }
+        .multiple-choice-options img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* Toggle switch styles */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+            margin: 10px 0;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+        input:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        .toggle-label {
+            margin-left: 10px;
+            font-weight: bold;
+            vertical-align: middle;
+        }
+
+        @media (max-width: 600px) {
+            .multiple-choice-options {
+                grid-template-columns: 1fr;
+            }
+            .multiple-choice-options img {
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div id="intro">
+            <h1>Combined Math Quiz</h1>
+            <p>Some questions will require filling blanks while others will be multiple choice.</p>
+            <p id="time-limit-info">Time limit per round: 15 minutes</p>
+
+            <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                <span class="toggle-label">Error Repeat (Off)</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="quiz-mode-toggle">
+                    <span class="slider round"></span>
+                </label>
+                <span class="toggle-label">Full Repeat (On)</span>
+            </div>
+
+            <button id="start">Start Quiz</button>
+            <button id="otherpage">Return to Your Class</button>
+        </div>
+        <div id="timer" class="hidden">Time: 15:00</div>
+        <div id="quiz" class="hidden">
+            <div class="question-area">
+                <h3 id="question-number-title"></h3>
+                <div id="question-prompt-text" class="question-prompt"></div>
+                <div id="question-image-container"></div>
+                <div id="question-content"></div>
+            </div>
+            <button id="clear-choices" class="hidden">Clear Choices</button>
+        </div>
+        <button id="submit" class="hidden">Submit Answer</button>
+        <div id="result" class="hidden"></div>
+        <button id="download" class="hidden">Download Results (PDF)</button>
+    </div>
+
+    <script>
+        // Quiz data - combination of both question types
+        const quizData = [
+            // Multiple choice question
+            {
+                type: "multipleChoice",
+                question: "Δίνεται η ευθεία \\(Αx+Βy+Γ=0\\). For which values of \\(Α, Β, Γ\\) does this line pass through the origin of the axes.",
+                options: ["For \\(Α=0\\)", "For \\(Β=0\\)", "For \\(Γ=0\\)"],
+                correctIndex: 2
+            },
+            // Another multiple choice question
+            {
+                type: "multipleChoice",
+                question: "Which figure has the equation \\(x^2=2py\\);",
+                image: null,
+                options: [
+                    `<img src="ySQ6x.png">`,
+                    `<img src="xSQ6y.png">`,
+                    `<img src="ySQminusxSQ.png">`,
+                    `<img src="xSQminusySQ.png">`,
+                    `<img src="xSQ4ySQ9.png">`,
+                    `<img src="ySQ4xSQ9.png">`
+                ],
+                correctIndex: 1
+            },
+            {
+                type: "multipleChoice",
+                question: "What is the equation of the following figure?",
+                image: "ySQ6x.png",
+                options: [
+                    "\\(y^2=6x\\)", //0
+                    "\\(y^2=-6x\\)",//1
+                    "\\(x^2=6y\\)",//2
+                    "\\(x^2=-6y\\)",//3
+                    "\\(\\dfrac{x^2}{9}+\\dfrac{y^2}{4}=1\\)",//4
+                    "\\(\\dfrac{x^2}{4}+\\dfrac{y^2}{9}=1\\)",//5
+                    "\\(\\dfrac{x^2}{9}-\\dfrac{y^2}{4}=1\\)",//6
+                    "\\(\\dfrac{y^2}{4}-\\dfrac{x^2}{9}=1\\)"//7
+                ],
+                correctIndex: 0
+            },
+            {
+                type: "multipleChoice",
+                question: "Given point \\(A(x_0, y_0)\\) of the following figure. What is the equation of its tangent at point \\(A\\);",
+                image: "xSQminusySQ.png",
+                options: [
+                    "\\(x_0 x+y_0 y=r^2\\)", //0
+                    "\\(y_0 y=p(x+x_0)\\)",//1
+                    "\\(x_0 x=p(y+y_0)\\)",//2
+                    "\\(\\dfrac{x_0 x}{α^2}+\\dfrac{y_0 y}{β^2}=1\\)",//3
+                    "\\(\\dfrac{x_0 x}{β^2}+\\dfrac{y_0 y}{α^2}=1\\)",//4
+                    "\\(\\dfrac{x_0 x}{α^2}-\\dfrac{y_0 y}{β^2}=1\\)",//5
+                    "\\(\\dfrac{y_0 y}{α^2}-\\dfrac{x_0 x}{β^2}=1\\)"//6
+                ],
+                correctIndex: 6
+            },
+            {
+                type: "fillBlank",
+                questionPrompt: "Complete the blanks.",
+                sentenceTemplate: [
+                    'The curve with equation \\(\\dfrac{y^2}{α^2}-\\dfrac{x^2}{β^2}=1\\) is ', null, ', has foci at points ', null, ' and ', null, ', eccentricity \\(ε=\\)', null, 
+                    ' with \\(ε\\)', null, ' and asymptotes ', null, ', ', null, '.'
+                ],
+                correctAnswers: ["hyperbola", "\\(E\\left( 0,γ\\right)\\)", "\\(E'\\left( 0,-γ\\right)\\)", "\\(\\dfrac{γ}{α}\\)", "\\(>1\\)",
+                "\\(\\dfrac{y}{α}-\\dfrac{x}{β}=0\\)","\\(\\dfrac{y}{α}+\\dfrac{x}{β}=0\\)"],
+                options: ["parabola", "ellipse", "hyperbola", 
+                "\\(E\\left( γ,0\\right)\\)", "\\(E'\\left( -γ,0\\right)\\)",
+                "\\(E\\left( 0,γ\\right)\\)", "\\(E'\\left( 0,-γ\\right)\\)",
+                "\\(\\dfrac{γ}{α}\\)", "\\(\\dfrac{α}{γ}\\)","\\(\\dfrac{β}{α}\\)",
+                "\\(<1\\)", "\\(>1\\)",
+                "\\(\\dfrac{y}{α}-\\dfrac{x}{β}=1\\)","\\(\\dfrac{y}{α}+\\dfrac{x}{β}=1\\)",
+                "\\(\\dfrac{y}{α}-\\dfrac{x}{β}=0\\)","\\(\\dfrac{y}{α}+\\dfrac{x}{β}=0\\)"],
+                orderMatters: true
+            },
+            {
+                type: "fillBlank",
+                questionPrompt: "Solve the equation in \\([0,2π]\\) (order does NOT matter):",
+                sentenceTemplate: [
+                    "\\(sin(x)=0\\Leftrightarrow x= \\)", null, " or \\(x=\\)", null, " or \\(x=\\)", null
+                ],
+                correctAnswers: ["\\(0\\)", "\\(π\\)", "\\(2π\\)"],
+                options: ["\\(0\\)","\\(\\dfrac{π}{6}\\)","\\(\\dfrac{π}{4}\\)","\\(\\dfrac{π}{3}\\)",
+                "\\(\\dfrac{π}{2}\\)", "\\(π\\)","\\(\\dfrac{3π}{2}\\)","\\(2π\\)"],
+                orderMatters: false
+            }
+        ];
+
+        const TIME_LIMIT = 900; // 15 minutes in seconds
+
+        let isMode2 = false; // Default mode is Mode 1 (off)
+
+        let currentQuizQuestions = []; // Questions for the current round/attempt
+        let currentQuestionIndex = 0; // Index within currentQuizQuestions
+        let currentAttemptScore = 0; // Correct answers in the current round/attempt
+        let currentAttemptErrors = 0; // Errors in the current round (Mode 1 specific)
+        let timeLimitExceeded = false; // Status for the current round/attempt
+        let startTime; // Start time for the current round/attempt
+        let timerInterval;
+        let attempt = 1; // Attempt number
+        const attemptsData = []; // Stores data for all completed attempts
+
+        // Mode 1 specific variables
+        let incorrectQuestionsThisRound = []; // Questions answered incorrectly in current round
+        let currentRoundIncorrectQuestionNumbersDisplay = []; // Display numbers of incorrect questions for Mode 1 PDF
+
+        // Variables for current question state
+        let userAnswersForCurrentQuestion = []; // For fill-in-the-blank
+        let nextBlankToFillIndex = 0; // For fill-in-the-blank
+        let optionButtons = []; // For fill-in-the-blank options
+        let selectedOption = null; // For multiple choice
+
+        const quizModeToggle = document.getElementById("quiz-mode-toggle");
+        const timeLimitInfo = document.getElementById("time-limit-info");
+
+        function startQuiz() {
+            document.getElementById("intro").classList.add("hidden");
+            document.getElementById("timer").classList.remove("hidden");
+            document.getElementById("quiz").classList.remove("hidden");
+            document.getElementById("submit").classList.remove("hidden");
+            document.getElementById("result").classList.add("hidden");
+            document.getElementById("download").classList.add("hidden");
+
+            isMode2 = quizModeToggle.checked; // Get the selected mode
+
+            // Reset state for a new attempt/round
+            currentAttemptScore = 0;
+            currentAttemptErrors = 0;
+            timeLimitExceeded = false;
+            currentRoundIncorrectQuestionNumbersDisplay = [];
+
+            startTime = new Date();
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            timerInterval = setInterval(updateTimer, 1000);
+
+            if (isMode2) { // Mode 2 Logic (Repeat entire quiz on error/timeout)
+                currentQuizQuestions = [...quizData];
+                currentQuestionIndex = 0;
+                loadQuestion();
+            } else { // Mode 1 Logic (Repeat only incorrect questions)
+                if (attempt === 1 || incorrectQuestionsThisRound.length === 0) {
+                    currentQuizQuestions = [...quizData];
+                } else {
+                    currentQuizQuestions = [...incorrectQuestionsThisRound];
+                }
+                incorrectQuestionsThisRound = [];
+                currentQuestionIndex = 0;
+                loadQuestion();
+            }
+        }
+
+        function updateTimer() {
+            const now = new Date();
+            const elapsed = Math.floor((now - startTime) / 1000);
+            const remaining = TIME_LIMIT - elapsed;
+
+            const minutes = Math.floor(remaining / 60).toString().padStart(2, "0");
+            const seconds = (remaining % 60).toString().padStart(2, "0");
+
+            const timerElement = document.getElementById("timer");
+            if (isMode2 && remaining <= 0) {
+                timerElement.textContent = `Time (${attempt}th Attempt): 00:00 (Time exceeded, but you continue)`;
+            } else {
+                timerElement.textContent = `Time (${isMode2 ? attempt + 'th Attempt' : attempt + 'th Round'}): ${minutes}:${seconds}`;
+            }
+
+            if (remaining <= 0 && !timeLimitExceeded) {
+                timeLimitExceeded = true;
+                timerElement.classList.add("timeout");
+            }
+        }
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60).toString().padStart(2, "0");
+            const secs = (seconds % 60).toString().padStart(2, "0");
+            return `${minutes}:${seconds}`;
+        }
+
+        function loadQuestion() {
+            if (currentQuestionIndex >= currentQuizQuestions.length) {
+                console.error("Attempted to load question beyond quiz length.");
+                clearInterval(timerInterval);
+                showResults();
+                return;
+            }
+
+            const q = currentQuizQuestions[currentQuestionIndex];
+            const questionNumberTitle = document.getElementById("question-number-title");
+            const questionPromptText = document.getElementById("question-prompt-text");
+            const questionImageContainer = document.getElementById("question-image-container");
+            const questionContent = document.getElementById("question-content");
+
+            questionNumberTitle.textContent = `Question ${currentQuestionIndex + 1} / ${currentQuizQuestions.length} (${isMode2 ? attempt + 'th Attempt' : attempt + 'th Round'})`;
+
+            questionImageContainer.innerHTML = '';
+            questionContent.innerHTML = '';
+
+            if (q.imageURL || q.image) {
+                const imgElement = document.createElement("img");
+                imgElement.src = q.imageURL || q.image;
+                imgElement.alt = q.questionPrompt || q.question || "Question Image";
+                questionImageContainer.appendChild(imgElement);
+            }
+
+            if (q.type === "fillBlank") {
+                loadFillBlankQuestion(q, questionPromptText, questionContent);
+            } else if (q.type === "multipleChoice") {
+                loadMultipleChoiceQuestion(q, questionPromptText, questionContent);
+            }
+
+            MathJax.typesetPromise([questionContent, questionPromptText]).catch(err => console.error("MathJax typeset error:", err));
+        }
+
+        function loadFillBlankQuestion(q, questionPromptText, questionContent) {
+            questionPromptText.textContent = q.questionPrompt;
+
+            const sentenceContainer = document.createElement("div");
+            sentenceContainer.classList.add("sentence-container");
+
+            const optionsContainer = document.createElement("div");
+            optionsContainer.classList.add("options-container");
+
+            userAnswersForCurrentQuestion = new Array(q.correctAnswers.length).fill(null);
+            nextBlankToFillIndex = 0;
+            optionButtons = [];
+
+            let blankIndex = 0;
+            if (q.sentenceTemplate && Array.isArray(q.sentenceTemplate)) {
+                q.sentenceTemplate.forEach(part => {
+                    if (part === null) {
+                        const blankSpan = document.createElement("span");
+                        blankSpan.classList.add("blank-space");
+                        blankSpan.dataset.blankIndex = blankIndex;
+                        blankSpan.innerHTML = "___";
+                        sentenceContainer.appendChild(blankSpan);
+                        blankIndex++;
+                    } else {
+                        const partSpan = document.createElement("span");
+                        partSpan.innerHTML = part;
+                        sentenceContainer.appendChild(partSpan);
+                    }
+                });
+            }
+
+            if (q.options && Array.isArray(q.options)) {
+                q.options.forEach(optionText => {
+                    const button = document.createElement("button");
+                    button.classList.add("option-button");
+                    button.innerHTML = optionText;
+                    button.dataset.value = optionText;
+                    button.addEventListener("click", handleOptionClick);
+                    optionsContainer.appendChild(button);
+                    optionButtons.push(button);
+                });
+            }
+
+            questionContent.appendChild(sentenceContainer);
+            questionContent.appendChild(optionsContainer);
+
+            document.getElementById("clear-choices").classList.remove("hidden");
+        }
+
+        function loadMultipleChoiceQuestion(q, questionPromptText, questionContent) {
+            questionPromptText.textContent = q.question;
+
+            const questionDiv = document.createElement("div");
+            questionDiv.classList.add("multiple-choice-question");
+
+            const optionsDiv = document.createElement("div");
+            optionsDiv.classList.add("multiple-choice-options");
+
+            selectedOption = null;
+
+            q.options.forEach((option, index) => {
+                const label = document.createElement("label");
+                const radio = document.createElement("input");
+                radio.type = "radio";
+                radio.name = `question-${currentQuestionIndex}`;
+                radio.id = `question-${currentQuestionIndex}-option-${index}`;
+                radio.value = index;
+                radio.addEventListener("change", function() {
+                    selectedOption = parseInt(this.value, 10);
+                });
+
+                label.appendChild(radio);
+                label.appendChild(document.createTextNode(" "));
+                label.insertAdjacentHTML('beforeend', option);
+
+                optionsDiv.appendChild(label);
+            });
+
+            questionDiv.appendChild(optionsDiv);
+            questionContent.appendChild(questionDiv);
+
+            document.getElementById("clear-choices").classList.add("hidden");
+        }
+
+        function handleOptionClick(event) {
+            const selectedButton = event.currentTarget;
+            const valueToFill = selectedButton.dataset.value;
+
+            const q = currentQuizQuestions[currentQuestionIndex];
+
+            if (q.type === "fillBlank" && nextBlankToFillIndex < q.correctAnswers.length) {
+                const blankToFill = document.querySelector(`.blank-space[data-blank-index="${nextBlankToFillIndex}"]`);
+                if (blankToFill) {
+                    blankToFill.innerHTML = valueToFill;
+                    blankToFill.classList.add("filled");
+                    userAnswersForCurrentQuestion[nextBlankToFillIndex] = valueToFill;
+                    nextBlankToFillIndex++;
+                    selectedButton.disabled = true;
+                    MathJax.typesetPromise([blankToFill]).catch(err => console.error("MathJax error on fill:", err));
+                }
+            }
+        }
+
+        function clearCurrentQuestionChoices() {
+            const q = currentQuizQuestions[currentQuestionIndex];
+
+            if (q.type === "fillBlank") {
+                userAnswersForCurrentQuestion = new Array(q.correctAnswers.length).fill(null);
+                nextBlankToFillIndex = 0;
+
+                const blankSpaces = document.querySelectorAll(".blank-space");
+                blankSpaces.forEach(blank => {
+                    blank.innerHTML = "___";
+                    blank.classList.remove("filled");
+                });
+
+                optionButtons.forEach(button => {
+                    button.disabled = false;
+                });
+                MathJax.typesetPromise([document.querySelector(".sentence-container")]).catch(err => console.error("MathJax error on clear:", err));
+            } else if (q.type === "multipleChoice") {
+                const radios = document.querySelectorAll(`input[name="question-${currentQuestionIndex}"]`);
+                radios.forEach(radio => {
+                    radio.checked = false;
+                });
+                selectedOption = null;
+            }
+        }
+
+        function checkAnswer() {
+            const q = currentQuizQuestions[currentQuestionIndex];
+            let isCorrect = false;
+
+            if (q.type === "fillBlank") {
+                const allBlanksFilled = userAnswersForCurrentQuestion.every(answer => answer !== null);
+
+                if (allBlanksFilled && userAnswersForCurrentQuestion.length === q.correctAnswers.length) {
+                    if (q.orderMatters === false) {
+                        // Order doesn't matter - check if all correct answers were selected
+                        const correctAnswersSet = new Set(q.correctAnswers);
+                        const userAnswersSet = new Set(userAnswersForCurrentQuestion);
+                        
+                        // Check if all correct answers are present in user answers
+                        let allCorrectSelected = true;
+                        let noIncorrectSelected = true;
+                        
+                        for (const correctAnswer of q.correctAnswers) {
+                            if (!userAnswersForCurrentQuestion.includes(correctAnswer)) {
+                                allCorrectSelected = false;
+                                break;
+                            }
+                        }
+                        
+                        for (const userAnswer of userAnswersForCurrentQuestion) {
+                            if (userAnswer && !correctAnswersSet.has(userAnswer)) {
+                                noIncorrectSelected = false;
+                                break;
+                            }
+                        }
+                        
+                        isCorrect = allCorrectSelected && noIncorrectSelected && 
+                                     userAnswersForCurrentQuestion.filter(a => a).length === q.correctAnswers.length;
+                    } else {
+                        // Order matters - check exact sequence
+                        isCorrect = true;
+                        for (let i = 0; i < q.correctAnswers.length; i++) {
+                            if (userAnswersForCurrentQuestion[i] !== q.correctAnswers[i]) {
+                                isCorrect = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+            } else if (q.type === "multipleChoice") {
+                if (selectedOption !== null && selectedOption === q.correctIndex) {
+                    isCorrect = true;
+                }
+            }
+
+            if (isCorrect) {
+                currentAttemptScore++;
+            } else {
+                currentAttemptErrors++;
+                if (!isMode2) {
+                    incorrectQuestionsThisRound.push(q);
+                    currentRoundIncorrectQuestionNumbersDisplay.push(currentQuestionIndex + 1);
+                }
+            }
+
+            currentQuestionIndex++;
+            if (currentQuestionIndex < currentQuizQuestions.length) {
+                loadQuestion();
+            } else {
+                clearInterval(timerInterval);
+                showResults();
+            }
+        }
+
+        function showResults() {
+            const now = new Date();
+            const elapsed = Math.floor((now - startTime) / 1000);
+            const totalQuestionsInRound = currentQuizQuestions.length;
+            const percentage = (totalQuestionsInRound > 0) ? ((currentAttemptScore / totalQuestionsInRound) * 100).toFixed(2) : 0;
+
+            attemptsData.push({
+                attempt: attempt,
+                score: currentAttemptScore,
+                errors: isMode2 ? totalQuestionsInRound - currentAttemptScore : currentAttemptErrors,
+                totalQuestions: totalQuestionsInRound,
+                percentage: percentage,
+                timeTaken: elapsed,
+                timeLimitExceeded: timeLimitExceeded,
+                incorrectQuestionNumbers: isMode2 ? null : [...currentRoundIncorrectQuestionNumbersDisplay]
+            });
+
+            const resultDiv = document.getElementById("result");
+            resultDiv.classList.remove("hidden");
+            document.getElementById("quiz").classList.add("hidden");
+            document.getElementById("submit").classList.add("hidden");
+            document.getElementById("clear-choices").classList.add("hidden");
+            document.getElementById("timer").classList.remove("timeout");
+
+            let message = "";
+            let startNext = false;
+
+            if (isMode2) {
+                const totalQuizQuestions = quizData.length;
+                if (currentAttemptScore === totalQuizQuestions && !timeLimitExceeded) {
+                    message = `Congratulations! You completed attempt ${attempt} successfully!`;
+                    message += `<br>Final score: ${currentAttemptScore}/${totalQuestionsInRound} (${percentage}%)<br>Time: ${formatTime(elapsed)}`;
+                } else {
+                    message = `In attempt ${attempt}:`;
+                    if (currentAttemptScore < totalQuestionsInRound) {
+                        message += `<br>You had errors (${totalQuestionsInRound - currentAttemptScore} incorrect answers).`;
+                    }
+                    if (timeLimitExceeded) {
+                        message += `<br>You exceeded the time limit (${formatTime(elapsed)} > ${formatTime(TIME_LIMIT)}).`;
+                    }
+                    message += `<br>Score: ${currentAttemptScore}/${totalQuestionsInRound} (${percentage}%)<br>Time: ${formatTime(elapsed)}`;
+                    message += `<br>You will repeat the entire quiz.`;
+                    startNext = true;
+                }
+            } else {
+                if (currentAttemptErrors === 0) {
+                    message = `Congratulations! You completed round ${attempt} successfully (0 errors)!`;
+                    if (currentQuizQuestions.length === quizData.length) {
+                        message += `<br>You finished the entire quiz!`;
+                    } else {
+                        message += `<br>You answered all questions in this review round correctly.`;
+                    }
+                } else {
+                    message = `In round ${attempt}, you had ${currentAttemptErrors} errors out of ${totalQuestionsInRound} questions.`;
+                    if (currentRoundIncorrectQuestionNumbersDisplay.length > 0) {
+                        message += ` (Questions: ${currentRoundIncorrectQuestionNumbersDisplay.join(', ')})`;
+                    }
+                    message += `<br>You will repeat ${incorrectQuestionsThisRound.length} question(s) you answered incorrectly.`;
+                    startNext = true;
+                }
+                message += `<br>Round score: ${currentAttemptScore}/${totalQuestionsInRound} (${percentage}%)<br>Round time: ${formatTime(elapsed)}`;
+            }
+
+            if (timeLimitExceeded && !(isMode2 && currentAttemptScore === quizData.length)) {
+                message += `<br>${isMode2 ? 'Note:' : 'Pay attention to the time in the next round.'} (Time limit exceeded)`;
+            }
+
+            resultDiv.innerHTML = `<p>${message}</p>`;
+
+            const timerElement = document.getElementById("timer");
+            timerElement.textContent = `Final Time ${isMode2 ? 'Attempt' : 'Round'} ${attempt}: ${formatTime(elapsed)}${timeLimitExceeded ? " (Time limit exceeded)" : ""}`;
+
+            if (startNext) {
+                attempt++;
+                setTimeout(() => {
+                    resultDiv.classList.add("hidden");
+                    startQuiz();
+                }, 5000);
+            } else {
+                document.getElementById("download").classList.remove("hidden");
+            }
+        }
+
+        function generatePDF() {
+            try {
+                if (typeof window.jspdf !== 'undefined') {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(18);
+                    doc.setTextColor(0, 0, 0);
+                    doc.text("Math Quiz Results", 105, 15, { align: 'center' });
+
+                    doc.setFontSize(12);
+                    doc.setFont("helvetica", "normal");
+                    const now = new Date();
+                    doc.text(`Date: ${now.toLocaleString('en-US')}`, 105, 25, { align: 'center' });
+
+                    let yPos = 40;
+
+                    attemptsData.forEach((attemptData, index) => {
+                        if (yPos > 250) {
+                            doc.addPage();
+                            yPos = 20;
+                        }
+
+                        doc.setFillColor(0, 0, 0);
+                        doc.rect(15, yPos - 5, 180, 8, 'F');
+
+                        doc.setTextColor(255, 255, 255);
+                        doc.setFontSize(12);
+                        doc.setFont("helvetica", "bold");
+                        doc.text(`${attemptData.attempt}${isMode2 ? 'th Attempt' : 'th Round'}`, 20, yPos);
+
+                        doc.setTextColor(0, 0, 0);
+                        doc.setFontSize(10);
+                        doc.setFont("helvetica", "normal");
+                        yPos += 8;
+
+                        doc.text(`Questions: ${attemptData.totalQuestions}`, 20, yPos);
+                        doc.text(`Correct: ${attemptData.score}`, 20, yPos + 6);
+
+                        if (isMode2) {
+                            doc.text(`Wrong: ${attemptData.totalQuestions - attemptData.score}`, 20, yPos + 12);
+                        } else {
+                            doc.text(`Errors: ${attemptData.errors}`, 20, yPos + 12);
+                        }
+
+                        doc.text(`Time: ${formatTime(attemptData.timeTaken)}`, 100, yPos);
+
+                        let statusText = "Completed";
+                        if (isMode2) {
+                            if (attemptData.score < attemptData.totalQuestions || attemptData.timeLimitExceeded) {
+                                statusText = "Repeat Required";
+                            }
+                        } else {
+                            if (attemptData.errors > 0) {
+                                statusText = "Repeat Errors";
+                            }
+                        }
+                        if (attemptData.timeLimitExceeded && !(isMode2 && attemptData.score === attemptData.totalQuestions)) {
+                            statusText += " (Time Exceeded)";
+                        }
+
+                        doc.text(`Status: ${statusText}`, 100, yPos + 6);
+                        doc.text(`Percentage: ${attemptData.percentage}%`, 100, yPos + 12);
+
+                        if (!isMode2 && attemptData.incorrectQuestionNumbers && attemptData.incorrectQuestionNumbers.length > 0) {
+                            let numbersText = attemptData.incorrectQuestionNumbers.join(', ');
+                            const splitText = doc.splitTextToSize(`Incorrect Questions (in round order): ${numbersText}`, 170);
+                            doc.text(splitText, 20, yPos + 18);
+                            yPos += (splitText.length * 5);
+                        }
+
+                        yPos += 20;
+                    });
+
+                    const lastAttempt = attemptsData[attemptsData.length - 1];
+                    let quizCompletedSuccessfully = false;
+
+                    if (isMode2) {
+                        if (lastAttempt.score === lastAttempt.totalQuestions && !lastAttempt.timeLimitExceeded) {
+                            quizCompletedSuccessfully = true;
+                        }
+                    } else {
+                        if (lastAttempt.errors === 0) {
+                            quizCompletedSuccessfully = true;
+                        }
+                    }
+
+                    if (quizCompletedSuccessfully) {
+                        doc.addPage();
+                        doc.setFontSize(22);
+                        doc.setTextColor(0, 128, 0);
+                        doc.setFont("helvetica", "bold");
+                        doc.text("CONGRATULATIONS!", 105, 50, { align: 'center' });
+                        doc.setFontSize(16);
+                        doc.setTextColor(0, 0, 0);
+                        doc.setFont("helvetica", "normal");
+                        doc.text(`You completed the quiz successfully`, 105, 70, { align: 'center' });
+                        doc.text(`in ${attemptsData.length} ${isMode2 ? 'attempt(s)' : 'round(s)'}!`, 105, 90, { align: 'center' });
+                    }
+
+                    doc.save('math_quiz_results.pdf');
+                } else {
+                    throw new Error("jsPDF not loaded");
+                }
+            } catch (error) {
+                console.error("PDF generation error:", error);
+                alert("An error occurred while generating the PDF. Please try again or refresh the page.");
+            }
+        }
+
+        quizModeToggle.addEventListener('change', function() {
+            if (this.checked) {
+                timeLimitInfo.textContent = "Time limit per attempt: 15 minutes";
+            } else {
+                timeLimitInfo.textContent = "Time limit per round: 15 minutes";
+            }
+        });
+
+        timeLimitInfo.textContent = `Time limit per ${quizModeToggle.checked ? 'attempt' : 'round'}: 15 minutes`;
+
+        document.getElementById("start").addEventListener("click", startQuiz);
+        document.getElementById("submit").addEventListener("click", checkAnswer);
+        document.getElementById("clear-choices").addEventListener("click", clearCurrentQuestionChoices);
+        document.getElementById("otherpage").addEventListener("click", function() {
+            window.location.href = 'your_class_url_here';
+        });
+        document.getElementById("download").addEventListener("click", generatePDF);
+
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !document.getElementById("quiz").classList.contains("hidden") && !document.getElementById("submit").classList.contains("hidden")) {
+                e.preventDefault();
+                document.getElementById("submit").click();
+            }
+        });
+
+        document.getElementById("quiz").classList.add("hidden");
+        document.getElementById("timer").classList.add("hidden");
+        document.getElementById("submit").classList.add("hidden");
+        document.getElementById("result").classList.add("hidden");
+        document.getElementById("download").classList.add("hidden");
+    </script>
+</body>
+</html>

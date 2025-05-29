@@ -1,50 +1,9 @@
-
-<!-- 
- Χρόνος TIME_LIMIT 
- <title>Τίτλος καρτέλας</title> 
- const finalTimeText = `Final Time ${isMode2 ? 'Attempt' : 'Round'} ${attempt}: ${formatTime(elapsed)}`; 
- <h1>Τίτλος Quiz</h1> 
- <p>Γενικές οδηγίες στην είσοδο του Quiz.</p> 
- <p id="time-limit-info">Χρόνος για κάθε γύρο: 15 λεπτά</p>
- timeLimitInfo.textContent = `Χρόνος για κάθε ${this.checked ? 'προσπάθεια' : 'γύρο'}: 15 λεπτά`;
-        });
-
-        timeLimitInfo.textContent = `Χρόνος για κάθε ${quizModeToggle.checked ? 'προσπάθεια' : 'γύρο'}: 15 λεπτά`;
- <span class="toggle-label">Επανάνηψη λαθών</span>
- <span class="toggle-label">Επανάληψη όλου του quiz</span>
- <button id="start">Άρχισε το Quiz</button>
- <button id="otherpage">Πήγαινε πίσω στην τάξη σου</button>
- questionNumberTitle.textContent = `Ερώτηση ${currentQuestionIndex + 1} / ${currentQuizQuestions.length} (${isMode2 ? attempt + 'η προσπάθεια' : attempt + 'ος γύρος'})`;
- <button id="clear-choices" class="hidden">Καθαρισμός επιλογών</button>
- <button id="submit" class="hidden">Υποβολή απάντησης</button>
- timerElement.textContent = `Χρόνος (${attempt}η προσπάθεια): 00:00 (Ο χρόνος σου τελείωσε, αλλά συνεχίζεις)`;
- timerElement.textContent = `Χρόνος (${attempt}ος γύρος): 00:00 (Ο χρόνος σου τελείωσε!)`;
- timerElement.textContent = `Χρόνος (${isMode2 ? attempt + 'η προσπάθεια' : attempt + 'ος γύρος'}): ${minutes}:${seconds}`;
- message = `Συγχαρητήρια! Ολοκλήρωσες την ${attempt}η προσπάθεια επιτυχώς!`;
- message += `<br>Τελικά αποτελέσματα: ${currentAttemptScore}/${totalQuestionsInRound} (${percentage}%)<br>Χρόνος: ${formatTime(elapsed)}`;
- message = `Στην ${attempt}η προσπάθεια:`;
- message += `<br>Είχες λάθη (${totalQuestionsInRound - currentAttemptScore} λάθος απαντήσεις).`;
- message += `<br>Πέρασες το προκαθορισμένο χρονικό όριο (${formatTime(elapsed)} > ${formatTime(TIME_LIMIT)}).`;
- message += `<br>Αποτελέσματα: ${currentAttemptScore}/${totalQuestionsInRound} (${percentage}%)<br>Χρόνος: ${formatTime(elapsed)}`;
- message += `<br>Θα επαναλάβεις ολόκληρο το quiz.`;
- message = `Συγχαρητήρια! Ολοκλήρωσες τον ${attempt}ο γύρο επιτυχώς (0 λάθη)!`;
- message += `<br>Τελείωσες ολόκληρο το quiz!`;
- message += `<br>Απάντησες όλες τις εναπομείνασες ερωτήσεις επιτυχώς. Το quiz τελείωσε!`;
- message = `Στον ${attempt}ο γύρο, είχες ${currentAttemptErrors} λάθη ${totalQuestionsInRound} ερωτήσεις συνολικά.`;
- message += ` (Οι ερωτήσεις που έκανες λάθος: ${[...new Set(currentRoundIncorrectQuestionNumbersDisplay)].sort((a,b)=>a-b).join(', ')})`;
- message += `<br>Αριθμός ερωτήσεων που θα επαναλάβεις: ${incorrectQuestionsThisRound.length}.`;
- message += `<br>Αποτελέσματα γύρου: ${currentAttemptScore}/${totalQuestionsInRound} (${percentage}%)<br>Χρόνος γύρου: ${formatTime(elapsed)}`;
- message += `<br>${isMode2 ? 'Σημείωση:' : 'Πρόσεχε τον χρόνο.'} (Το προκαθορισμένο χρονικό όριο έχει ξεπεραστεί.)`;
- const finalTimeText = `Τελικός χρόνος ${isMode2 ? 'Προσπάθεια' : 'Γύρος'} ${attempt}: ${formatTime(elapsed)}`;
--->
-
-
 <!DOCTYPE html>
 <html lang="el">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Γρήγοροι υπολογισμοί</title>
+    <title>Τίτλος καρτέλας</title>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -123,8 +82,9 @@
             margin: 15px 0;
             flex-wrap: wrap; /* Allow wrapping */
         }
-        .keyboard-answer-container span { /* Style for prefix/suffix */
+        .keyboard-answer-container span, .keyboard-answer-container div { /* Style for prefix/suffix/text parts */
             font-size: 1em; /* Ensure consistent font size */
+            line-height: 1.5; /* For better vertical alignment with inputs */
         }
         .answer-input { /* Style for the text input field */
             width: auto; /* Allow natural width based on content */
@@ -135,6 +95,7 @@
             border-radius: 4px;
             font-size: 1em; /* Consistent font size */
             text-align: center;
+            margin: 0 2px; /* Small margin around inputs */
         }
 
 
@@ -274,13 +235,13 @@
                 max-width: 90%;
             }
             .keyboard-answer-container {
-                flex-direction: column; /* Stack prefix, input, suffix vertically on small screens */
-                align-items: flex-start;
+                /* flex-direction: column; /* Consider if vertical stacking is desired for very narrow screens */
+                align-items: flex-start; /* Align items to start if wrapping occurs */
             }
             .answer-input {
-                width: 100%; /* Make input full width on small screens */
-                max-width: none;
-                box-sizing: border-box; /* Include padding and border in the element's total width and height */
+                width: 80px; /* Adjust for smaller screens if needed */
+                max-width: 120px;
+                 /* box-sizing: border-box; /* Include padding and border in the element's total width and height */
             }
         }
     </style>
@@ -288,9 +249,9 @@
 <body>
     <div class="quiz-container">
         <div id="intro">
-            <h1>Γρήγοροι υπολογισμοί</h1>
-            <p>Σε πολλές ασκήσεις θα χρειάζεται να βρίσκεις γρήγορα το πρόσημο μιας παράστασης ή να υπολογίζεις άμεσα μια προσέγγισης κάποιας άλλης. Το quiz αυτό θα ελέγξει κατά πόσον έχεις αυτή την ικανότητα. Θα χρειαστεί να μελετήσεις λίγη τριγωνομετρία, λίγους λογαρίθμους καθώς και να θυμιθείς κάποια πράγματα στα κλάσματα και τις ρίζες.</p>
-            <p id="time-limit-info">Χρόνος για κάθε γύρο: 10 λεπτά</p>
+            <h1>Τίτλος Quiz</h1>
+            <p>Γενικές οδηγίες στην είσοδο του Quiz.</p>
+            <p id="time-limit-info">Χρόνος για κάθε γύρο: 15 λεπτά</p>
 
             <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
                 <span class="toggle-label">Επανάληψη λαθών </span>
@@ -324,359 +285,84 @@
         const quizData = [
             // Multiple choice question (single select)
             {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( ημ(-38^\\circ) \\approx\\) ",
-        suffix: "0,61566",
-        answer: "-"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε τη σχέση με την μικρότερη δυνατή γωνία θετικού μέτρου (σε μοίρες): ",
-        prefix: "\\( εφ( \\)",
-        suffix: "): δεν ορίζεται",
-        answer: "90"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( σφ(18^\\circ) \\approx\\)",
-        suffix: "3,07768",
-        answer: "+"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( ημ(157^\\circ) \\approx\\)",
-        suffix: "0,3907",
-        answer: "+"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( σφ(-70^\\circ) \\approx\\)",
-        suffix: "0,36397",
-        answer: "-"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( συν(220^\\circ) \\approx\\)",
-        suffix: "0,766",
-        answer: "-"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε το ακέραιο μέρος: ",
-        prefix: "\\( \\frac{13}{15}= \\)",
-        suffix: ",866667 ",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( \\ln(\\)",
-        suffix: ")=0",
-        answer: "1"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( εφ(180^\\circ) =\\)",
-        suffix: "",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( σφ(193^\\circ) \\approx\\)",
-        suffix: "4,33148",
-        answer: "+"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( ημ(90^\\circ) =\\)",
-        suffix: "",
-        answer: "1"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( εφ(-25^\\circ) \\approx\\)",
-        suffix: "0,133526 ",
-        answer: "-"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( συν(0^\\circ) =\\)",
-        suffix: "",
-        answer: "1"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( ημ(270^\\circ) =\\)",
-        suffix: "",
-        answer: "-1"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε το ακέραιο μέρος: ",
-        prefix: "\\( \\frac{47}{8}= \\)",
-        suffix: ",875",
-        answer: "5"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( \\ln(\\)",
-        suffix: ")=1",
-        answer: "e"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( σφ(90^\\circ) =\\)",
-        suffix: "",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( συν(32^\\circ) \\approx\\)",
-        suffix: "0,848048",
-        answer: "+"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( εφ(103^\\circ) \\approx\\)",
-        suffix: "4,33148 ",
-        answer: "-"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( ημ(0^\\circ) =\\)",
-        suffix: "",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( εφ(19^\\circ) \\approx\\)",
-        suffix: "0,344328",
-        answer: "+"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( συν(270^\\circ) =\\)",
-        suffix: "",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( \\sqrt[5]{32}= \\)",
-        suffix: "",
-        answer: "2"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( \\ln\\left(\\frac{2}{3}\\right) \\approx\\)",
-        suffix: "0,405465 ",
-        answer: "-"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( σφ(300^\\circ) \\approx\\)",
-        suffix: "0,57735",
-        answer: "-"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( ημ(180^\\circ) =\\)",
-        suffix: "",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( συν(125^\\circ) \\approx\\)",
-        suffix: "0,573576",
-        answer: "-"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( εφ(0^\\circ) =\\)",
-        suffix: "",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( σφ(170^\\circ) \\approx\\)",
-        suffix: "5,67128",
-        answer: "-"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( συν(90^\\circ) =\\)",
-        suffix: "",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( \\sqrt[3]{64}= \\)",
-        suffix: "",
-        answer: "4"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε το ακέραιο μέρος: ",
-        prefix: "\\( \\ln( \\)",
-        suffix: "\\(,47)\\approx -0,755023\\)",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε τη σχέση με μια γωνία μεταξύ των \\( 91^\\circ \\) και των των \\( 361^\\circ \\): ",
-        prefix: "\\( εφ( \\)",
-        suffix: "): δεν ορίζεται",
-        answer: "270"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( ημ(200^\\circ) \\approx\\)",
-        suffix: "0,34202",
-        answer: "-"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( συν(-50^\\circ) \\approx\\)",
-        suffix: "0,642788",
-        answer: "+"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( εφ(325^\\circ) \\approx\\)",
-        suffix: "0,700208",
-        answer: "-"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε τη σχέση με την μικρότερη δυνατή μη αρνητική γωνία (σε μοίρες): ",
-        prefix: "\\( σφ( \\)",
-        suffix: "): δεν ορίζεται",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( ημ(19^\\circ) \\approx\\)",
-        suffix: "0,325568",
-        answer: "+"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε το ακέραιο μέρος: ",
-        prefix: "\\( \\sqrt[5]{35} \\approx\\)",
-        suffix: ",03617 ",
-        answer: "2"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε το ακέραιο μέρος: ",
-        prefix: "\\( \\ln(2)\\approx \\)",
-        suffix: ",69315",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( συν(180^\\circ) =\\)",
-        suffix: "",
-        answer: "-1"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( εφ(42^\\circ) \\approx\\)",
-        suffix: "0,900404",
-        answer: "+"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε την ισότητα: ",
-        prefix: "\\( σφ(270^\\circ) =\\)",
-        suffix: "",
-        answer: "0"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( ημ(310^\\circ) \\approx\\)",
-        suffix: "0,766044",
-        answer: "-"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( εφ(203^\\circ) \\approx\\)",
-        suffix: "0,424475",
-        answer: "+"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε τη σχέση με μια γωνία μεταξύ της \\( 1^\\circ \\) και των των \\( 359^\\circ \\): ",
-        prefix: "\\( σφ( \\)",
-        suffix: "): δεν ορίζεται",
-        answer: "180"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε το ακέραιο μέρος: ",
-        prefix: "\\( \\sqrt[3]{30}\\approx \\)",
-        suffix: ",10723",
-        answer: "3"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε το ακέραιο μέρος: ",
-        prefix: "\\( \\ln(\\pi) \\approx\\)",
-        suffix: ",1447",
-        answer: "1"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε «+» ή «-»: ",
-        prefix: "\\( συν(319^\\circ) \\approx\\)",
-        suffix: "0,75471",
-        answer: "+"
-      },
-      {
-        type: "fillBlankKeyboard",
-        question: "Συμπλήρωσε το ακέραιο μέρος: ",
-        prefix: "\\( \\sqrt{15} \\approx\\)",
-        suffix: ",87298",
-        answer: "3"
-      }
+                type: "multipleChoice",
+                question: "Δίνεται η ευθεία \\(Αx+Βy+Γ=0\\). For which values of \\(Α, Β, Γ\\) does this line pass through the origin of the axes.",
+                options: ["For \\(Α=0\\)", "For \\(Β=0\\)", "For \\(Γ=0\\)"],
+                correctIndex: 2
+            },
+            // Fill in the blank question (button based)
+            {
+                type: "fillBlank",
+                questionPrompt: "Complete the blanks using the buttons.",
+                sentenceTemplate: [
+                    'The curve with equation \\(\\dfrac{y^2}{α^2}-\\dfrac{x^2}{β^2}=1\\) is ', null, ', has foci at points ', null, ' and ', null, '.'
+                ],
+                correctAnswers: ["hyperbola", "\\(E\\left( 0,γ\\right)\\)", "\\(E'\\left( 0,-γ\\right)\\)"],
+                options: ["parabola", "ellipse", "hyperbola",
+                "\\(E\\left( γ,0\\right)\\)", "\\(E'\\left( -γ,0\\right)\\)",
+                "\\(E\\left( 0,γ\\right)\\)", "\\(E'\\left( 0,-γ\\right)\\)"],
+                orderMatters: true
+            },
+            // START: Updated "fillBlankKeyboard" questions
+            { // ΑΛΛΑΓΗ: Νέα δομή για fillBlankKeyboard
+                type: "fillBlankKeyboard",
+                question: "Συμπλήρωσε τις δύο ισότητες:",
+                template: ["3+", null, "=7 και 7-", null, "=1"],
+                answers: ["4", "6"] 
+            },
+            { // ΑΛΛΑΓΗ: Νέα δομή για fillBlankKeyboard
+                type: "fillBlankKeyboard",
+                question: "Complete the relation with an angle between \\( 91^\\circ \\) and \\( 361^\\circ \\):",
+                template: ["\\( tan( \\)", null, "\\( ^\\circ ) \\) is undefined."],
+                answers: ["270"] 
+            },
+            { // ΑΛΛΑΓΗ: Νέα δομή για fillBlankKeyboard
+                type: "fillBlankKeyboard",
+                question: "What is \\( \\sqrt{16} \\)?",
+                template: ["Answer: ", null],
+                answers: ["4"]
+            },
+            { // ΑΛΛΑΓΗ: Νέα δομή για fillBlankKeyboard
+                type: "fillBlankKeyboard",
+                question: "Fill in '+' or '-':",
+                template: ["\\( sin(200^\\circ) \\approx \\)", null, "\\(0.34202\\)"],
+                answers: ["-"]
+            },
+            // END: Updated "fillBlankKeyboard"
+            // Multiple choice question (single select with images)
+            {
+                type: "multipleChoice",
+                question: "Which figure has the equation \\(x^2=2py\\);",
+                image: null, 
+                options: [
+                    `<img src="ySQ6x.png">`, 
+                    `<img src="xSQ6y.png">`,
+                    `<img src="ySQminusxSQ.png">`,
+                    `<img src="xSQminusySQ.png">`,
+                    `<img src="xSQ4ySQ9.png">`,
+                    `<img src="ySQ4xSQ9.png">`
+                ],
+                correctIndex: 1
+            },
+            // START: New question type "multipleChoiceMultSelect"
+            {
+                type: "multipleChoiceMultSelect",
+                question: "Which of the following characterize the function \\(f(x) = x^3\\)?",
+                image: null,
+                options: [
+                    "It is an even function (άρτια)",
+                    "It is an odd function (περιττή)",
+                    "It is strictly increasing (γνησίως αύξουσα) on \\((-\\infty, \\infty)\\)",
+                    "It is strictly decreasing (γνησίως φθίνουσα) on \\((-\\infty, 0]\\)",
+                    "It has a local minimum (τοπικό ελάχιστο)",
+                    "It has no global extremum (ολικό ακρότατο)"
+                ],
+                correctIndices: [1, 2, 5]
+            }
             // END: New question type "multipleChoiceMultSelect"
         ];
 
-        const TIME_LIMIT = 600; // 10 minutes in seconds
+        const TIME_LIMIT = 900; // 15 minutes in seconds
 
         let isMode2 = false;
 
@@ -696,21 +382,21 @@
         // Variables for current question state
         let userAnswersForCurrentQuestion = []; 
         let nextBlankToFillIndex = 0;           
-        let optionButtons = [];                
-        let selectedOption = null;             
-        let selectedOptionsArray = [];         
-        let currentTextAnswerInput = null;     
+        let optionButtons = [];                 
+        let selectedOption = null;              
+        let selectedOptionsArray = [];          
+        let currentTextAnswerInputs = []; // ΑΛΛΑΓΗ: Για πολλαπλά πεδία εισαγωγής
 
         const quizModeToggle = document.getElementById("quiz-mode-toggle");
         const timeLimitInfo = document.getElementById("time-limit-info");
-        const exitQuizButton = document.getElementById("exit-quiz-button"); // ΝΕΟ
+        const exitQuizButton = document.getElementById("exit-quiz-button"); 
 
         function startQuiz() {
             document.getElementById("intro").classList.add("hidden");
             document.getElementById("timer").classList.remove("hidden");
             document.getElementById("quiz").classList.remove("hidden");
             document.getElementById("submit").classList.remove("hidden");
-            exitQuizButton.classList.remove("hidden"); // ΝΕΟ: Εμφάνιση κουμπιού εξόδου
+            exitQuizButton.classList.remove("hidden"); 
             document.getElementById("result").classList.add("hidden");
             document.getElementById("download").classList.add("hidden");
 
@@ -794,7 +480,7 @@
             questionImageContainer.innerHTML = '';
             questionContent.innerHTML = '';
             selectedOptionsArray = [];
-            currentTextAnswerInput = null; 
+            currentTextAnswerInputs = []; // ΑΛΛΑΓΗ: Καθαρισμός για τη νέα ερώτηση
 
             if (q.imageURL || q.image) {
                 const imgElement = document.createElement("img");
@@ -938,34 +624,38 @@
             questionContent.appendChild(questionDiv);
         }
 
+        // ΑΛΛΑΓΗ: Ενημέρωση της συνάρτησης για υποστήριξη πολλαπλών κενών
         function loadFillBlankKeyboardQuestion(q, questionPromptText, questionContent) {
             questionPromptText.innerHTML = q.question || ""; 
+            currentTextAnswerInputs = []; // Καθαρισμός του πίνακα για τη νέα ερώτηση
 
             const answerContainer = document.createElement("div");
             answerContainer.classList.add("keyboard-answer-container");
 
-            if (q.prefix) {
-                const prefixSpan = document.createElement("span");
-                prefixSpan.innerHTML = q.prefix; 
-                answerContainer.appendChild(prefixSpan);
-            }
-
-            const inputElement = document.createElement("input");
-            inputElement.type = "text";
-            inputElement.classList.add("answer-input");
-            inputElement.id = `text-answer-${currentQuestionIndex}`; 
-            inputElement.placeholder = "...";
-            answerContainer.appendChild(inputElement);
-            currentTextAnswerInput = inputElement; 
-
-            if (q.suffix) {
-                const suffixSpan = document.createElement("span");
-                suffixSpan.innerHTML = q.suffix; 
-                answerContainer.appendChild(suffixSpan);
+            if (q.template && Array.isArray(q.template)) {
+                q.template.forEach((part, index) => {
+                    if (part === null) { // Αν είναι null, πρόσθεσε ένα input field
+                        const inputElement = document.createElement("input");
+                        inputElement.type = "text";
+                        inputElement.classList.add("answer-input");
+                        inputElement.id = `text-answer-${currentQuestionIndex}-${currentTextAnswerInputs.length}`; 
+                        inputElement.placeholder = "...";
+                        answerContainer.appendChild(inputElement);
+                        currentTextAnswerInputs.push(inputElement); // Πρόσθεσε το input στον πίνακα
+                    } else { // Αλλιώς, πρόσθεσε το κείμενο
+                        const textPartSpan = document.createElement("div"); // Χρησιμοποιούμε div για να μην σπάει η γραμμή άσκοπα αν το κείμενο είναι σκέτος αριθμός.
+                        textPartSpan.innerHTML = part; 
+                        answerContainer.appendChild(textPartSpan);
+                    }
+                });
             }
 
             questionContent.appendChild(answerContainer);
-            inputElement.focus(); 
+
+            // Focus στο πρώτο input field, αν υπάρχει
+            if (currentTextAnswerInputs.length > 0) {
+                currentTextAnswerInputs[0].focus(); 
+            }
         }
 
         function handleFillBlankOptionClick(event) {
@@ -986,6 +676,7 @@
             }
         }
 
+        // ΑΛΛΑΓΗ: Ενημέρωση για καθαρισμό πολλαπλών πεδίων εισαγωγής
         function clearCurrentQuestionChoices() {
             const q = currentQuizQuestions[currentQuestionIndex];
 
@@ -1004,13 +695,14 @@
                 });
                 selectedOptionsArray = [];
             } else if (q.type === "fillBlankKeyboard") { 
-                if (currentTextAnswerInput) {
-                    currentTextAnswerInput.value = "";
-                    currentTextAnswerInput.focus();
+                if (currentTextAnswerInputs && currentTextAnswerInputs.length > 0) {
+                    currentTextAnswerInputs.forEach(input => input.value = "");
+                    currentTextAnswerInputs[0].focus(); // Focus στο πρώτο input
                 }
             } 
         }
-
+        
+        // ΑΛΛΑΓΗ: Ενημέρωση της λογικής ελέγχου για fillBlankKeyboard
         function checkAnswer() {
             const q = currentQuizQuestions[currentQuestionIndex];
             let isCorrect = false;
@@ -1032,9 +724,17 @@
                     isCorrect = correct.length === selected.length && correct.every((val, index) => val === selected[index]);
                 }
             } else if (q.type === "fillBlankKeyboard") { 
-                if (currentTextAnswerInput && q.answer !== undefined) {
-                    const userAnswer = currentTextAnswerInput.value.trim();
-                    isCorrect = userAnswer === q.answer;
+                if (currentTextAnswerInputs && currentTextAnswerInputs.length > 0 && q.answers && q.answers.length === currentTextAnswerInputs.length) {
+                    isCorrect = true; // Assume correct initially
+                    for (let i = 0; i < q.answers.length; i++) {
+                        const userAnswer = currentTextAnswerInputs[i].value.trim();
+                        if (userAnswer !== q.answers[i]) {
+                            isCorrect = false; // If any answer is wrong, mark as incorrect
+                            break;
+                        }
+                    }
+                } else {
+                     isCorrect = false; // Mismatch in number of inputs and answers
                 }
             } 
 
@@ -1076,14 +776,14 @@
                 timeTaken: elapsed,
                 timeLimitExceeded: timeLimitExceeded,
                 incorrectQuestionNumbers: isMode2 ? null : [...new Set(currentRoundIncorrectQuestionNumbersDisplay)].sort((a,b) => a-b),
-                modeLabel: isMode2 ? 'Attempt' : 'Round' // ΝΕΟ: Για σαφήνεια στο PDF
+                modeLabel: isMode2 ? 'Attempt' : 'Round' 
             });
 
             const resultDiv = document.getElementById("result");
             resultDiv.classList.remove("hidden");
             document.getElementById("quiz").classList.add("hidden");
             document.getElementById("submit").classList.add("hidden");
-            exitQuizButton.classList.add("hidden"); // ΝΕΟ: Απόκρυψη κουμπιού εξόδου
+            exitQuizButton.classList.add("hidden"); 
             document.getElementById("clear-choices").classList.add("hidden");
             document.getElementById("timer").classList.remove("timeout");
 
@@ -1149,7 +849,6 @@
             }
         }
         
-        // ΝΕΑ ΣΥΝΑΡΤΗΣΗ: Για χειρισμό εξόδου από το quiz
         function handleExitQuiz() {
             if (timerInterval) {
                 clearInterval(timerInterval);
@@ -1158,56 +857,42 @@
             const now = new Date();
             const elapsedForCurrentRound = Math.floor((now - startTime) / 1000);
 
-            // Απόκρυψη στοιχείων quiz
             document.getElementById("quiz").classList.add("hidden");
             document.getElementById("submit").classList.add("hidden");
             document.getElementById("clear-choices").classList.add("hidden");
             exitQuizButton.classList.add("hidden");
             document.getElementById("timer").textContent = "Έξοδος από το quiz. Δημιουργία αναφοράς...";
 
-            const reportData = JSON.parse(JSON.stringify(attemptsData)); // Βαθύ αντίγραφο των ολοκληρωμένων γύρων
+            const reportData = JSON.parse(JSON.stringify(attemptsData)); 
 
-            // Έλεγχος αν ο τρέχων γύρος ήταν ενεργός και δεν είχε ολοκληρωθεί φυσιολογικά
-            // currentQuestionIndex είναι ο αριθμός των ερωτήσεων που έχουν ήδη απαντηθεί/υποβληθεί
             const questionsAnsweredThisAttempt = currentQuestionIndex; 
             
-            if (questionsAnsweredThisAttempt < currentQuizQuestions.length || attemptsData.length === 0 ) { // Αν ο γύρος είναι σε εξέλιξη ή είναι ο πρώτος γύρος και δεν υπάρχουν δεδομένα
-                 const scoreThisAttempt = currentAttemptScore;
-                 const percentageThisAttempt = (questionsAnsweredThisAttempt > 0) ? ((scoreThisAttempt / questionsAnsweredThisAttempt) * 100).toFixed(2) : "0.00";
+            if (questionsAnsweredThisAttempt < currentQuizQuestions.length || attemptsData.length === 0 ) { 
+                const scoreThisAttempt = currentAttemptScore;
+                const percentageThisAttempt = (questionsAnsweredThisAttempt > 0) ? ((scoreThisAttempt / questionsAnsweredThisAttempt) * 100).toFixed(2) : "0.00";
 
-                 const currentPartialData = {
-                     attempt: attempt,
-                     modeLabel: isMode2 ? 'Attempt' : 'Round',
-                     questionsSeen: questionsAnsweredThisAttempt, // Ερωτήσεις που απαντήθηκαν σε αυτόν τον (ημιτελή) γύρο
-                     score: scoreThisAttempt,
-                     percentage: percentageThisAttempt,
-                     timeTaken: elapsedForCurrentRound,
-                     isPartial: true 
-                 };
-                 // Προσθήκη μόνο αν δεν έχει ήδη προστεθεί από το showResults (π.χ. αν ο χρήστης βγαίνει ακριβώς όταν τελειώνει ο χρόνος)
-                 // ή αν είναι ο πρώτος γύρος και δεν υπάρχουν δεδομένα στο attemptsData.
-                 const lastAttemptData = attemptsData.length > 0 ? attemptsData[attemptsData.length -1] : null;
-                 if (!lastAttemptData || lastAttemptData.attempt < attempt || (lastAttemptData.attempt === attempt && questionsAnsweredThisAttempt > 0) ) {
-                    // Ελέγχουμε αν ο τελευταίος γύρος στο attemptsData είναι ο τρέχων γύρος
-                    // Αν ναι, και ο χρήστης απάντησε κι άλλες ερωτήσεις πριν πατήσει έξοδο, 
-                    // τότε ίσως να θέλουμε να ενημερώσουμε την τελευταία εγγραφή αντί να προσθέσουμε νέα.
-                    // Για απλότητα, εδώ απλά προσθέτουμε τα τρέχοντα δεδομένα ως νέα "μερική" εγγραφή αν χρειάζεται.
-                    // Αυτό είναι πιο απλό αν ο χρήστης βγαίνει *πριν* ολοκληρωθεί ο γύρος.
-                    // Αν ο χρήστης βγαίνει *ακριβώς* όταν ο γύρος ολοκληρώνεται (π.χ. time out), το showResults θα έχει τρέξει.
-                    
-                    // Προσθέτουμε την τρέχουσα (μερική) προσπάθεια στα δεδομένα της αναφοράς
-                    // μόνο αν ο τρέχων γύρος δεν έχει ήδη καταγραφεί πλήρως μέσω του showResults()
+                const currentPartialData = {
+                    attempt: attempt,
+                    modeLabel: isMode2 ? 'Attempt' : 'Round',
+                    questionsSeen: questionsAnsweredThisAttempt, 
+                    score: scoreThisAttempt,
+                    percentage: percentageThisAttempt,
+                    timeTaken: elapsedForCurrentRound,
+                    isPartial: true 
+                };
+                const lastAttemptData = attemptsData.length > 0 ? attemptsData[attemptsData.length -1] : null;
+                if (!lastAttemptData || lastAttemptData.attempt < attempt || (lastAttemptData.attempt === attempt && questionsAnsweredThisAttempt > 0) ) {
                     let currentRoundAlreadyFullyLogged = false;
                     if (lastAttemptData && lastAttemptData.attempt === attempt && lastAttemptData.totalQuestions === currentQuizQuestions.length) {
                         currentRoundAlreadyFullyLogged = true;
                     }
 
                     if (!currentRoundAlreadyFullyLogged && questionsAnsweredThisAttempt < currentQuizQuestions.length ) {
-                         reportData.push(currentPartialData);
-                    } else if (!lastAttemptData && questionsAnsweredThisAttempt < currentQuizQuestions.length) { // Πρώτος γύρος, δεν έχει ολοκληρωθεί
-                         reportData.push(currentPartialData);
+                        reportData.push(currentPartialData);
+                    } else if (!lastAttemptData && questionsAnsweredThisAttempt < currentQuizQuestions.length) { 
+                        reportData.push(currentPartialData);
                     }
-                 }
+                }
             }
 
 
@@ -1215,14 +900,13 @@
 
             const resultDiv = document.getElementById("result");
             resultDiv.innerHTML = `<p>Έγινε έξοδος από το quiz. Η πρόοδός σας μέχρι αυτό το σημείο έχει καταγραφεί στο PDF που έγινε λήψη.</p>
-                               <p>Μπορείτε να ξεκινήσετε ένα νέο quiz ή να επιστρέψετε στην τάξη σας.</p>`;
+                                <p>Μπορείτε να ξεκινήσετε ένα νέο quiz ή να επιστρέψετε στην τάξη σας.</p>`;
             resultDiv.classList.remove("hidden");
-            document.getElementById("intro").querySelector("#start").textContent = "Start New Quiz"; // Επαναφορά ή αλλαγή κειμένου κουμπιού
-            document.getElementById("intro").classList.remove("hidden"); // Εμφάνιση αρχικής οθόνης
+            document.getElementById("intro").querySelector("#start").textContent = "Start New Quiz"; 
+            document.getElementById("intro").classList.remove("hidden"); 
             document.getElementById("timer").classList.add("hidden");
         }
 
-        // ΝΕΑ ΣΥΝΑΡΤΗΣΗ: Για δημιουργία PDF ανολοκλήρωτου quiz
         function generateIncompleteQuizPDF(reportData) {
             try {
                 if (typeof window.jspdf !== 'undefined') {
@@ -1289,7 +973,7 @@
             }
         }
 
-        function generatePDF() { // Η υπάρχουσα συνάρτηση για το πλήρες quiz
+        function generatePDF() { 
             try {
                 if (typeof window.jspdf !== 'undefined') {
                     const { jsPDF } = window.jspdf;
@@ -1324,7 +1008,7 @@
                         doc.setTextColor(0, 0, 0);
                         doc.setFontSize(12);
                         doc.setFont("helvetica", "bold");
-                        doc.text(`${attemptData.modeLabel} ${attemptData.attempt}`, 20, yPos); // Χρήση modeLabel
+                        doc.text(`${attemptData.modeLabel} ${attemptData.attempt}`, 20, yPos); 
 
                         doc.setTextColor(0, 0, 0);
                         doc.setFontSize(10);
@@ -1382,7 +1066,7 @@
                     let quizCompletedSuccessfully = false;
                     const allQuizQuestionsCount = quizData.length;
 
-                    if (lastAttempt) { // Check if lastAttempt exists
+                    if (lastAttempt) { 
                         if (isMode2) {
                             if (lastAttempt.score === allQuizQuestionsCount && !lastAttempt.timeLimitExceeded) {
                                 quizCompletedSuccessfully = true;
@@ -1428,18 +1112,18 @@
 
         quizModeToggle.addEventListener('change', function() {
             isMode2 = this.checked;
-            timeLimitInfo.textContent = `Χρόνος για κάθε ${this.checked ? 'προσπάθεια' : 'γύρο'}: 10 λεπτά`;
+            timeLimitInfo.textContent = `Χρόνος για κάθε ${this.checked ? 'προσπάθεια' : 'γύρο'}: 15 λεπτά`;
         });
 
-        timeLimitInfo.textContent = `Χρόνος για κάθε ${quizModeToggle.checked ? 'προσπάθεια' : 'γύρο'}: 10 λεπτά`;
+        timeLimitInfo.textContent = `Χρόνος για κάθε ${quizModeToggle.checked ? 'προσπάθεια' : 'γύρο'}: 15 λεπτά`;
 
 
         document.getElementById("start").addEventListener("click", startQuiz);
         document.getElementById("submit").addEventListener("click", checkAnswer);
         document.getElementById("clear-choices").addEventListener("click", clearCurrentQuestionChoices);
-        exitQuizButton.addEventListener("click", handleExitQuiz); // ΝΕΟ: Event listener
+        exitQuizButton.addEventListener("click", handleExitQuiz); 
         document.getElementById("otherpage").addEventListener("click", function() {
-            window.location.href = 'your_class_url_here'; // Αντικαταστήστε με το πραγματικό URL
+            window.location.href = 'your_class_url_here'; 
         });
         document.getElementById("download").addEventListener("click", generatePDF);
 
@@ -1453,7 +1137,7 @@
         document.getElementById("quiz").classList.add("hidden");
         document.getElementById("timer").classList.add("hidden");
         document.getElementById("submit").classList.add("hidden");
-        exitQuizButton.classList.add("hidden"); // ΝΕΟ: Απόκρυψη αρχικά
+        exitQuizButton.classList.add("hidden"); 
         document.getElementById("result").classList.add("hidden");
         document.getElementById("download").classList.add("hidden");
         document.getElementById("clear-choices").classList.add("hidden");
