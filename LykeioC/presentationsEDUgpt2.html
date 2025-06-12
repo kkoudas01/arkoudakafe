@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Παρουσίαση Υλικού</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #ff8c42;
+            --secondary-color: #6ec1e4;
+            --accent-color: #fbd14b;
+            --background-color: #121212;
+            --surface-color: #1e1e1e;
+            --text-color: #eeeeee;
+            --header-color: #ffffff;
+        }
+
+        body {
+            font-family: 'Comic Neue', cursive;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: 10px 22px;
+            margin-bottom: 25px;
+            background-color: var(--accent-color);
+            color: #000;
+            text-decoration: none;
+            border-radius: 20px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background-color: var(--primary-color);
+            transform: scale(1.05);
+        }
+
+        .intro-paragraph {
+            background-color: var(--surface-color);
+            padding: 20px;
+            border-left: 8px solid var(--primary-color);
+            border-radius: 20px;
+            font-size: 1.2em;
+            margin-bottom: 40px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .gallery-item {
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.6);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            transform: rotate(-1deg) scale(1.03);
+            box-shadow: 0 8px 20px rgba(255, 140, 66, 0.5);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            border-radius: 10px;
+        }
+
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 10, 10, 0.95);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: opacity 0.4s ease;
+        }
+
+        .lightbox.show {
+            display: flex;
+        }
+
+        .lightbox-content {
+            position: relative;
+            max-width: 85vw;
+            max-height: 90vh;
+            text-align: center;
+            animation: fadeInZoom 0.4s ease-in-out;
+        }
+
+        .lightbox-content img {
+            max-width: 100%;
+            max-height: 75vh;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.7);
+        }
+
+        .lightbox-caption {
+            margin-top: 10px;
+            font-size: 1.2em;
+            color: var(--accent-color);
+        }
+
+        @keyframes fadeInZoom {
+            from {
+                opacity: 0;
+                transform: scale(0.85);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .lightbox-close,
+        .lightbox-prev,
+        .lightbox-next {
+            position: absolute;
+            color: var(--accent-color);
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            z-index: 1001;
+        }
+
+        .lightbox-close {
+            top: 10px;
+            right: 30px;
+        }
+
+        .lightbox-prev,
+        .lightbox-next {
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: var(--secondary-color);
+            padding: 10px 15px;
+            border-radius: 50%;
+            color: #000;
+        }
+
+        .lightbox-prev:hover,
+        .lightbox-next:hover,
+        .lightbox-close:hover {
+            background-color: var(--primary-color);
+        }
+
+        .lightbox-prev {
+            left: 20px;
+        }
+
+        .lightbox-next {
+            right: 20px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 20px;
+            font-size: 0.9em;
+            color: #bbb;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <a href="index.html" class="back-button">← Επιστροφή</a>
+
+        <p class="intro-paragraph">
+            Καλώς ήρθατε στην παρουσίαση του υλικού μας! Εδώ θα βρείτε τις βασικές διαφάνειες του μαθήματος. Κάντε κλικ σε κάθε εικόνα για να τη δείτε σε πλήρες μέγεθος και να πλοηγηθείτε στο υλικό.
+        </p>
+
+        <div class="gallery-grid">
+            <div class="gallery-item">
+                <img src="MyPresentation/Διαφάνεια1.PNG" data-comment="Αυτή είναι η εισαγωγική διαφάνεια του μαθήματος." 
+                     onerror="this.onerror=null;this.src='https://placehold.co/400x300/1e1e1e/eeeeee?text=Διαφάνεια+1';">
+            </div>
+            <div class="gallery-item">
+                <img src="MyPresentation/Διαφάνεια2.PNG" data-comment="" 
+                     onerror="this.onerror=null;this.src='https://placehold.co/400x300/1e1e1e/eeeeee?text=Διαφάνεια+2';">
+            </div>
+            <div class="gallery-item">
+                <img src="MyPresentation/Διαφάνεια3.PNG" data-comment="Εδώ αναλύουμε τη δεύτερη βασική ενότητα." 
+                     onerror="this.onerror=null;this.src='https://placehold.co/400x300/1e1e1e/eeeeee?text=Διαφάνεια+3';">
+            </div>
+            <div class="gallery-item">
+                <img src="MyPresentation/Διαφάνεια4.PNG" 
+                     onerror="this.onerror=null;this.src='https://placehold.co/400x300/1e1e1e/eeeeee?text=Διαφάνεια+4';">
+            </div>
+            <div class="gallery-item">
+                <img src="MyPresentation/Διαφάνεια5.PNG" data-comment="Παραδείγματα και ασκήσεις για εξάσκηση."
+                     onerror="this.onerror=null;this.src='https://placehold.co/400x300/1e1e1e/eeeeee?text=Διαφάνεια+5';">
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        Δημιουργήθηκε από τον/την [Το Όνομά σας]
+    </footer>
+
+    <div id="lightbox" class="lightbox">
+        <span class="lightbox-close">&times;</span>
+        <a class="lightbox-prev">&#10094;</a>
+        <a class="lightbox-next">&#10095;</a>
+        <div class="lightbox-content">
+            <img id="lightbox-img">
+            <div id="lightbox-caption" class="lightbox-caption"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const galleryItems = document.querySelectorAll('.gallery-item img');
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            const lightboxCaption = document.getElementById('lightbox-caption');
+            const closeBtn = document.querySelector('.lightbox-close');
+            const prevBtn = document.querySelector('.lightbox-prev');
+            const nextBtn = document.querySelector('.lightbox-next');
+
+            let currentImageIndex = 0;
+            const images = Array.from(galleryItems);
+
+            function showLightbox() {
+                lightbox.classList.add('show');
+                document.addEventListener('keydown', handleKeyPress);
+            }
+
+            function hideLightbox() {
+                lightbox.classList.remove('show');
+                document.removeEventListener('keydown', handleKeyPress);
+            }
+
+            function updateImage(index) {
+                const imgElement = images[index];
+                const imagePath = imgElement.src;
+                const customComment = imgElement.dataset.comment;
+
+                lightboxImg.src = imagePath;
+                lightboxCaption.textContent = customComment?.trim() !== '' ? customComment : decodeURIComponent(imagePath.split('/').pop());
+                currentImageIndex = index;
+                prevBtn.style.display = index === 0 ? 'none' : 'block';
+                nextBtn.style.display = index === images.length - 1 ? 'none' : 'block';
+            }
+
+            function handleKeyPress(e) {
+                if (e.key === 'Escape') hideLightbox();
+                else if (e.key === 'ArrowLeft' && currentImageIndex > 0) updateImage(currentImageIndex - 1);
+                else if (e.key === 'ArrowRight' && currentImageIndex < images.length - 1) updateImage(currentImageIndex + 1);
+            }
+
+            galleryItems.forEach((img, index) => {
+                img.addEventListener('click', () => {
+                    updateImage(index);
+                    showLightbox();
+                });
+            });
+
+            closeBtn.addEventListener('click', hideLightbox);
+            prevBtn.addEventListener('click', () => {
+                if (currentImageIndex > 0) updateImage(currentImageIndex - 1);
+            });
+            nextBtn.addEventListener('click', () => {
+                if (currentImageIndex < images.length - 1) updateImage(currentImageIndex + 1);
+            });
+        });
+    </script>
+</body>
+</html>
