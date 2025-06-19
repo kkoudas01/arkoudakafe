@@ -288,9 +288,9 @@
   <div class="container">
     <div class="central-circle" id="main-label">Γ Λυκείου</div>
     <div class="ring">
-      <button class="ring-button" data-subject="Λογισμός">Λογισμός</button>
-      <button class="ring-button" data-subject="Γεωμετρία">Γεωμετρία</button>
-      <button class="ring-button" data-subject="Στοχαστικά">Στοχαστικά</button>
+      <button class="ring-button" data-subject="Όριο - συνέχεια">Όριο - συνέχεια</button>
+      <button class="ring-button" data-subject="Διαφορικός Λογισμός">Διαφορικός Λογισμός</button>
+      <button class="ring-button" data-subject="Ολοκληρωτικός Λογισμός">Ολοκληρωτικός Λογισμός</button>
     </div>
   </div>
 
@@ -300,19 +300,20 @@
 
   <script>
     const subjects = {
-      'Λογισμός': ['Γραφικές παραστάσεις', 'Ανισώσεις'],
-      'Γεωμετρία': ['Σχήματα', 'Γωνίες'],
-      'Στοχαστικά': ['Κινηματική', 'Δυναμική']
+      'Όριο - συνέχεια': [ 'Εισαγωγή στις συναρτήσεις','Γραφικές παραστάσεις'],
+      'Διαφορικός Λογισμός': ['Σχήματα', 'Γωνίες'],
+      'Ολοκληρωτικός Λογισμός': ['Κινηματική', 'Δυναμική']
     };
 
     const links = {
+      'Εισαγωγή στις συναρτήσεις': [
+        { text: 'Πεδίο ορισμού και σύνολο τιμών', url: 'functionsIntro.html' }
+      ],
       'Γραφικές παραστάσεις': [
+        { text: 'Βασική θεωρία γραφικών παραστάσεων', url: 'graphs.html' },
         { text: 'Βρες τη γραφική παράσταση (Quiz)', url: 'EidosGrapg.html' },
         { text: 'Βρες τη γραφική παράσταση (Quiz με χρόνο)', url: 'EidosGrapgTime.html' },
         { text: 'Βρες τη γραφική παράσταση (Quiz με επανάληψη λαθών)', url: 'eidosGraphEpanLathi.html' }
-      ],
-      'Ανισώσεις': [
-        { text: 'Γραμμικές Ανισώσεις', url: 'an1.html' }
       ],
       'Σχήματα': [
         { text: 'Τρίγωνα', url: 'sx1.html' },
