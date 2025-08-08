@@ -1,0 +1,87 @@
+
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue&display=swap" rel="stylesheet">
+
+    <meta charset="UTF-8">
+    <title>Αρκούδα Καφέ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Πορτοκαλί καρτέλα - Προσθήκη ΣΤΗΝ ΑΡΧΗ του body -->
+    <div id="sideTab" onclick="toggleSidebar()">☰</div>
+
+    <!-- Πλευρική στήλη - Προσθήκη ΑΜΕΣΩΣ ΜΕΤΑ το sideTab -->
+    <div id="sidebar" class="hidden">
+        <div class="link-box">
+            <a href="https://www.desmos.com/calculator" target="_blank">Γραφικές παραστάσεις με το desmos</a>
+        </div>
+        <div class="link-box">
+            <a href="https://www.geogebra.org/3d?lang=el" target="_blank">Τρισδιάστατες αναπαραστάσεις με το geogebra</a>
+        </div>
+        <div class="link-box">
+            <a href="https://www.geogebra.org/geometry?lang=en" target="_blank">Γεωμετρία με το geogebra</a>
+        </div>
+        <div class="link-box">
+            <a href="https://www.wolframalpha.com/" target="_blank">Το πολυεργαλείο wolfram alpha</a>
+        </div>
+        <div class="link-box">
+            <a href="https://phet.colorado.edu/" target="_blank">Προσομοιώσεις για τις θετικές επιστήμες (phet)</a>
+        </div>
+    </div>
+    <div class="container">
+        <!-- <h1 class="neon">Αρκούδα Καφέ</h1> -->
+        
+        <div class="dock">
+            <div class="dock-item" onmouseover="hoverEffect(this)" onmouseout="removeEffect(this)" onclick="showContent('cat')">
+                <img src="origamiCat1.png" class="dock-icon">
+                <div class="neon-sub">Α' Γυμνασίου</div>
+            </div>
+            <div class="dock-item" onmouseover="hoverEffect(this)" onmouseout="removeEffect(this)" onclick="showContent('bird')">
+                <img src="origamiBird1.png" class="dock-icon">
+                <div class="neon-sub">Β' Γυμνασίου</div>
+            </div>
+            <div class="dock-item" onmouseover="hoverEffect(this)" onmouseout="removeEffect(this)" onclick="showContent('boat')">
+                <img src="origamiBoat1.png" class="dock-icon">
+                <div class="neon-sub">Γ' Γυμνασίου</div>
+            </div>
+            <div class="dock-item" onmouseover="hoverEffect(this)" onmouseout="removeEffect(this)" onclick="showContent('airplane')">
+                <img src="origamiAirplane.png" class="dock-icon">
+                <div class="neon-sub">Α' Λυκείου</div>
+            </div>
+            <div class="dock-item" onmouseover="hoverEffect(this)" onmouseout="removeEffect(this)" onclick="showContent('rose')">
+                <img src="origamiRose1.png" class="dock-icon">
+                <div class="neon-sub">Β' Λυκείου</div>
+            </div>
+            <div class="dock-item" onmouseover="hoverEffect(this)" onmouseout="removeEffect(this)" onclick="showContent('butterfly')">
+                <img src="origamibutterfly1.png" class="dock-icon">
+                <div class="neon-sub">Γ' Λυκείου</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="content" class="hidden paper-unfold">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
+            <div id="contentInner"></div>
+            <div class="button-container side-buttons">
+                <button onclick="goBack()">Επιστροφή</button>
+                <button onclick="goToMore()">Περισσότερα</button>
+            </div>
+        </div>
+    </div>
+    
+
+    <div id="logo" onclick="toggleLogoContent()">
+        <img src="logo1.png" alt="Logo">
+    </div>
+
+    <div id="logoContent" class="hidden">
+        <img src="logo2.jpg" alt="Logo Info">
+        <p class="logo-text">Η σελίδα αυτή περιέχει εκπαιδευτικό υλικό.</p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
